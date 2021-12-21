@@ -17,10 +17,6 @@ public class AddForceRequest implements Request {
   private final double duration;
 
   public AddForceRequest(Entity entity, Vector force, double duration) {
-    if (duration <= 0) {
-      throw new IllegalArgumentException("duration must be > 0");
-    }
-
     this.entity = entity;
     this.force = force;
     this.duration = duration;
