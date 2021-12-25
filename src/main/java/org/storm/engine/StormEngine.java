@@ -18,16 +18,12 @@ import org.storm.core.ui.Window;
 import org.storm.engine.exception.StormEngineException;
 import org.storm.engine.state.State;
 import org.storm.physics.ImpulseResolutionPhysicsEngine;
-import org.storm.physics.PhysicsData;
 import org.storm.physics.PhysicsEngine;
 
-import javax.swing.text.html.parser.Entity;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * The StormEngine combines the multiple components of the Storm libraries to create a simple, straight forward and
@@ -44,10 +40,6 @@ public class StormEngine {
   @Getter
   private final Window window;
 
-
-  // Game loop vars
-  private double targetFps;
-
   private double minRenderDelay;
 
   private double minLogicDelay;
@@ -63,7 +55,6 @@ public class StormEngine {
   private double lastUpdateTime;
 
   private Timeline timeline;
-
 
   // Stateful vars
   private State current;
@@ -135,13 +126,14 @@ public class StormEngine {
     if (!this.fpsChangeAllow) throw new StormEngineException("fps change not allowed at this time");
 
     if (this.timeline != null) this.timeline.stop();
-    this.targetFps = FastMath.max(targetLogicFps, targetRenderFps);
+    // Game loop vars
+    double targetFps = FastMath.max(targetLogicFps, targetRenderFps);
     this.minRenderDelay = 1000000000.0 / targetRenderFps;
     this.minLogicDelay = 1000000000.0 / targetLogicFps;
     this.accumulatedRenderDelay = this.minRenderDelay; // To allow first run render
     this.accumulatedLogicDelay = this.minLogicDelay; // To allow first run logic updates
-    this.fixedTimeStepInterval = 1000000000.0 / this.targetFps;
-    this.timeline = this.createTimeline(this.targetFps, this::run);
+    this.fixedTimeStepInterval = 1000000000.0 / targetFps;
+    this.timeline = this.createTimeline(targetFps, this::run);
   }
 
   /**
@@ -174,11 +166,12 @@ public class StormEngine {
   }
 
   /**
-   * Swaps the current active State to the one associated with the given id
+   * Swaps the current active State to the one associated with the given id with or without resetting it.
    *
    * @param stateId unique id of the state to switch to
+   * @param reset true if resetting the state is wanted, false otherwise
    */
-  public void swapState(String stateId) {
+  public void swapState(String stateId, boolean reset) {
     if (!this.states.containsKey(stateId)) throw new StormEngineException("could not find state for id " + stateId);
     if (this.states.get(stateId) == this.current) return;
 
@@ -191,8 +184,19 @@ public class StormEngine {
     this.physicsEngine.clearAllForces();
     this.physicsEngine.setEntities(this.current.getEntities());
 
+    if (reset) this.current.reset();
+
     this.current.load();
     this.timeline.play();
+  }
+
+  /**
+   * Swaps the current active State to the one associated with the given id without resetting
+   *
+   * @param stateId unique id of the state to switch to
+   */
+  public void swapState(String stateId) {
+    this.swapState(stateId, false);
   }
 
   /**

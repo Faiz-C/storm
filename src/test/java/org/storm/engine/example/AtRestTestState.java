@@ -44,6 +44,11 @@ public class AtRestTestState extends State {
   }
 
   @Override
+  public void reset() {
+
+  }
+
+  @Override
   public void load() {
     this.soundManager.play("bgm");
     this.requestQueue.submit(

@@ -74,4 +74,9 @@ public abstract class State implements Renderable, Updatable, Processor {
    */
   public abstract void unload();
 
+  /**
+   * Resets the state as if it hasn't been used yet
+   */
+  public abstract void reset();
+
 }

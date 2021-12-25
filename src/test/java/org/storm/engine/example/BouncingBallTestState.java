@@ -38,6 +38,10 @@ public class BouncingBallTestState extends State {
   }
 
   @Override
+  public void reset() {
+  }
+
+  @Override
   public void process(ActionManager actionManager) {
     if (actionManager.isPerforming(KeyActionConstants.DOWN)) {
       this.requestQueue.submit(new StateChangeRequest(KeyActionConstants.DOWN));
