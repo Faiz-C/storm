@@ -2,7 +2,10 @@ package org.storm.engine.request;
 
 import org.storm.engine.exception.StormEngineException;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -44,7 +47,7 @@ public class RequestQueue {
    * @param requests variable number of Requests to submit
    */
   public void submit(Request... requests) {
-    this.queue.add(Arrays.asList(requests));
+    this.submit(Arrays.asList(requests));
   }
 
   /**
@@ -66,7 +69,7 @@ public class RequestQueue {
   }
 
   /**
-   * This is a non blocking retrieve of the next request in the queue.
+   * This is a non-blocking retrieve of the next request in the queue.
    *
    * @return an Optional with either the new list of requests in the queue or empty if the queue is empty
    */

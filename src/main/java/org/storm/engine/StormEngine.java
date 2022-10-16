@@ -12,17 +12,16 @@ import lombok.Setter;
 import org.apache.commons.math3.util.FastMath;
 import org.storm.core.input.Translator;
 import org.storm.core.input.action.ActionManager;
-import org.storm.core.input.action.SimpleActionManager;
 import org.storm.core.ui.Resolution;
 import org.storm.core.ui.Window;
 import org.storm.engine.exception.StormEngineException;
+import org.storm.engine.request.RequestQueue;
 import org.storm.engine.state.State;
-import org.storm.physics.ImpulseResolutionPhysicsEngine;
 import org.storm.physics.PhysicsEngine;
+import org.storm.physics.transforms.UnitConvertor;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -40,24 +39,18 @@ public class StormEngine {
   @Getter
   private final Window window;
 
+  // Game Loop Vars
   private double minRenderDelay;
-
   private double minLogicDelay;
-
   private double accumulatedRenderDelay;
-
   private double accumulatedLogicDelay;
-
   private double accumulator;
-
   private double fixedTimeStepInterval;
-
   private double lastUpdateTime;
-
   private Timeline timeline;
 
   // Stateful vars
-  private State current;
+  private State currentState;
 
   private final Map<String, State> states;
 
@@ -67,65 +60,42 @@ public class StormEngine {
   @Setter
   private boolean fpsChangeAllow;
 
-  public StormEngine(PhysicsEngine physicsEngine, ActionManager actionManager, Window window, int targetLogicFps, int targetRenderFps) {
+  private final RequestQueue requestQueue;
+
+  private final UnitConvertor unitConvertor;
+
+  public StormEngine(PhysicsEngine physicsEngine, ActionManager actionManager, UnitConvertor unitConvertor,
+                     Resolution resolution, int inputQueueMax, int targetLogicFps, int targetRenderFps) {
     this.physicsEngine = physicsEngine;
     this.actionManager = actionManager;
-    this.window = window;
+    this.window = new Window(resolution);
     this.fpsChangeAllow = true;
     this.setTargetFps(targetLogicFps, targetRenderFps);
     this.fpsChangeAllow = false;
     this.accumulator = 0.0;
     this.states = new HashMap<>();
+    this.requestQueue = new RequestQueue(inputQueueMax);
+    this.unitConvertor = unitConvertor;
 
     this.physicsEngine.setPaused(true);
   }
 
-  public StormEngine(PhysicsEngine physicsEngine, ActionManager actionManager, Window window, int targetFps) {
-    this(physicsEngine, actionManager, window, targetFps, targetFps);
-  }
-
-  public StormEngine(ActionManager actionManager, Window window, int targetLogicFps, int targetRenderFps) {
-    this(new ImpulseResolutionPhysicsEngine(window.getResolution()), actionManager, window, targetLogicFps, targetRenderFps);
-  }
-
-  public StormEngine(ActionManager actionManager, Window window, int targetFps) {
-    this(new ImpulseResolutionPhysicsEngine(window.getResolution()), actionManager, window, targetFps);
-  }
-
-  public StormEngine(Window window, int targetLogicFps, int targetRenderFps) {
-    this(new ImpulseResolutionPhysicsEngine(window.getResolution()), new SimpleActionManager(), window, targetLogicFps, targetRenderFps);
-  }
-
-  public StormEngine(Window window, int targetFps) {
-    this(new ImpulseResolutionPhysicsEngine(window.getResolution()), new SimpleActionManager(), window, targetFps);
-  }
-
-  public StormEngine(PhysicsEngine physicsEngine, ActionManager actionManager, Resolution resolution, int targetLogicFps, int targetRenderFps) {
-    this(physicsEngine, actionManager, new Window(resolution), targetLogicFps, targetRenderFps);
-  }
-
-  public StormEngine(ActionManager actionManager, Resolution resolution, int targetFps) {
-    this(new ImpulseResolutionPhysicsEngine(resolution), actionManager, resolution, targetFps, targetFps);
-  }
-
-  public StormEngine(Resolution resolution, int targetLogicFps, int targetRenderFps) {
-    this(new ImpulseResolutionPhysicsEngine(resolution), new SimpleActionManager(), resolution, targetLogicFps, targetRenderFps);
-  }
-
-  public StormEngine(Resolution resolution, int targetFps) {
-    this(new ImpulseResolutionPhysicsEngine(resolution), new SimpleActionManager(), resolution, targetFps, targetFps);
+  public StormEngine(PhysicsEngine physicsEngine, ActionManager actionManager, UnitConvertor unitConvertor,
+                     Resolution resolution, int inputQueueMax, int targetFps) {
+    this(physicsEngine, actionManager, unitConvertor, resolution, inputQueueMax, targetFps, targetFps);
   }
 
   /**
    * Changes the logic and render fps to the given if allowed
    *
-   * @param targetLogicFps new logic fps to use
+   * @param targetLogicFps  new logic fps to use
    * @param targetRenderFps new render fps to use
    */
   public void setTargetFps(int targetLogicFps, int targetRenderFps) {
     if (!this.fpsChangeAllow) throw new StormEngineException("fps change not allowed at this time");
 
     if (this.timeline != null) this.timeline.stop();
+
     // Game loop vars
     double targetFps = FastMath.max(targetLogicFps, targetRenderFps);
     this.minRenderDelay = 1000000000.0 / targetRenderFps;
@@ -149,10 +119,10 @@ public class StormEngine {
    * Adds the given State under the given unique id. This will also initialize the state
    *
    * @param stateId unique id to identify the state by
-   * @param state State to add
+   * @param state   State to add
    */
   public void addState(String stateId, State state) {
-    state.init();
+    state.preload(this.requestQueue);
     this.states.put(stateId, state);
   }
 
@@ -169,24 +139,24 @@ public class StormEngine {
    * Swaps the current active State to the one associated with the given id with or without resetting it.
    *
    * @param stateId unique id of the state to switch to
-   * @param reset true if resetting the state is wanted, false otherwise
+   * @param reset   true if resetting the state is wanted, false otherwise
    */
   public void swapState(String stateId, boolean reset) {
     if (!this.states.containsKey(stateId)) throw new StormEngineException("could not find state for id " + stateId);
-    if (this.states.get(stateId) == this.current) return;
+    if (this.states.get(stateId) == this.currentState) return;
 
     this.timeline.stop();
 
-    if (this.current != null) this.current.unload();
+    if (this.currentState != null) this.currentState.unload(this.requestQueue);
 
-    this.current = this.states.get(stateId);
+    this.currentState = this.states.get(stateId);
 
     this.physicsEngine.clearAllForces();
-    this.physicsEngine.setEntities(this.current.getEntities());
+    this.physicsEngine.setEntities(this.currentState.getEntities());
 
-    if (reset) this.current.reset();
+    if (reset) this.currentState.reset(this.requestQueue);
 
-    this.current.load();
+    this.currentState.load(this.requestQueue);
     this.timeline.play();
   }
 
@@ -205,9 +175,9 @@ public class StormEngine {
    *
    * @param inputTranslator Translator to use
    */
-  public void addKeyRegister(Translator<KeyEvent, Set<String>> inputTranslator) {
-    this.window.setOnKeyPressed(keyEvent -> inputTranslator.translate(keyEvent).forEach(this.actionManager::startUsing));
-    this.window.setOnKeyReleased(keyEvent -> inputTranslator.translate(keyEvent).forEach(this.actionManager::stopUsing));
+  public void addKeyRegister(Translator<KeyEvent, String> inputTranslator) {
+    this.window.setOnKeyPressed(keyEvent -> this.actionManager.startUsing(inputTranslator.translate(keyEvent)));
+    this.window.setOnKeyReleased(keyEvent -> this.actionManager.stopUsing(inputTranslator.translate(keyEvent)));
   }
 
   /**
@@ -216,11 +186,11 @@ public class StormEngine {
    *
    * @param inputTranslator Translator to use
    */
-  public void addMouseRegister(Translator<MouseEvent, Set<String>> inputTranslator) {
-    this.window.setOnMousePressed(mouseEvent -> inputTranslator.translate(mouseEvent).forEach(this.actionManager::startUsing));
-    this.window.setOnMouseReleased(mouseEvent -> inputTranslator.translate(mouseEvent).forEach(this.actionManager::stopUsing));
-    this.window.setOnMouseEntered(mouseEvent -> inputTranslator.translate(mouseEvent).forEach(this.actionManager::startUsing));
-    this.window.setOnMouseExited(mouseEvent -> inputTranslator.translate(mouseEvent).forEach(this.actionManager::stopUsing));
+  public void addMouseRegister(Translator<MouseEvent, String> inputTranslator) {
+    this.window.setOnMousePressed(mouseEvent -> this.actionManager.startUsing(inputTranslator.translate(mouseEvent)));
+    this.window.setOnMouseReleased(mouseEvent -> this.actionManager.stopUsing(inputTranslator.translate(mouseEvent)));
+    this.window.setOnMouseEntered(mouseEvent -> this.actionManager.startUsing(inputTranslator.translate(mouseEvent)));
+    this.window.setOnMouseExited(mouseEvent -> this.actionManager.stopUsing(inputTranslator.translate(mouseEvent)));
   }
 
   /**
@@ -240,7 +210,7 @@ public class StormEngine {
    * @param event Javafx Event -- unused
    */
   private void run(Event event) {
-    if (!this.running || this.current == null) return;
+    if (!this.running || this.currentState == null) return;
 
     double now = System.nanoTime();
     double elapsedFrameTime = now - this.lastUpdateTime;
@@ -248,7 +218,7 @@ public class StormEngine {
     this.accumulator += elapsedFrameTime;
 
     // First handle a set of requests
-    this.current.getRequestQueue()
+    this.requestQueue
       .next()
       .ifPresent(requests -> requests
         .forEach(request -> request.execute(this)));
@@ -259,10 +229,10 @@ public class StormEngine {
 
     if (this.accumulatedLogicDelay >= this.minLogicDelay) {
       // Process Input
-      this.current.process(this.actionManager.getReadonly());
+      this.currentState.process(this.actionManager.getReadonly(), this.requestQueue);
 
       // Then allow the state to do any internal updating
-      this.current.update(toSeconds(this.lastUpdateTime), toSeconds(elapsedFrameTime));
+      this.currentState.update(toSeconds(this.lastUpdateTime), toSeconds(elapsedFrameTime));
 
       // Apply Physics
       while (accumulator >= this.fixedTimeStepInterval) {
@@ -277,7 +247,7 @@ public class StormEngine {
     if (++this.accumulatedRenderDelay >= this.minRenderDelay) {
       // Render the state
       this.window.clear();
-      this.current.render(this.window.getGraphicsContext(), 0, 0);
+      this.currentState.render(this.window.getGraphicsContext(), 0, 0);
 
       this.accumulatedRenderDelay = 0;
     }

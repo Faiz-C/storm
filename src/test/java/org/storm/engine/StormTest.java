@@ -2,26 +2,37 @@ package org.storm.engine;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import org.storm.core.input.action.SimpleActionManager;
+import org.storm.core.ui.Resolution;
 import org.storm.core.ui.Resolutions;
-import org.storm.engine.example.AtRestTestState;
-import org.storm.engine.example.ParticleTestState;
-import org.storm.engine.example.BouncingBallTestState;
-import org.storm.engine.example.TranslatorImpl;
-
+import org.storm.engine.example.*;
+import org.storm.engine.request.RequestQueue;
+import org.storm.physics.ImpulseResolutionPhysicsEngine;
+import org.storm.physics.transforms.UnitConvertor;
 
 public class StormTest extends Application {
 
   public void start(Stage primaryStage) {
-    StormEngine stormEngine = new StormEngine(Resolutions.SD, 144, 240);
+    Resolution resolution = Resolutions.SD;
+    StormEngine stormEngine = new StormEngine(
+      new ImpulseResolutionPhysicsEngine(resolution),
+      new SimpleActionManager(),
+      new UnitConvertor() {},
+      resolution,
+      RequestQueue.UNLIMITED_REQUEST_SIZE,
+      144,
+      240
+    );
 
-    stormEngine.addState(KeyActionConstants.DOWN, new AtRestTestState());
-    stormEngine.addState(KeyActionConstants.UP, new BouncingBallTestState());
-    stormEngine.addState(KeyActionConstants.LEFT, new ParticleTestState());
+    stormEngine.addState(KeyActionConstants.ONE, new AtRestTestState());
+    stormEngine.addState(KeyActionConstants.TWO, new BouncingBallTestState());
+    stormEngine.addState(KeyActionConstants.THREE, new ParticleTestState());
+    stormEngine.addState(KeyActionConstants.FOUR, new CircleCornerTestState());
     stormEngine.addKeyRegister(new TranslatorImpl());
 
     stormEngine.setFpsChangeAllow(false);
 
-    stormEngine.swapState(KeyActionConstants.LEFT);
+    stormEngine.swapState(KeyActionConstants.ONE);
     stormEngine.run();
 
     primaryStage.setScene(stormEngine.getWindow());

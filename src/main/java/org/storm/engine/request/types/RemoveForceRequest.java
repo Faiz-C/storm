@@ -18,7 +18,7 @@ public class RemoveForceRequest implements Request {
 
   @Override
   public void execute(StormEngine stormEngine) {
-    stormEngine.getPhysicsEngine().removeForce(this.entity, this.force);
+    this.entity.removeForce(this.force);
   }
 
 }

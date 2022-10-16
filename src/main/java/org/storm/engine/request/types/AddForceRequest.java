@@ -11,9 +11,7 @@ import org.storm.physics.math.Vector;
 public class AddForceRequest implements Request {
 
   private final Entity entity;
-
   private final Vector force;
-
   private final double duration;
 
   public AddForceRequest(Entity entity, Vector force, double duration) {
@@ -29,9 +27,9 @@ public class AddForceRequest implements Request {
   @Override
   public void execute(StormEngine stormEngine) {
     if (duration == Double.POSITIVE_INFINITY) {
-      stormEngine.getPhysicsEngine().addForce(this.entity, this.force);
+      this.entity.addForce(this.force);
     } else {
-      stormEngine.getPhysicsEngine().addForce(this.entity, this.force, this.duration);
+      this.entity.addForce(this.force, this.duration);
     }
   }
 
