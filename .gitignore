@@ -1,4 +1,9 @@
-storm.iml
+### Gradle ###
+.gradle
+
+### IntelliJ IDEA ###
 .idea
-target
-src/test/resources
+*.iml
+
+### Mac OS ###
+.DS_Store
