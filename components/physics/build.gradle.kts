@@ -1,16 +1,5 @@
-plugins {
-  id("java-library")
-  id("org.openjfx.javafxplugin") version ("0.0.13")
-}
-
-group = "org.storm"
 version = "1.1.0"
 
-repositories {
-  mavenCentral()
-}
-
-val lombokVersion = "1.18.24"
 val junitVersion = "5.6.0"
 
 dependencies {
@@ -21,9 +10,6 @@ dependencies {
   testImplementation("org.mockito:mockito-core:4.8.0")
   testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
   testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-
-  annotationProcessor("org.projectlombok:lombok:$lombokVersion")
-  testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 }
 
 javafx {
@@ -36,6 +22,18 @@ tasks {
     minHeapSize = "1024m"
     maxHeapSize = "1536m"
     useJUnitPlatform()
+  }
+}
+
+publishing {
+  publications {
+    create<MavenPublication>("maven") {
+      groupId = group as String
+      artifactId = "storm-physics"
+      version = version
+
+      from(components["java"])
+    }
   }
 }
 
