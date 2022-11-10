@@ -5,7 +5,6 @@ import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.storm.core.ui.Resolutions;
 import org.storm.core.ui.Window;
-import org.storm.physics.Simulator;
 import org.storm.physics.entity.Entity;
 import org.storm.physics.entity.ImmovableEntity;
 import org.storm.physics.entity.SimpleEntity;

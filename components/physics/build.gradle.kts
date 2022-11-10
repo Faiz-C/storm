@@ -14,14 +14,38 @@ dependencies {
 
 javafx {
   version = "18.0.1"
-  modules = listOf("javafx.controls", "javafx.graphics")
+  modules("javafx.graphics")
 }
 
 tasks {
   test {
-    minHeapSize = "1024m"
-    maxHeapSize = "1536m"
+    minHeapSize = "1G"
+    maxHeapSize = "1.5G"
     useJUnitPlatform()
+  }
+
+  task<JavaExec>("particleTest") {
+    doFirst {
+      // Setup our class paths
+      sourceSets.main.configure {
+        this@task.classpath(this.runtimeClasspath.asPath)
+      }
+      sourceSets.test.configure {
+        this@task.classpath(this.runtimeClasspath.asPath)
+      }
+    }
+
+    group = "Execution"
+    description = "Particle test and visual showcase of Quadrant Tree"
+
+    // For some reason tasks are ignored by the JavaFx Plugin (because why not) so we have to
+    // do what the plugin does ourselves
+    jvmArgs = listOf(
+      "--module-path ${classpath.asPath}",
+      "--add-modules javafx.controls"
+    )
+
+    mainClass.set("org.storm.physics.visual.ParticleTest")
   }
 }
 
