@@ -20,7 +20,7 @@ javafx {
 tasks {
   test {
     minHeapSize = "1G"
-    maxHeapSize = "1.5G"
+    maxHeapSize = "2G"
     useJUnitPlatform()
   }
 
@@ -33,18 +33,17 @@ tasks {
       sourceSets.test.configure {
         this@task.classpath(this.runtimeClasspath.asPath)
       }
+
+      // For some reason tasks are ignored by the JavaFx Plugin (because why not) so we have to
+      // do what the plugin does ourselves
+      jvmArgs = listOf(
+        "--module-path", this@task.classpath.asPath,
+        "--add-modules", "javafx.graphics"
+      )
     }
 
     group = "Execution"
     description = "Particle test and visual showcase of Quadrant Tree"
-
-    // For some reason tasks are ignored by the JavaFx Plugin (because why not) so we have to
-    // do what the plugin does ourselves
-    jvmArgs = listOf(
-      "--module-path ${classpath.asPath}",
-      "--add-modules javafx.controls"
-    )
-
     mainClass.set("org.storm.physics.visual.ParticleTest")
   }
 }

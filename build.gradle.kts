@@ -19,6 +19,11 @@ allprojects {
     mavenCentral()
   }
 
+  java {
+    sourceCompatibility = JavaVersion.VERSION_18
+    targetCompatibility = JavaVersion.VERSION_18
+  }
+
   dependencies {
     // Versions
     val lombokVersion = "1.18.24"
