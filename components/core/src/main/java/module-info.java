@@ -7,6 +7,7 @@ module org.storm.core {
 
   exports org.storm.core.exception;
   exports org.storm.core.input;
+  exports org.storm.core.input.action;
   exports org.storm.core.render;
   exports org.storm.core.ui;
   exports org.storm.core.update;

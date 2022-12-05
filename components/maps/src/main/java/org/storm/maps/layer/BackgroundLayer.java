@@ -12,7 +12,6 @@ import org.storm.physics.entity.Entity;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-@Slf4j
 @Setter
 public class BackgroundLayer extends Layer {
 

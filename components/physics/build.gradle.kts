@@ -25,26 +25,20 @@ tasks {
   }
 
   task<JavaExec>("particleTest") {
-    doFirst {
-      // Setup our class paths
-      sourceSets.main.configure {
-        this@task.classpath(this.runtimeClasspath.asPath)
-      }
-      sourceSets.test.configure {
-        this@task.classpath(this.runtimeClasspath.asPath)
-      }
-
-      // For some reason tasks are ignored by the JavaFx Plugin (because why not) so we have to
-      // do what the plugin does ourselves
-      jvmArgs = listOf(
-        "--module-path", this@task.classpath.asPath,
-        "--add-modules", "javafx.graphics"
-      )
-    }
+    setupJavaFx(this)
 
     group = "Execution"
     description = "Particle test and visual showcase of Quadrant Tree"
     mainClass.set("org.storm.physics.visual.ParticleTest")
+  }
+
+
+  task<JavaExec>("atRestTest") {
+    setupJavaFx(this)
+
+    group = "Execution"
+    description = "A simple test which ensures that objects can fall into a 'rest' state and stop needing collision checks"
+    mainClass.set("org.storm.physics.visual.VisualAtRestTest")
   }
 }
 
@@ -57,6 +51,25 @@ publishing {
 
       from(components["java"])
     }
+  }
+}
+
+fun setupJavaFx(exec: JavaExec) {
+  exec.doFirst {
+    // Setup our class paths
+    sourceSets.main.configure {
+      exec.classpath(this.runtimeClasspath.asPath)
+    }
+    sourceSets.test.configure {
+      exec.classpath(this.runtimeClasspath.asPath)
+    }
+
+    // For some reason tasks are ignored by the JavaFx Plugin (because why not) so we have to
+    // do what the plugin does ourselves
+    exec.jvmArgs = listOf(
+            "--module-path", exec.classpath.asPath,
+            "--add-modules", "javafx.graphics"
+    )
   }
 }
 

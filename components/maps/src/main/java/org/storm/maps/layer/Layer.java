@@ -2,7 +2,6 @@ package org.storm.maps.layer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.storm.core.render.Renderable;
 import org.storm.core.ui.Resolution;
 import org.storm.core.update.Updatable;
@@ -11,7 +10,6 @@ import org.storm.physics.entity.Entity;
 import java.util.HashSet;
 import java.util.Set;
 
-@Slf4j
 @Getter
 @Setter
 public abstract class Layer implements Renderable, Updatable {
