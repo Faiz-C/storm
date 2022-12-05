@@ -8,7 +8,6 @@ import org.storm.core.ui.Resolution;
 import org.storm.core.ui.Resolutions;
 import org.storm.core.ui.Window;
 
-@Slf4j
 public class BackgroundLayerTest extends Application {
 
   @Override

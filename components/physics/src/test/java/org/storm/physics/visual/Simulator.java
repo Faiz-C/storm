@@ -1,4 +1,4 @@
-package org.storm.physics;
+package org.storm.physics.visual;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -7,6 +7,8 @@ import javafx.event.Event;
 import javafx.util.Duration;
 import lombok.Getter;
 import org.storm.core.ui.Resolution;
+import org.storm.physics.ImpulseResolutionPhysicsEngine;
+import org.storm.physics.PhysicsEngine;
 
 public class Simulator {
 

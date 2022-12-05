@@ -8,6 +8,7 @@ javafx {
 }
 
 allprojects {
+  apply(plugin = "java")
   apply(plugin = "java-library")
   apply(plugin = "maven-publish")
   apply(plugin = "org.openjfx.javafxplugin")
@@ -16,6 +17,11 @@ allprojects {
 
   repositories {
     mavenCentral()
+  }
+
+  java {
+    sourceCompatibility = JavaVersion.VERSION_18
+    targetCompatibility = JavaVersion.VERSION_18
   }
 
   dependencies {

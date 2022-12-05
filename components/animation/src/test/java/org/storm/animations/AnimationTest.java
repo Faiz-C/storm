@@ -10,7 +10,6 @@ import org.storm.core.ui.Window;
 public class AnimationTest extends Application {
 
   private static final double BUFFER_WAIT_TIME = 10;
-
   private SpriteAnimation downSpriteAnimation;
   private SpriteAnimation rightSpriteAnimation;
   private SpriteAnimation upSpriteAnimation;
@@ -83,10 +82,6 @@ public class AnimationTest extends Application {
     rightSpriteAnimation.update(0, 0);
     upSpriteAnimation.update(0, 0);
     leftSpriteAnimation.update(0, 0);
-  }
-
-  private static double toSeconds(double nanoSeconds) {
-    return nanoSeconds / 1000000000.0;
   }
 
   private static double toMilliSeconds(double nanoSeconds) {

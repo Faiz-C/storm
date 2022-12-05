@@ -14,14 +14,31 @@ dependencies {
 
 javafx {
   version = "18.0.1"
-  modules = listOf("javafx.controls", "javafx.graphics")
+  modules("javafx.graphics")
 }
 
 tasks {
   test {
-    minHeapSize = "1024m"
-    maxHeapSize = "1536m"
+    minHeapSize = "1G"
+    maxHeapSize = "2G"
     useJUnitPlatform()
+  }
+
+  task<JavaExec>("particleTest") {
+    setupJavaFx(this)
+
+    group = "Execution"
+    description = "Particle test and visual showcase of Quadrant Tree"
+    mainClass.set("org.storm.physics.visual.ParticleTest")
+  }
+
+
+  task<JavaExec>("atRestTest") {
+    setupJavaFx(this)
+
+    group = "Execution"
+    description = "A simple test which ensures that objects can fall into a 'rest' state and stop needing collision checks"
+    mainClass.set("org.storm.physics.visual.VisualAtRestTest")
   }
 }
 
@@ -34,6 +51,25 @@ publishing {
 
       from(components["java"])
     }
+  }
+}
+
+fun setupJavaFx(exec: JavaExec) {
+  exec.doFirst {
+    // Setup our class paths
+    sourceSets.main.configure {
+      exec.classpath(this.runtimeClasspath.asPath)
+    }
+    sourceSets.test.configure {
+      exec.classpath(this.runtimeClasspath.asPath)
+    }
+
+    // For some reason tasks are ignored by the JavaFx Plugin (because why not) so we have to
+    // do what the plugin does ourselves
+    exec.jvmArgs = listOf(
+            "--module-path", exec.classpath.asPath,
+            "--add-modules", "javafx.graphics"
+    )
   }
 }
 
