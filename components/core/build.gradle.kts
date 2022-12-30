@@ -22,13 +22,13 @@ publishing {
       artifactId = "storm-core"
       version = version
 
-      from(components["java"])
+      from(components["kotlin"])
     }
   }
 }
 
 tasks {
   withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "18"
   }
 }
