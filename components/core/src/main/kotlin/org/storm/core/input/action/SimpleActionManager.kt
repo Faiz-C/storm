@@ -3,7 +3,10 @@ package org.storm.core.input.action
 /**
  * Simple implementation of an ActionManager.
  */
-class SimpleActionManager : ActionManager(HashMap()) {
+class SimpleActionManager(
+  state: MutableMap<String, Boolean> = mutableMapOf()
+) : ActionManager(state) {
+
   override fun add(action: String) {
     this.state[action] = false
   }
@@ -19,4 +22,5 @@ class SimpleActionManager : ActionManager(HashMap()) {
   override fun stopUsing(action: String) {
     state[action] = false
   }
+
 }

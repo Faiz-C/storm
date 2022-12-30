@@ -1,4 +1,14 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+  kotlin("jvm") version "1.8.0"
+}
+
 version = "1.1.0"
+
+dependencies {
+  implementation(kotlin("stdlib-jdk8"))
+}
 
 javafx {
   version = "18.0.1"
@@ -30,7 +40,7 @@ publishing {
       artifactId = "storm-sound"
       version = version
 
-      from(components["java"])
+      from(components["kotlin"])
     }
   }
 }
@@ -48,8 +58,14 @@ fun setupJavaFx(exec: JavaExec) {
     // For some reason tasks are ignored by the JavaFx Plugin (because why not) so we have to
     // do what the plugin does ourselves
     exec.jvmArgs = listOf(
-            "--module-path", exec.classpath.asPath,
-            "--add-modules", "javafx.graphics,javafx.media"
+      "--module-path", exec.classpath.asPath,
+      "--add-modules", "javafx.graphics,javafx.media"
     )
+  }
+}
+
+tasks {
+  withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "18"
   }
 }

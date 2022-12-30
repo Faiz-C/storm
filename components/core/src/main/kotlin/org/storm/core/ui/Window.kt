@@ -11,7 +11,9 @@ import javafx.scene.layout.Pane
  * A Window represents a common window which has a settable resolution and can be rendered onto. It can also listen
  * for and act on events from a user (i.e. mouse events and keyboard events).
  */
-class Window(private var resolution: Resolution) : Scene(Pane()) {
+class Window(
+  private var resolution: Resolution
+) : Scene(Pane()) {
 
   private val canvas: Canvas = Canvas()
   private val pane: Pane = (this.root as Pane).also {
@@ -47,7 +49,7 @@ class Window(private var resolution: Resolution) : Scene(Pane()) {
    *
    * @param handler handler for key event
    */
-  fun addKeyHandler(handler: (KeyEvent) -> Void) {
+  fun addKeyHandler(handler: (KeyEvent) -> Unit) {
     addEventHandler(KeyEvent.ANY) { t -> handler(t) }
   }
 
@@ -56,7 +58,7 @@ class Window(private var resolution: Resolution) : Scene(Pane()) {
    *
    * @param handler handler for key event
    */
-  fun addKeyPressedHandler(handler: (KeyEvent) -> Void) {
+  fun addKeyPressedHandler(handler: (KeyEvent) -> Unit) {
     addEventHandler(KeyEvent.KEY_PRESSED) { t -> handler(t) }
   }
 
@@ -65,7 +67,7 @@ class Window(private var resolution: Resolution) : Scene(Pane()) {
    *
    * @param handler handler for key event
    */
-  fun addKeyReleasedHandler(handler: (KeyEvent) -> Void) {
+  fun addKeyReleasedHandler(handler: (KeyEvent) -> Unit) {
     addEventHandler(KeyEvent.KEY_RELEASED) { t -> handler(t) }
   }
 
@@ -74,7 +76,7 @@ class Window(private var resolution: Resolution) : Scene(Pane()) {
    *
    * @param handler handler for key event
    */
-  fun addKeyTypedHandler(handler: (KeyEvent) -> Void) {
+  fun addKeyTypedHandler(handler: (KeyEvent) -> Unit) {
     addEventHandler(KeyEvent.KEY_TYPED) { t -> handler(t) }
   }
 
@@ -83,7 +85,7 @@ class Window(private var resolution: Resolution) : Scene(Pane()) {
    *
    * @param handler handler for mouse event
    */
-  fun addMouseHandler(handler: (MouseEvent) -> Void) {
+  fun addMouseHandler(handler: (MouseEvent) -> Unit) {
     addEventHandler(MouseEvent.ANY) { t -> handler(t) }
   }
 
@@ -92,7 +94,7 @@ class Window(private var resolution: Resolution) : Scene(Pane()) {
    *
    * @param handler handler for mouse event
    */
-  fun addMouseDragDetectedHandler(handler: (MouseEvent) -> Void) {
+  fun addMouseDragDetectedHandler(handler: (MouseEvent) -> Unit) {
     addEventHandler(MouseEvent.DRAG_DETECTED) { t -> handler(t) }
   }
 
@@ -101,7 +103,7 @@ class Window(private var resolution: Resolution) : Scene(Pane()) {
    *
    * @param handler handler for mouse event
    */
-  fun addMouseClickedHandler(handler: (MouseEvent) -> Void) {
+  fun addMouseClickedHandler(handler: (MouseEvent) -> Unit) {
     addEventHandler(MouseEvent.MOUSE_CLICKED) { t -> handler(t) }
   }
 
@@ -110,7 +112,7 @@ class Window(private var resolution: Resolution) : Scene(Pane()) {
    *
    * @param handler handler for mouse event
    */
-  fun addMouseDraggedHandler(handler: (MouseEvent) -> Void) {
+  fun addMouseDraggedHandler(handler: (MouseEvent) -> Unit) {
     addEventHandler(MouseEvent.MOUSE_DRAGGED) { t -> handler(t) }
   }
 
@@ -119,7 +121,7 @@ class Window(private var resolution: Resolution) : Scene(Pane()) {
    *
    * @param handler handler for mouse event
    */
-  fun addMouseEnteredHandler(handler: (MouseEvent) -> Void) {
+  fun addMouseEnteredHandler(handler: (MouseEvent) -> Unit) {
     addEventHandler(MouseEvent.MOUSE_ENTERED) { t -> handler(t) }
   }
 
@@ -128,7 +130,7 @@ class Window(private var resolution: Resolution) : Scene(Pane()) {
    *
    * @param handler handler for mouse event
    */
-  fun addMouseExitedHandler(handler: (MouseEvent) -> Void) {
+  fun addMouseExitedHandler(handler: (MouseEvent) -> Unit) {
     addEventHandler(MouseEvent.MOUSE_EXITED) { t -> handler(t) }
   }
 
@@ -137,7 +139,7 @@ class Window(private var resolution: Resolution) : Scene(Pane()) {
    *
    * @param handler handler for mouse event
    */
-  fun addMouseEnteredTargetHandler(handler: (MouseEvent) -> Void) {
+  fun addMouseEnteredTargetHandler(handler: (MouseEvent) -> Unit) {
     addEventHandler(MouseEvent.MOUSE_ENTERED_TARGET) { t -> handler(t) }
   }
 
@@ -146,7 +148,7 @@ class Window(private var resolution: Resolution) : Scene(Pane()) {
    *
    * @param handler handler for mouse event
    */
-  fun addMouseExitedTargetHandler(handler: (MouseEvent) -> Void) {
+  fun addMouseExitedTargetHandler(handler: (MouseEvent) -> Unit) {
     addEventHandler(MouseEvent.MOUSE_EXITED_TARGET) { t -> handler(t) }
   }
 
@@ -155,7 +157,7 @@ class Window(private var resolution: Resolution) : Scene(Pane()) {
    *
    * @param handler handler for mouse event
    */
-  fun addMouseMovedHandler(handler: (MouseEvent) -> Void) {
+  fun addMouseMovedHandler(handler: (MouseEvent) -> Unit) {
     addEventHandler(MouseEvent.MOUSE_MOVED) { t -> handler(t) }
   }
 
@@ -164,7 +166,7 @@ class Window(private var resolution: Resolution) : Scene(Pane()) {
    *
    * @param handler handler for mouse event
    */
-  fun addMousePressedHandler(handler: (MouseEvent) -> Void) {
+  fun addMousePressedHandler(handler: (MouseEvent) -> Unit) {
     addEventHandler(MouseEvent.MOUSE_PRESSED) { t -> handler(t) }
   }
 
@@ -173,7 +175,7 @@ class Window(private var resolution: Resolution) : Scene(Pane()) {
    *
    * @param handler handler for mouse event
    */
-  fun addMouseReleasedHandler(handler: (MouseEvent) -> Void) {
+  fun addMouseReleasedHandler(handler: (MouseEvent) -> Unit) {
     addEventHandler(MouseEvent.MOUSE_RELEASED) { t -> handler(t) }
   }
 }

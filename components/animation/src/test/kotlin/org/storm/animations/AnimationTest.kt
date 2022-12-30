@@ -4,7 +4,9 @@ import javafx.application.Application
 import javafx.stage.Stage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.slf4j.LoggerFactory
 import org.storm.animations.sprite.SpriteAnimation
 import org.storm.animations.sprite.SpriteSheet
 import org.storm.core.ui.Resolution
@@ -12,6 +14,16 @@ import org.storm.core.ui.Window
 import java.util.concurrent.Executors
 
 class AnimationTest : Application() {
+
+  companion object {
+    private const val BUFFER_WAIT_TIME = 10.0
+
+    private fun toMilliSeconds(nanoSeconds: Double): Double {
+      return nanoSeconds / 1000000
+    }
+
+    private val logger = LoggerFactory.getLogger(AnimationTest::class.java)
+  }
 
   private lateinit var downSpriteAnimation: SpriteAnimation
   private lateinit var rightSpriteAnimation: SpriteAnimation
@@ -21,14 +33,15 @@ class AnimationTest : Application() {
   override fun start(primaryStage: Stage) {
     val window = Window(Resolution(320.0, 240.0))
     val spriteSheet = SpriteSheet("src/test/resources/spriteSheet.png", 32, 32)
+
     downSpriteAnimation = SpriteAnimation(spriteSheet.row(0), 8, Animation.LOOP_INDEFINITELY)
     rightSpriteAnimation = SpriteAnimation(spriteSheet.row(1), 8, 6)
     upSpriteAnimation = SpriteAnimation(spriteSheet.row(2), 8, 10)
     leftSpriteAnimation = SpriteAnimation(spriteSheet.row(3), 8, 20)
 
     val coroutineScope = CoroutineScope(Executors.newSingleThreadExecutor {
-      Thread(it).also {
-        it.isDaemon = true
+      Thread(it).also { thread ->
+        thread.isDaemon = true
       }
     }.asCoroutineDispatcher())
 
@@ -50,12 +63,11 @@ class AnimationTest : Application() {
           time += fixedStepInterval
         }
         var waitTime = toMilliSeconds(time - System.nanoTime() + fixedStepInterval)
-        if (waitTime < 0) waitTime =
-          BUFFER_WAIT_TIME // we took too long to execute the loop, so wait for a fixed BUFFER WAIT TIME
+        if (waitTime < 0) waitTime = BUFFER_WAIT_TIME // we took too long to execute the loop, so wait for a fixed BUFFER WAIT TIME
         try {
-          Thread.sleep(waitTime.toLong())
+          delay(waitTime.toLong())
         } catch (e: Exception) {
-          e.printStackTrace()
+          logger.error("Error occurred during animation loop", e)
         }
       }
     }
@@ -79,15 +91,4 @@ class AnimationTest : Application() {
     leftSpriteAnimation.update(0.0, 0.0)
   }
 
-  companion object {
-    private const val BUFFER_WAIT_TIME = 10.0
-
-    private fun toMilliSeconds(nanoSeconds: Double): Double {
-      return nanoSeconds / 1000000
-    }
-  }
-}
-
-fun main(args: Array<String>) {
-  Application.launch(AnimationTest::class.java, *args)
 }

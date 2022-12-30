@@ -1,8 +1,15 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 version = "1.1.0"
+
+plugins {
+  kotlin("jvm") version "1.8.0"
+}
 
 dependencies {
   implementation(project(":components:core"))
   implementation(project(":components:physics"))
+  implementation(kotlin("stdlib-jdk8"))
 }
 
 javafx {
@@ -35,7 +42,7 @@ tasks {
     mainClass.set("org.storm.maps.tile.TileSetTest")
   }
 
-  task<JavaExec>("MapTest") {
+  task<JavaExec>("mapTest") {
     setupJavaFx(this)
 
     group = "Execution"
@@ -51,7 +58,7 @@ publishing {
       artifactId = "storm-maps"
       version = version
 
-      from(components["java"])
+      from(components["kotlin"])
     }
   }
 }
@@ -69,8 +76,14 @@ fun setupJavaFx(exec: JavaExec) {
     // For some reason tasks are ignored by the JavaFx Plugin (because why not) so we have to
     // do what the plugin does ourselves
     exec.jvmArgs = listOf(
-            "--module-path", exec.classpath.asPath,
-            "--add-modules", "javafx.graphics"
+      "--module-path", exec.classpath.asPath,
+      "--add-modules", "javafx.graphics"
     )
+  }
+}
+
+tasks {
+  withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "18"
   }
 }
