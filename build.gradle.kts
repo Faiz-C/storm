@@ -7,6 +7,11 @@ javafx {
   modules("javafx.controls", "javafx.graphics", "javafx.media")
 }
 
+tasks.wrapper {
+  gradleVersion = "7.5.1"
+  distributionType = Wrapper.DistributionType.ALL
+}
+
 allprojects {
   apply(plugin = "java")
   apply(plugin = "java-library")

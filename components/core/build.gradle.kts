@@ -1,4 +1,14 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 version = "1.1.0"
+
+plugins {
+  kotlin("jvm") version "1.8.0"
+}
+
+dependencies {
+  implementation(kotlin("stdlib"))
+}
 
 javafx {
   version = "18.0.1"
@@ -14,5 +24,11 @@ publishing {
 
       from(components["java"])
     }
+  }
+}
+
+tasks {
+  withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "1.8"
   }
 }
