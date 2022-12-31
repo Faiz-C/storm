@@ -4,7 +4,7 @@ import javafx.scene.canvas.GraphicsContext
 import org.storm.core.ui.Resolution
 import org.storm.maps.tile.Tile
 import org.storm.maps.tile.TileSet
-import org.storm.physics.math.geometry.shapes.AxisAlignedRectangle
+import org.storm.physics.math.geometry.shapes.AABB
 
 class TileLayer(
   active: Boolean,
@@ -30,7 +30,7 @@ class TileLayer(
   }
 
   override fun render(gc: GraphicsContext, x: Double, y: Double) {
-    val screenRect = AxisAlignedRectangle(x, y, resolution.width, resolution.height)
+    val screenRect = AABB(x, y, resolution.width, resolution.height)
 
     skeleton.doubleForEach { r, c ->
       if (skeleton[r][c] < 0) return@doubleForEach
@@ -39,7 +39,7 @@ class TileLayer(
       val tx = c * tileImage.width
       val ty = r * tileImage.height
 
-      val tileRect = AxisAlignedRectangle(tx, ty, tileImage.width, tileImage.height)
+      val tileRect = AABB(tx, ty, tileImage.width, tileImage.height)
 
       // Only draw if its visible on the screen
       if (tileRect.intersects(screenRect)) {

@@ -6,7 +6,8 @@ import javafx.scene.canvas.GraphicsContext
  * A Renderable is an object which understands how to represent itself on a window or canvas. In other words,
  * it knows how to render for a user to see it.
  */
-interface Renderable {
+fun interface Renderable {
+
   /**
    * Renders the object onto the given GraphicsContext.
    *
@@ -15,4 +16,5 @@ interface Renderable {
    * @param y base y position to render from
    */
   fun render(gc: GraphicsContext, x: Double, y: Double)
+
 }

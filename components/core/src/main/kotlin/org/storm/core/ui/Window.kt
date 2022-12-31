@@ -12,7 +12,7 @@ import javafx.scene.layout.Pane
  * for and act on events from a user (i.e. mouse events and keyboard events).
  */
 class Window(
-  private var resolution: Resolution
+  resolution: Resolution
 ) : Scene(Pane()) {
 
   private val canvas: Canvas = Canvas()
@@ -20,16 +20,18 @@ class Window(
     it.children.add(this.canvas)
   }
 
-  init {
-    setResolution(resolution)
-  }
+  private var resolution: Resolution = resolution
+    set(value) {
+      field = value
+      pane.setMaxSize(value.width, value.height)
+      pane.setMinSize(value.width, value.height)
+      canvas.width = value.width
+      canvas.height = value.height
+    }
 
-  fun setResolution(resolution: Resolution) {
+
+  init {
     this.resolution = resolution
-    pane.setMaxSize(resolution.width, resolution.height)
-    pane.setMinSize(resolution.width, resolution.height)
-    canvas.width = resolution.width
-    canvas.height = resolution.height
   }
 
   /**

@@ -3,7 +3,8 @@ package org.storm.core.update
 /**
  * An Updatable represents an object which can change over the span of a running game.
  */
-interface Updatable {
+fun interface Updatable {
+
   /**
    * Updates the object internally
    *
@@ -11,4 +12,5 @@ interface Updatable {
    * @param elapsedTime the time in seconds it has been since the update method was last called
    */
   fun update(time: Double, elapsedTime: Double)
+
 }

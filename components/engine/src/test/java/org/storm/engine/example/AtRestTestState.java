@@ -9,7 +9,7 @@ import org.storm.engine.request.types.TogglePhysicsRequest;
 import org.storm.physics.entity.Entity;
 import org.storm.physics.enums.Direction;
 import org.storm.physics.math.Vector;
-import org.storm.physics.math.geometry.shapes.AxisAlignedRectangle;
+import org.storm.physics.math.geometry.shapes.AABB;
 import org.storm.physics.math.geometry.shapes.Circle;
 import org.storm.sound.types.MediaSound;
 
@@ -25,7 +25,7 @@ public class AtRestTestState extends SwitchableState {
   );
 
   private final Entity repellingBall = new EntityImpl(
-    new AxisAlignedRectangle(
+    new AABB(
       this.unitConvertor.toUnits(75),
       this.unitConvertor.toUnits(400),
       this.unitConvertor.toUnits(20),
@@ -48,7 +48,7 @@ public class AtRestTestState extends SwitchableState {
   );
 
   private final Entity repellingBall3 = new EntityImpl(
-    new AxisAlignedRectangle(
+    new AABB(
       unitConvertor.toUnits(225),
       unitConvertor.toUnits(200),
       unitConvertor.toUnits(20),
@@ -60,7 +60,7 @@ public class AtRestTestState extends SwitchableState {
   );
 
   private final Entity repellingBall4 = new EntityImpl(
-    new AxisAlignedRectangle(
+    new AABB(
       unitConvertor.toUnits(300),
       unitConvertor.toUnits(100),
       unitConvertor.toUnits(20),

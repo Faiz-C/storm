@@ -5,10 +5,12 @@ package org.storm.core.input
  *
  * @param T the type to be translated from
  * @param U the type to be translated to */
-interface Translator<T, U> {
+fun interface Translator<T, U> {
+
   /**
    * @param t object to be translated
    * @return returns the translation of the given object to the desired type
    */
   fun translate(t: T): U
+
 }

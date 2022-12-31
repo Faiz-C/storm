@@ -1,15 +1,22 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 version = "1.1.0"
 
-val junitVersion = "5.6.0"
+plugins {
+  kotlin("jvm") version "1.8.0"
+}
 
 dependencies {
+  val junitVersion = "5.9.0"
+
   api(project(":components:core"))
   api("org.apache.commons:commons-math3:3.6.1")
   api("com.google.guava:guava:31.1-jre")
 
-  testImplementation("org.mockito:mockito-core:4.8.0")
+  testImplementation("org.mockito:mockito-core:4.10.0")
   testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
   testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+  implementation(kotlin("stdlib-jdk8"))
 }
 
 javafx {
@@ -67,9 +74,15 @@ fun setupJavaFx(exec: JavaExec) {
     // For some reason tasks are ignored by the JavaFx Plugin (because why not) so we have to
     // do what the plugin does ourselves
     exec.jvmArgs = listOf(
-            "--module-path", exec.classpath.asPath,
-            "--add-modules", "javafx.graphics"
+      "--module-path", exec.classpath.asPath,
+      "--add-modules", "javafx.graphics"
     )
+  }
+}
+
+tasks {
+  withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "18"
   }
 }
 
