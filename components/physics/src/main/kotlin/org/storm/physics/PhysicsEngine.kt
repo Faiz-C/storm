@@ -7,7 +7,6 @@ import org.storm.physics.entity.Entity
 import org.storm.physics.math.Vector
 import org.storm.physics.structures.SpatialDataStructure
 import org.storm.physics.transforms.UnitConvertor
-import java.util.function.Consumer
 
 /**
  * A PhysicsEngine is an abstract representation of a game engine's physics core. A PhysicsEngine deals with applying
@@ -28,7 +27,7 @@ abstract class PhysicsEngine protected constructor(
 
   protected val entityLock: Any = Any()
 
-  var entities: List<Entity> = listOf()
+  var entities: Set<Entity> = setOf()
     set(value) {
       synchronized(this.entityLock) {
         field = value
@@ -43,7 +42,7 @@ abstract class PhysicsEngine protected constructor(
    * Clears all forces from all entities being tracked
    */
   fun clearAllForces() {
-    synchronized(this.entityLock) { this.entities.forEach(Consumer { entity -> entity.actingForces.clear() }) }
+    synchronized(this.entityLock) { this.entities.forEach { entity -> entity.actingForces.clear() } }
   }
 
   override fun update(time: Double, elapsedTime: Double) {

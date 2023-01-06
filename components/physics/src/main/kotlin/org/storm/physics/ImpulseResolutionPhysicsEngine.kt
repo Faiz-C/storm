@@ -10,8 +10,8 @@ import org.storm.physics.structures.QuadrantTree
 import org.storm.physics.transforms.UnitConvertor
 
 /**
- * A ImpulseResolutionPhysicsEngine is straight forward and basic implementation of a PhysicsEngines. It uses a Quad Tree (QuadrantTree)
- * to check likely collisions and then uses impulse resolution to deal with collisions.
+ * A ImpulseResolutionPhysicsEngine is straight forward and basic implementation of a PhysicsEngines.
+ * It uses a Quad Tree (QuadrantTree) to check likely collisions and then uses impulse resolution to deal with collisions.
  */
 class ImpulseResolutionPhysicsEngine (
   resolution: Resolution,

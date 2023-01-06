@@ -3,8 +3,6 @@ package org.storm.physics.visual
 import javafx.animation.Animation
 import javafx.animation.KeyFrame
 import javafx.animation.Timeline
-import javafx.event.ActionEvent
-import javafx.event.Event
 import javafx.util.Duration
 import org.storm.core.ui.Resolution
 import org.storm.physics.ImpulseResolutionPhysicsEngine
@@ -29,14 +27,14 @@ class Simulator(
   private var accumulator = 0.0
 
   fun simulate() {
-    val loopFrame = KeyFrame(Duration.millis(1000.0 / targetFps), { e: ActionEvent -> this.run(e) })
+    val loopFrame = KeyFrame(Duration.millis(1000.0 / targetFps), { _ -> this.run() })
     val timeline = Timeline(targetFps, loopFrame)
     timeline.isAutoReverse = false
     timeline.cycleCount = Animation.INDEFINITE
     timeline.play()
   }
 
-  private fun run(e: Event) {
+  private fun run() {
     val now = System.nanoTime().toDouble()
     val elapsedFrameTime = now - lastUpdateTime
     lastUpdateTime = now

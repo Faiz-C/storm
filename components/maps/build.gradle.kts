@@ -1,15 +1,8 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 version = "1.1.0"
-
-plugins {
-  kotlin("jvm") version "1.8.0"
-}
 
 dependencies {
   implementation(project(":components:core"))
   implementation(project(":components:physics"))
-  implementation(kotlin("stdlib-jdk8"))
 }
 
 javafx {
@@ -19,6 +12,7 @@ javafx {
 
 tasks {
   task<JavaExec>("backgroundLayerTest") {
+    dependsOn(compileKotlin, compileTestKotlin)
     setupJavaFx(this)
 
     group = "Execution"
@@ -27,6 +21,7 @@ tasks {
   }
 
   task<JavaExec>("tileLayerTest") {
+    dependsOn(compileKotlin, compileTestKotlin)
     setupJavaFx(this)
 
     group = "Execution"
@@ -35,6 +30,7 @@ tasks {
   }
 
   task<JavaExec>("tileSetTest") {
+    dependsOn(compileKotlin, compileTestKotlin)
     setupJavaFx(this)
 
     group = "Execution"
@@ -43,6 +39,7 @@ tasks {
   }
 
   task<JavaExec>("mapTest") {
+    dependsOn(compileKotlin, compileTestKotlin)
     setupJavaFx(this)
 
     group = "Execution"
@@ -79,11 +76,5 @@ fun setupJavaFx(exec: JavaExec) {
       "--module-path", exec.classpath.asPath,
       "--add-modules", "javafx.graphics"
     )
-  }
-}
-
-tasks {
-  withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "18"
   }
 }

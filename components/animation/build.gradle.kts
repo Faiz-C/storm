@@ -1,10 +1,4 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 version = "1.1.0"
-
-plugins {
-  kotlin("jvm") version "1.8.0"
-}
 
 javafx {
   version = "18.0.1"
@@ -13,7 +7,6 @@ javafx {
 
 dependencies {
   implementation(project(":components:core"))
-  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 }
 
 publishing {
@@ -30,15 +23,13 @@ publishing {
 
 tasks {
   task<JavaExec>("animationTest") {
+    dependsOn(compileKotlin, compileTestKotlin)
+
     setupJavaFx(this)
 
     group = "Execution"
     description = "Simple test for sprite animations and animation looping"
     mainClass.set("org.storm.animations.AnimationTest")
-  }
-
-  withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "18"
   }
 }
 

@@ -2,7 +2,6 @@ package org.storm.sound.types
 
 import javafx.scene.media.Media
 import javafx.scene.media.MediaPlayer
-import lombok.extern.slf4j.Slf4j
 import org.slf4j.LoggerFactory
 import org.storm.sound.Sound
 import java.nio.file.Paths

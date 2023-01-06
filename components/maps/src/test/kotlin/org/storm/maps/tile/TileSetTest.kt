@@ -2,13 +2,13 @@ package org.storm.maps.tile
 
 import javafx.application.Application
 import javafx.stage.Stage
-import org.storm.core.ui.Resolutions
+import org.storm.core.ui.Resolution
 import org.storm.core.ui.Window
 
 class TileSetTest : Application() {
 
   override fun start(primaryStage: Stage) {
-    val window = Window(Resolutions.SD)
+    val window = Window(Resolution.SD)
     val tileSet = TileSet("src/test/resources/tiles/testTileSet.png", 32, 32)
     window.graphicsContext.drawImage(tileSet.tile(0), 100.0, 50.0)
     window.graphicsContext.drawImage(tileSet.tile(1), 150.0, 100.0)

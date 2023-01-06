@@ -3,7 +3,7 @@ package org.storm.physics.math.geometry
 /**
  * A Geometric object can be translated (moved) in Euclidean (2D) space
  */
-interface Geometric {
+fun interface Geometric {
 
   /**
    * Translates (moves) the Geometric object by the given deltas

@@ -13,6 +13,8 @@ javafx {
 
 tasks {
   task<JavaExec>("engineTest") {
+    dependsOn(compileKotlin, compileTestKotlin)
+
     setupJavaFx(this)
 
     group = "Execution"
@@ -33,7 +35,6 @@ publishing {
   }
 }
 
-
 fun setupJavaFx(exec: JavaExec) {
   exec.doFirst {
     // Setup our class paths
@@ -47,8 +48,9 @@ fun setupJavaFx(exec: JavaExec) {
     // For some reason tasks are ignored by the JavaFx Plugin (because why not) so we have to
     // do what the plugin does ourselves
     exec.jvmArgs = listOf(
-            "--module-path", exec.classpath.asPath,
-            "--add-modules", "javafx.graphics,javafx.media"
+      "--module-path", exec.classpath.asPath,
+      "--add-modules", "javafx.graphics,javafx.media",
+      "-Djavafx.animation.fullspeed=true"
     )
   }
 }

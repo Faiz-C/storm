@@ -1,14 +1,4 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
-plugins {
-  kotlin("jvm") version "1.8.0"
-}
-
 version = "1.1.0"
-
-dependencies {
-  implementation(kotlin("stdlib-jdk8"))
-}
 
 javafx {
   version = "18.0.1"
@@ -17,6 +7,7 @@ javafx {
 
 tasks {
   task<JavaExec>("mediaSoundTest") {
+    dependsOn(compileKotlin, compileTestKotlin)
     setupJavaFx(this)
 
     group = "Execution"
@@ -25,6 +16,7 @@ tasks {
   }
 
   task<JavaExec>("soundManagerTest") {
+    dependsOn(compileKotlin, compileTestKotlin)
     setupJavaFx(this)
 
     group = "Execution"
@@ -61,11 +53,5 @@ fun setupJavaFx(exec: JavaExec) {
       "--module-path", exec.classpath.asPath,
       "--add-modules", "javafx.graphics,javafx.media"
     )
-  }
-}
-
-tasks {
-  withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "18"
   }
 }

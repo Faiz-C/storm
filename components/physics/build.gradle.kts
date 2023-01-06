@@ -1,10 +1,4 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 version = "1.1.0"
-
-plugins {
-  kotlin("jvm") version "1.8.0"
-}
 
 dependencies {
   val junitVersion = "5.9.0"
@@ -16,7 +10,6 @@ dependencies {
   testImplementation("org.mockito:mockito-core:4.10.0")
   testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
   testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-  implementation(kotlin("stdlib-jdk8"))
 }
 
 javafx {
@@ -32,6 +25,7 @@ tasks {
   }
 
   task<JavaExec>("particleTest") {
+    dependsOn(compileKotlin, compileTestKotlin)
     setupJavaFx(this)
 
     group = "Execution"
@@ -39,8 +33,8 @@ tasks {
     mainClass.set("org.storm.physics.visual.ParticleTest")
   }
 
-
   task<JavaExec>("atRestTest") {
+    dependsOn(compileKotlin, compileTestKotlin)
     setupJavaFx(this)
 
     group = "Execution"
@@ -80,9 +74,5 @@ fun setupJavaFx(exec: JavaExec) {
   }
 }
 
-tasks {
-  withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "18"
-  }
-}
+
 

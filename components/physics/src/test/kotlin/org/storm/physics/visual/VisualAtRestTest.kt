@@ -5,7 +5,7 @@ import javafx.event.EventHandler
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
-import org.storm.core.ui.Resolutions
+import org.storm.core.ui.Resolution
 import org.storm.core.ui.Window
 import org.storm.physics.entity.Entity
 import org.storm.physics.entity.ImmovableEntity
@@ -21,8 +21,8 @@ class VisualAtRestTest : Application() {
   private val platform: Entity = ImmovableEntity(
     AABB(
       unitConvertor.toUnits(1.0),
-      unitConvertor.toUnits(Resolutions.SD.height - 20),
-      unitConvertor.toUnits(Resolutions.SD.width - 2),
+      unitConvertor.toUnits(Resolution.SD.height - 20),
+      unitConvertor.toUnits(Resolution.SD.width - 2),
       unitConvertor.toUnits(10.0)
     )
   )
@@ -74,9 +74,9 @@ class VisualAtRestTest : Application() {
 
   override fun start(stage: Stage) {
     // Make a Display
-    val window = Window(Resolutions.SD)
-    simulator = Simulator(Resolutions.SD, 400.0) { render(window) }
-    simulator.physicsEngine.entities = listOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4)
+    val window = Window(Resolution.SD)
+    simulator = Simulator(Resolution.SD, 400.0) { render(window) }
+    simulator.physicsEngine.entities = setOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4)
     repellingBall.addForce(Direction.SOUTH.vector.scale(unitConvertor.toUnits(10.0)))
     repellingBall.addForce(Direction.NORTH.vector.scale(unitConvertor.toUnits(30.0)), 2.0)
     repellingBall2.addForce(Direction.SOUTH.vector.scale(unitConvertor.toUnits(30.0)))
@@ -90,7 +90,7 @@ class VisualAtRestTest : Application() {
       }
     }
 
-    simulator!!.simulate()
+    simulator.simulate()
     stage.scene = window
     stage.show()
   }

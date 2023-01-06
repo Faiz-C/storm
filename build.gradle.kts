@@ -1,4 +1,7 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
+  kotlin("jvm") version("1.8.0")
   id("org.openjfx.javafxplugin") version ("0.0.13")
 }
 
@@ -17,8 +20,10 @@ allprojects {
   apply(plugin = "java-library")
   apply(plugin = "maven-publish")
   apply(plugin = "org.openjfx.javafxplugin")
+  apply(plugin = "org.jetbrains.kotlin.jvm")
 
   group = "org.storm"
+  buildDir = File("${rootProject.projectDir}${File.separator}build", project.name)
 
   repositories {
     mavenCentral()
@@ -31,14 +36,19 @@ allprojects {
 
   dependencies {
     // Versions
-    val lombokVersion = "1.18.24"
     val slf4jVersion = "2.0.3"
 
-    implementation("org.projectlombok:lombok:$lombokVersion")
+    implementation(kotlin("stdlib-jdk8"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:1.6.4")
+
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("org.slf4j:slf4j-simple:$slf4jVersion")
+  }
 
-    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
-    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
+  tasks {
+    withType<KotlinCompile> {
+      kotlinOptions.jvmTarget = "18"
+    }
   }
 }

@@ -15,7 +15,7 @@ import org.storm.physics.transforms.UnitConvertor
  */
 abstract class Entity protected constructor(
   var hurtBox: Shape,
-  protected var speed: Double,
+  var speed: Double,
   mass: Double,
   var restitution: Double
 ) : Impulsive, Geometric, TransformableRender {
