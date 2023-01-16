@@ -1,7 +1,7 @@
 # Storm Engine
 
 ## _What is the Storm Engine?_
-The Storm Engine is an open source and transparent 2D game engine written in Java. It aims to be a complete package for
+The Storm Engine is an open source and transparent 2D game engine written in <s>Java</s> Kotlin. It aims to be a complete package for
 those looking to build 2D games while also offering the core components separately. It's also built to be easily
 extended for those wanting to add their own components. 
 
