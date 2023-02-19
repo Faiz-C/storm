@@ -7,7 +7,7 @@ import org.storm.engine.example.*
 class StormTest : Application() {
 
   override fun start(primaryStage: Stage) {
-    val stormEngine = StormEngine()
+    val stormEngine = StormEngine(renderFps = 144, logicFps = 180)
 
     stormEngine.addState(KeyActionConstants.ONE, AtRestTestState())
     stormEngine.addState(KeyActionConstants.TWO, BouncingBallTestState())

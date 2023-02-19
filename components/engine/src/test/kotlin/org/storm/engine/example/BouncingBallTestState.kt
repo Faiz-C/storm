@@ -58,7 +58,7 @@ class BouncingBallTestState : SwitchableState() {
       }
     )
 
-    this.soundManager.add("bgm", MediaSound("src/test/resources/music/bgm.mp3", true))
+    this.soundManager.add("bgm", MediaSound("music/bgm.mp3", loop = true, resource = true))
     this.soundManager.adjustAllVolume(0.1)
   }
 

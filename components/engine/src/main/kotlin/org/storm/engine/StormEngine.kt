@@ -5,6 +5,7 @@ import javafx.scene.input.KeyEvent
 import javafx.scene.input.MouseEvent
 import kotlinx.coroutines.*
 import kotlinx.coroutines.javafx.JavaFx
+import org.apache.commons.math3.util.FastMath
 import org.storm.core.input.Translator
 import org.storm.core.input.action.ActionManager
 import org.storm.core.input.action.SimpleActionManager
@@ -28,7 +29,8 @@ class StormEngine(
   private val unitConvertor: UnitConvertor = object : UnitConvertor {}, // Default to standard Unit Convertor (1 unit = 10 pixels)
   private val actionManager: ActionManager = SimpleActionManager(),
   val physicsEngine: PhysicsEngine = ImpulseResolutionPhysicsEngine(resolution, unitConvertor),
-  fps: Int = 144,
+  renderFps: Int = 60,
+  val logicFps: Int = renderFps,
   singleInputRequestMax: Int = 25
 ) {
 
@@ -54,19 +56,31 @@ class StormEngine(
   private var accumulator: Long = 0L
   private var fixedTimeStepInterval: Long = 0L
   private var lastUpdateTime: Long = 0L
+
+  // To allow for separate rendering and physics rates we use fps ratios and delays (calculated in the setter for render fps)
+  private var renderFpsRatio: Int = 0
+  private var renderDelay: Int = 0
+
+  private var physicsFpsRatio: Int = 0
+  private var physicsDelay: Int = 0
+
   private var gameLoop: Job? = null
   private val gameLoopScope: CoroutineScope = CoroutineScope(Dispatchers.JavaFx)
 
-  // Stateful vars
+  // Stateful Vars
   private var currentState: State? = null
   private val states: MutableMap<String, State> = mutableMapOf()
   private val requestQueue: RequestQueue = RequestQueue(singleInputRequestMax)
+
+  // Internal var is used to determine if the Engine has been started at least once and to avoid starting it multiple times
   private var running: Boolean = false
-  private var paused: Boolean = false
+
+  // External var used to toggle rendering, input translation, and physics. Essentially the entire game loop.
+  var paused: Boolean = false
 
   var fpsChangeAllow: Boolean = true
 
-  var fps: Int = fps
+  var renderFps: Int = renderFps
     set(value) {
       if (!this.fpsChangeAllow) {
         throw StormEngineException("fps change not allowed at this time")
@@ -74,11 +88,20 @@ class StormEngine(
 
       this.gameLoop?.cancel() // Stop the current loop if its running
 
+      // Figure out which of the two is the greater fps, that will be the rate the loop will run at
+      val higher = FastMath.max(value, this.logicFps)
+
+      // We capture both ratios as we do not enforce that any one fps amount must be smaller than the other
+      // This allows us to separate the physics and the rendering rates during the game loop
+      this.renderFpsRatio = FastMath.ceil(higher.toDouble() / value).toInt()
+      this.physicsFpsRatio = FastMath.ceil(higher.toDouble() / this.logicFps).toInt()
+
       // 1 / fps == fixed number of calls per second, but we want it in terms of nanoseconds as that is our tracking
       // metric, therefore we multiply by 1000000000 to go from seconds to nanoseconds -> 1000000000 / fps
-      this.fixedTimeStepInterval = 1000000000L / value
+      this.fixedTimeStepInterval = 1000000000L / this.logicFps
 
-      this.gameLoop = this.gameLoopScope.onInterval(1000L / value) {
+      // Restart the loop with the new interval rate
+      this.gameLoop = this.gameLoopScope.onInterval(1000L / higher) {
         this.runGameLogic()
       }
 
@@ -86,33 +109,9 @@ class StormEngine(
     }
 
   init {
-    this.fps = fps
+    this.renderFps = renderFps
     this.physicsEngine.paused = true
   }
-
-  /**
-   * Changes the logic and render fps to the given if allowed
-   *
-   * @param targetLogicFps  new logic fps to use
-   * @param targetRenderFps new render fps to use
-  fun setTargetFps(targetLogicFps: Int, targetRenderFps: Int) {
-    if (!fpsChangeAllow) throw StormEngineException("fps change not allowed at this time")
-
-    this.gameLoop?.cancel() // Stop the current loop if its running
-
-    // Calculate the new delays, accumulators and fixed time step
-    val targetFps = FastMath.max(targetLogicFps, targetRenderFps).toDouble()
-    this.minRenderDelay = 1000000000.0 / targetRenderFps
-    this.minLogicDelay = 1000000000.0 / targetLogicFps
-    this.accumulatedRenderDelay = minRenderDelay // To allow first run render
-    this.accumulatedLogicDelay = minLogicDelay // To allow first run logic updates
-    this.fixedTimeStepInterval = 1000000000.0 / targetFps
-
-    this.gameLoop = this.gameLoopScope.onInterval((1000.0 / targetFps).toLong()) {
-      this.runGameLogic()
-    }
-  }
-   */
 
   /**
    * Adds the given State under the given unique id. This will also initialize the state
@@ -224,16 +223,20 @@ class StormEngine(
     // Then allow the state to do any internal updating
     this.currentState!!.update(toSeconds(this.lastUpdateTime), toSeconds(elapsedFrameTime))
 
-    // Apply Physics when we have built up a bit of leeway using our accumulator
-    while (this.accumulator >= this.fixedTimeStepInterval) {
-      this.physicsEngine.update(toSeconds(this.lastUpdateTime), toSeconds(elapsedFrameTime))
-      this.accumulator -= this.fixedTimeStepInterval
-      this.lastUpdateTime += this.fixedTimeStepInterval
+    if (++this.physicsDelay >= this.physicsFpsRatio) {
+      // Apply Physics for as long as we have leeway through our accumulator
+      while (this.accumulator >= this.fixedTimeStepInterval) {
+        this.physicsEngine.update(toSeconds(this.lastUpdateTime), toSeconds(elapsedFrameTime))
+        this.accumulator -= this.fixedTimeStepInterval
+        this.lastUpdateTime += this.fixedTimeStepInterval
+      }
+      this.physicsDelay = 0
     }
 
-    // Render the state
-    this.window.clear()
-    this.currentState!!.render(this.window.graphicsContext, 0.0, 0.0)
+    if (++this.renderDelay >= this.renderFpsRatio) {
+      this.window.clear()
+      this.currentState!!.render(this.window.graphicsContext, 0.0, 0.0)
+      this.renderDelay = 0
+    }
   }
-
 }

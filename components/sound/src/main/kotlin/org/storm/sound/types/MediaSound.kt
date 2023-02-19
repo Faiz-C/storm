@@ -4,6 +4,7 @@ import javafx.scene.media.Media
 import javafx.scene.media.MediaPlayer
 import org.slf4j.LoggerFactory
 import org.storm.sound.Sound
+import org.storm.sound.exception.SoundException
 import java.nio.file.Paths
 
 /**
@@ -12,6 +13,7 @@ import java.nio.file.Paths
 class MediaSound(
   path: String,
   loop: Boolean = false,
+  resource: Boolean = true,
   private val loopCount: Int? = null,
 ) : Sound {
 
@@ -19,9 +21,20 @@ class MediaSound(
     private val logger = LoggerFactory.getLogger(MediaSound::class.java)
   }
 
-  private val sound: MediaPlayer = MediaPlayer(Media(Paths.get(path).toUri().toString())).also {
-    it.cycleCount = if (loop) MediaPlayer.INDEFINITE else loopCount ?: 1
-    it.onError = Runnable { logger.error("error occurred with background music") }
+  private val sound: MediaPlayer = run {
+    val uri = if (resource) {
+      logger.debug("loading sound file $path from resources")
+      javaClass.classLoader.getResource(path)
+        ?: throw SoundException("failed to find $path in resources")
+    } else {
+      logger.debug("loading sound file $path from file system")
+      Paths.get(path).toUri()
+    }
+
+    MediaPlayer(Media(uri.toString())).also {
+      it.cycleCount = if (loop) MediaPlayer.INDEFINITE else loopCount ?: 1
+      it.onError = Runnable { logger.error("error occurred with background music") }
+    }
   }
 
   override fun play() {
