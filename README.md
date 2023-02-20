@@ -5,7 +5,7 @@ The Storm Engine is an open source and transparent 2D game engine written in <s>
 those looking to build 2D games while also offering the core components separately. It's also built to be easily
 extended for those wanting to add their own components. 
 
-The framework which the Storm Engine offers is not tightly coupled to <s>Java<s> Kotlin, aside from the use of JavaFx behind the covers
+The framework which the Storm Engine offers is not tightly coupled to <s>Java</s> Kotlin, aside from the use of JavaFx behind the covers
 for certain portions. This allows the framework to be ported to other languages if wanted. 
 
 ## _Why Build Another Game Engine?_
