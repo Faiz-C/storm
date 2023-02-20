@@ -21,7 +21,7 @@ There are quite a few benefits to separating the components into individual modu
 * Better separation of code made it easier to develop and maintain
 * Components can be used on their own
 * For those learning it can be easier to handle the information in self-contained sections
-* Monorepo pattern + Gradle made managing the components as separate models easy
+* Monorepo pattern + Gradle made managing the components as separate modules easy
 
 Below are the individual components of the Storm Engine:
 
