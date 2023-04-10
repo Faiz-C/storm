@@ -1,8 +1,8 @@
 version = "1.1.0"
 
 dependencies {
-  implementation(project(":components:core"))
-  implementation(project(":components:physics"))
+  api(project(":components:core"))
+  api(project(":components:physics"))
 }
 
 javafx {
@@ -52,7 +52,7 @@ publishing {
   publications {
     create<MavenPublication>("maven") {
       groupId = group as String
-      artifactId = "storm-maps"
+      artifactId = "maps"
       version = version
 
       from(components["kotlin"])

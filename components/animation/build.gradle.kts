@@ -6,14 +6,14 @@ javafx {
 }
 
 dependencies {
-  implementation(project(":components:core"))
+  api(project(":components:core"))
 }
 
 publishing {
   publications {
     create<MavenPublication>("maven") {
       groupId = group as String
-      artifactId = "storm-animations"
+      artifactId = "animations"
       version = version
 
       from(components["kotlin"])

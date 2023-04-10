@@ -33,6 +33,15 @@ tasks {
     mainClass.set("org.storm.physics.visual.ParticleTest")
   }
 
+  task<JavaExec>("multiPartBoundaryTest") {
+    dependsOn(compileKotlin, compileTestKotlin)
+    setupJavaFx(this)
+
+    group = "Execution"
+    description = "A test and visual showcase of using multiple shapes to construct a more complex boundary for an Entity"
+    mainClass.set("org.storm.physics.visual.MultiPartBoundaryTest")
+  }
+
   task<JavaExec>("atRestTest") {
     dependsOn(compileKotlin, compileTestKotlin)
     setupJavaFx(this)
@@ -47,10 +56,10 @@ publishing {
   publications {
     create<MavenPublication>("maven") {
       groupId = group as String
-      artifactId = "storm-physics"
+      artifactId = "physics"
       version = version
 
-      from(components["java"])
+      from(components["kotlin"])
     }
   }
 }

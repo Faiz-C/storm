@@ -59,6 +59,14 @@ open class ConvexPolygon(
     this.center.translate(dx, dy)
   }
 
+  override fun rotate(point: Point, angle: Double) {
+    this.vertices.forEach {
+      it.rotate(point, angle)
+    }
+
+    this.center.rotate(point, angle)
+  }
+
   /**
    * Returns the projection of this Polygon onto the given axis
    *
@@ -111,7 +119,7 @@ open class ConvexPolygon(
     gc.fillPolygon(xCoordinates, yCoordinates, vertexCount)
   }
 
-  override fun toString(): String = "Points: $vertices"
+  override fun toString(): String = "ConvexPolygon(vertices: $vertices)"
 
   /**
    * Returns the edges of the polygon as vectors. The edges are defined as such:

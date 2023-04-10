@@ -89,12 +89,21 @@ data class Vector(
 
   /**
    * @param angle angle in degrees to rotate by
-   * @return new Vector rotated by the given angle *anticlockwise* from the origin with the same magnitude
+   * @return new Vector rotated by the given angle *anticlockwise* around the origin with the same magnitude
    */
   fun rotate(angle: Double): Vector {
+    return this.rotate(Point(0.0, 0.0), angle)
+  }
+
+  /**
+   * @param point Point to rotate around
+   * @param angle angle in degrees to rotate by
+   * @return new Vector rotated by the given angle *anticlockwise* around the given Point with the same magnitude
+   */
+  fun rotate(point: Point, angle: Double): Vector {
     return Vector(
-      FastMath.cos(angle) * x - FastMath.sin(angle) * y,
-      FastMath.sin(angle) * x + FastMath.cos(angle) * y
+      FastMath.cos(angle) * (x - point.x) - FastMath.sin(angle) * (y - point.y) + point.x,
+      FastMath.sin(angle) * (x - point.x) + FastMath.cos(angle) * (y - point.y) + point.y
     )
   }
 

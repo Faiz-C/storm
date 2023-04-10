@@ -9,7 +9,7 @@ publishing {
   publications {
     create<MavenPublication>("maven") {
       groupId = group as String
-      artifactId = "storm-core"
+      artifactId = "core"
       version = version
 
       from(components["kotlin"])

@@ -65,7 +65,10 @@ abstract class PhysicsEngine protected constructor(
     this.collisionStructure.clear()
     this.entities.forEach { entity: Entity ->
       entity.collisionState.clear()
-      this.collisionStructure.insert(entity)
+
+      entity.boundaries.forEach { (_, boundary) ->
+        this.collisionStructure.insert(entity, boundary)
+      }
     }
   }
 

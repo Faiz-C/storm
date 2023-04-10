@@ -22,6 +22,8 @@ interface Shape : Geometric, TransformableRender {
    */
   val center: Point
 
+  fun rotate(point: Point, angle: Double)
+
   /**
    * Calculates and returns the projection of the shape onto the given axis (in vector form). This
    * is used for collision detection.

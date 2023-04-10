@@ -32,9 +32,15 @@ open class Circle(
     this.center.translate(dx, dy)
   }
 
+  override fun rotate(point: Point, angle: Double) {
+    this.center.rotate(point, angle)
+  }
+
   override fun project(axis: Vector): Interval {
     val projectionLength = this.center.toVector().dot(axis)
     return Interval(projectionLength - radius, projectionLength + radius)
   }
+
+  override fun toString(): String = "Circle(center = $center, radius: $radius)"
 
 }
