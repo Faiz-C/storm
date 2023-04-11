@@ -31,30 +31,35 @@ class ImpulseResolutionPhysicsEngine (
   }
 
   override fun processCollisions(entity: Entity) {
-    this.collisionStructure.getCloseNeighbours(entity)
-      .forEach { other: Entity ->
-        // Ignore if already interacted with
-        if (other.collisionState.containsKey(entity)) return@forEach
+    entity.boundaries.forEach boundaries@{ (_, section) ->
+      this.collisionStructure.getCloseNeighbours(entity, section)
+        .forEach neighbourCollisionCheck@{ (neighbourSection, neighbour) ->
+          // Ignore if already interacted with
+          // This is intentionally checking the neighbours collision state instead of this entity's since we update
+          // our collision state during these checks and not our neighbours
+          if (neighbour.collisionState[entity]?.contains(section) == true) return@neighbourCollisionCheck
 
-        // Initially we can say that these two did not collide, but still track that we checked the two
-        entity.collisionState[other] = false
+          // Initially we can say that these two did not collide, but still track that we checked the two
+          if (!entity.collisionState.containsKey(neighbour)) {
+            entity.collisionState[neighbour] = setOf()
+          }
 
-        // Check collision and get back the minimum translation vector
-        val mtv = checkMtv(entity.hurtBox, other.hurtBox)
+          // Check collision and get back the minimum translation vector
+          val mtv = checkMtv(section, neighbourSection)
 
-        // no collision happened
-        if (mtv === Vectors.ZERO_VECTOR) return@forEach
+          if (mtv === Vectors.ZERO_VECTOR) return@neighbourCollisionCheck
 
-        // resolve collision via impulse resolution
-        impulsiveResolution(entity, other, mtv)
+          // resolve collision via impulse resolution
+          impulsiveResolution(entity, neighbour, mtv)
 
-        // Allow the entities to react to colliding with each other
-        entity.react(other)
-        other.react(entity)
+          // Allow the entities to react to colliding with each other
+          entity.react(neighbour)
+          neighbour.react(entity)
 
-        // Update the collision state to say that we collided with this entity
-        entity.collisionState[other] = true
-      }
+          // Update the collision state to say that we collided with this entity
+          entity.collisionState[neighbour] = entity.collisionState[neighbour]!!.plus(section)
+        }
+    }
   }
 
   /**

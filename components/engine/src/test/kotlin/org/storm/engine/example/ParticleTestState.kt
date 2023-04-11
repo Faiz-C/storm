@@ -6,52 +6,51 @@ import org.storm.engine.KeyActionConstants
 import org.storm.engine.request.RequestQueue
 import org.storm.engine.request.types.TogglePhysicsRequest
 import org.storm.physics.entity.Entity
+import org.storm.physics.entity.ImmovableEntity
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.Point
+import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
 import java.util.concurrent.ThreadLocalRandom
 
 class ParticleTestState : SwitchableState() {
 
   init {
-    this.mutableEntities.add(
-      ImmovableRectEntity(
-        0.0,
-        0.0,
-        this.unitConvertor.toUnits(Resolution.SD.width),
-        this.unitConvertor.toUnits(5.0)
+    val boundingBox = ImmovableEntity(
+      mutableMapOf(
+        "platformTop" to AABB(
+          0.0,
+          0.0,
+          this.unitConvertor.toUnits(Resolution.SD.width),
+          this.unitConvertor.toUnits(5.0)
+        ),
+        "platformRight" to AABB(
+          0.0,
+          0.0,
+          this.unitConvertor.toUnits(5.0),
+          this.unitConvertor.toUnits(Resolution.SD.height)
+        ),
+        "platformBottom" to AABB(
+          this.unitConvertor.toUnits(Resolution.SD.width - 5),
+          0.0,
+          this.unitConvertor.toUnits(5.0),
+          this.unitConvertor.toUnits(Resolution.SD.height)
+        ),
+        "platformLeft" to AABB(
+          0.0,
+          this.unitConvertor.toUnits(Resolution.SD.height - 5),
+          this.unitConvertor.toUnits(Resolution.SD.width),
+          this.unitConvertor.toUnits(5.0)
+        )
       )
     )
-    this.mutableEntities.add(
-      ImmovableRectEntity(
-        0.0,
-        0.0,
-        this.unitConvertor.toUnits(5.0),
-        this.unitConvertor.toUnits(Resolution.SD.height)
-      )
-    )
-    this.mutableEntities.add(
-      ImmovableRectEntity(
-        this.unitConvertor.toUnits(Resolution.SD.width - 5),
-        0.0,
-        this.unitConvertor.toUnits(5.0),
-        this.unitConvertor.toUnits(Resolution.SD.height)
-      )
-    )
-    this.mutableEntities.add(
-      ImmovableRectEntity(
-        0.0,
-        this.unitConvertor.toUnits(Resolution.SD.height - 5),
-        this.unitConvertor.toUnits(Resolution.SD.width),
-        this.unitConvertor.toUnits(5.0)
-      )
-    )
+    this.mutableEntities.add(boundingBox)
   }
 
   override fun preload(requestQueue: RequestQueue) {
     val usedPoints: MutableSet<Point> = mutableSetOf()
 
-    for (i in 0..999) {
+    for (i in 0..400) {
       var topLeft = Point(
         ThreadLocalRandom.current().nextInt(5, this.unitConvertor.toUnits(Resolution.SD.width - 5).toInt()).toDouble(),
         ThreadLocalRandom.current().nextInt(5, this.unitConvertor.toUnits(Resolution.SD.height - 5).toInt()).toDouble()

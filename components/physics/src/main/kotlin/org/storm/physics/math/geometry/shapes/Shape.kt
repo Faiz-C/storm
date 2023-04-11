@@ -23,6 +23,14 @@ interface Shape : Geometric, TransformableRender {
   val center: Point
 
   /**
+   * Rotates this Shape around the given Point by the given angle *anticlockwise*.
+   *
+   * @param point Point to rotate around
+   * @param angle angle in radians to rotate by
+   */
+  fun rotate(point: Point, angle: Double)
+
+  /**
    * Calculates and returns the projection of the shape onto the given axis (in vector form). This
    * is used for collision detection.
    *

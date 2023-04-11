@@ -1,6 +1,7 @@
 package org.storm.physics.structures
 
 import org.storm.physics.entity.Entity
+import org.storm.physics.math.geometry.shapes.Shape
 import org.storm.physics.transforms.TransformableRender
 
 /**
@@ -10,16 +11,18 @@ import org.storm.physics.transforms.TransformableRender
 interface SpatialDataStructure : TransformableRender {
 
   /**
-   * @param e Entity to insert
+   * @param e Entity for which the boundary belongs too
+   * @param boundary boundary Shape to insert
    * @return true if the insert was successful, false otherwise
    */
-  fun insert(e: Entity): Boolean
+  fun insert(e: Entity, boundary: Shape): Boolean
 
   /**
-   * @param e Entity to remove
+   * @param e Entity for which the boundary belongs too
+   * @param boundary boundary Shape to remove
    * @return true if the remove was successful, false otherwise
    */
-  fun remove(e: Entity): Boolean
+  fun remove(e: Entity, boundary: Shape): Boolean
 
   /**
    * Clears the data structure of all entities
@@ -27,9 +30,10 @@ interface SpatialDataStructure : TransformableRender {
   fun clear()
 
   /**
-   * @param e Entity check neighbours for
-   * @return set of entities which are close spatially to e
+   * @param e Entity for which the boundary belongs too
+   * @param boundary boundary Shape to find neighbours for
+   * @return map of (Shape -> Entity it belongs too) which are close spatially to the boundary
    */
-  fun getCloseNeighbours(e: Entity): Set<Entity>
+  fun getCloseNeighbours(e: Entity, boundary: Shape): Map<Shape, Entity>
 
 }

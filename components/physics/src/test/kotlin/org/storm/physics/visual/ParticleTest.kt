@@ -23,38 +23,35 @@ class ParticleTest : Application() {
 
   private val unitConvertor: UnitConvertor = object : UnitConvertor {}
 
-  private val platformTop: Entity = ImmovableEntity(
-    AABB(
-      0.0,
-      0.0,
-      this.unitConvertor.toUnits(Resolution.SD.width),
-      this.unitConvertor.toUnits(5.0)
+  private val boundingBox = ImmovableEntity(
+    mutableMapOf(
+      "platformTop" to AABB(
+        0.0,
+        0.0,
+        this.unitConvertor.toUnits(Resolution.HD.width),
+        this.unitConvertor.toUnits(5.0)
+      ),
+      "platformRight" to AABB(
+        0.0,
+        0.0,
+        this.unitConvertor.toUnits(5.0),
+        this.unitConvertor.toUnits(Resolution.HD.height)
+      ),
+      "platformBottom" to AABB(
+        this.unitConvertor.toUnits(Resolution.HD.width - 5),
+        0.0,
+        this.unitConvertor.toUnits(5.0),
+        this.unitConvertor.toUnits(Resolution.HD.height)
+      ),
+      "platformLeft" to AABB(
+        0.0,
+        this.unitConvertor.toUnits(Resolution.HD.height - 5),
+        this.unitConvertor.toUnits(Resolution.HD.width),
+        this.unitConvertor.toUnits(5.0)
+      )
     )
   )
-  private val platformLeft: Entity = ImmovableEntity(
-    AABB(
-      0.0,
-      0.0,
-      this.unitConvertor.toUnits(5.0),
-      this.unitConvertor.toUnits(Resolution.SD.height)
-    )
-  )
-  private val platformRight: Entity = ImmovableEntity(
-    AABB(
-      this.unitConvertor.toUnits(Resolution.SD.width - 5),
-      0.0,
-      this.unitConvertor.toUnits(5.0),
-      this.unitConvertor.toUnits(Resolution.SD.height)
-    )
-  )
-  private val platformBottom: Entity = ImmovableEntity(
-    AABB(
-      0.0,
-      this.unitConvertor.toUnits(Resolution.SD.height - 5),
-      this.unitConvertor.toUnits(Resolution.SD.width),
-      this.unitConvertor.toUnits(5.0)
-    )
-  )
+
   private val entities: MutableSet<Entity> = mutableSetOf()
   private lateinit var simulator: Simulator
   private val ballColour = Color.rgb(
@@ -66,18 +63,15 @@ class ParticleTest : Application() {
   override fun start(stage: Stage) {
 
     // Make a Display
-    val window = Window(Resolution.SD)
-    this.simulator = Simulator(Resolution.SD, 144.0) { render(window) }
-    this.entities.add(platformTop)
-    this.entities.add(platformLeft)
-    this.entities.add(platformRight)
-    this.entities.add(platformBottom)
+    val window = Window(Resolution.HD)
+    this.simulator = Simulator(Resolution.HD, 144.0) { render(window) }
+    this.entities.add(boundingBox)
 
     for (i in 0..999) {
       val (x, y) = Point(
-        ThreadLocalRandom.current().nextInt(10, this.unitConvertor.toUnits(Resolution.SD.width - 10).toInt())
+        ThreadLocalRandom.current().nextInt(10, this.unitConvertor.toUnits(Resolution.HD.width - 10).toInt())
           .toDouble(),
-        ThreadLocalRandom.current().nextInt(10, this.unitConvertor.toUnits(Resolution.SD.height - 10).toInt())
+        ThreadLocalRandom.current().nextInt(10, this.unitConvertor.toUnits(Resolution.HD.height - 10).toInt())
           .toDouble()
       )
       this.entities.add(SimpleEntity(Circle(x, y, this.unitConvertor.toUnits(2.0)), 3.0, 0.5, 1.0))
@@ -107,14 +101,14 @@ class ParticleTest : Application() {
     val gc = window.graphicsContext
     window.graphicsContext.save()
     this.simulator.physicsEngine.render(gc, 0.0, 0.0)
-    this.entities.forEach(Consumer { e: Entity ->
+    this.entities.forEach { e: Entity ->
       if (e is ImmovableEntity) {
         gc.fill = Color.RED
       } else {
         gc.fill = ballColour
       }
       e.transform().render(gc, 0.0, 0.0)
-    })
+    }
     window.graphicsContext.restore()
   }
 }
