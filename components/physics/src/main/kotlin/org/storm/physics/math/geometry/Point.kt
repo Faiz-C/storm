@@ -30,7 +30,7 @@ data class Point(
   fun toVector(): Vector = Vector(this.x, this.y)
 
   /**
-   * Rotates this Point around the given Point by the given angle
+   * Rotates this Point around the given Point by the given angle *anticlockwise*
    *
    * @param point Point to rotate around
    * @param angle angle in radians to rotate by

@@ -23,7 +23,7 @@ interface Shape : Geometric, TransformableRender {
   val center: Point
 
   /**
-   * Rotates this Shape around the given Point by the given angle.
+   * Rotates this Shape around the given Point by the given angle *anticlockwise*.
    *
    * @param point Point to rotate around
    * @param angle angle in radians to rotate by

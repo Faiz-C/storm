@@ -111,7 +111,7 @@ abstract class Entity protected constructor(
   }
 
   /**
-   * Rotates all boundary sections of this entity by the given angle around the given point
+   * Rotates all boundary sections of this entity by the given angle *anticlockwise* around the given point
    *
    * @param point Point to rotate around
    * @param angle angle in radians to rotate by
