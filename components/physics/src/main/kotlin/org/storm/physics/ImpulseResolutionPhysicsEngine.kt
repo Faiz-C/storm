@@ -6,7 +6,6 @@ import org.storm.physics.collision.CollisionDetector.checkMtv
 import org.storm.physics.constants.Vectors
 import org.storm.physics.entity.Entity
 import org.storm.physics.math.Vector
-import org.storm.physics.math.geometry.shapes.Circle
 import org.storm.physics.structures.QuadrantTree
 import org.storm.physics.transforms.UnitConvertor
 

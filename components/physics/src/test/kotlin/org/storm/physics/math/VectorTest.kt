@@ -92,7 +92,7 @@ class VectorTest {
     val v = Vector(4.0, 3.0)
     assertEquals(5.0, v.magnitude, 0.0)
 
-    val rotated90Degrees = v.rotate(Math.PI /2)
+    val rotated90Degrees = v.rotate(Math.PI / 2)
     assertNotEquals(v, rotated90Degrees)
     assertEquals(5.0, rotated90Degrees.magnitude, 0.0)
   }

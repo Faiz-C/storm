@@ -88,7 +88,7 @@ data class Vector(
   }
 
   /**
-   * @param angle angle in degrees to rotate by
+   * @param angle angle in radians to rotate by
    * @return new Vector rotated by the given angle *anticlockwise* around the origin with the same magnitude
    */
   fun rotate(angle: Double): Vector {
@@ -97,7 +97,7 @@ data class Vector(
 
   /**
    * @param point Point to rotate around
-   * @param angle angle in degrees to rotate by
+   * @param angle angle in radians to rotate by
    * @return new Vector rotated by the given angle *anticlockwise* around the given Point with the same magnitude
    */
   fun rotate(point: Point, angle: Double): Vector {

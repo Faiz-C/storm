@@ -50,7 +50,7 @@ class ParticleTestState : SwitchableState() {
   override fun preload(requestQueue: RequestQueue) {
     val usedPoints: MutableSet<Point> = mutableSetOf()
 
-    for (i in 0..200) {
+    for (i in 0..400) {
       var topLeft = Point(
         ThreadLocalRandom.current().nextInt(5, this.unitConvertor.toUnits(Resolution.SD.width - 5).toInt()).toDouble(),
         ThreadLocalRandom.current().nextInt(5, this.unitConvertor.toUnits(Resolution.SD.height - 5).toInt()).toDouble()

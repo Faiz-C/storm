@@ -93,21 +93,29 @@ abstract class Entity protected constructor(
   }
 
   /**
-   * Clears all forces being applied to the given Entity. i.e. stops applying any forces to the Entity
-   *
+   * Clears all forces being applied to the given Entity. i.e. stops applying any forces to the Entity.
    */
   open fun clearForces() {
     this.actingForces.clear()
   }
 
-  open fun translate(boundarySectionName: String, dx: Double, dy: Double) {
-    this.boundaries[boundarySectionName]?.translate(dx, dy)
+  /**
+   * Translates the given part of the boundary by the supplied deltas if it exists.
+   *
+   * @param boundaryName name of boundary section to translate
+   * @param dx x delta to translate by
+   * @param dy y delta to translate by
+   */
+  open fun translate(boundaryName: String, dx: Double, dy: Double) {
+    this.boundaries[boundaryName]?.translate(dx, dy)
   }
 
-  open fun translate(boundarySection: Shape, dx: Double, dy: Double) {
-    boundarySection.translate(dx, dy)
-  }
-
+  /**
+   * Rotates all boundary sections of this entity by the given angle around the given point
+   *
+   * @param point Point to rotate around
+   * @param angle angle in radians to rotate by
+   */
   open fun rotate(point: Point, angle: Double) {
     this.boundaries.forEach { (_, boundary) ->
       boundary.rotate(point, angle)
@@ -115,14 +123,14 @@ abstract class Entity protected constructor(
   }
 
   override fun transform(unitConvertor: UnitConvertor) = Renderable { gc, x, y ->
-    this@Entity.boundaries.forEach { (_, section) ->
-      section.transform(unitConvertor).render(gc, x, y)
+    this@Entity.boundaries.forEach { (_, boundary) ->
+      boundary.transform(unitConvertor).render(gc, x, y)
     }
   }
 
   override fun translate(dx: Double, dy: Double) {
-    this.boundaries.forEach { (_, section) ->
-      section.translate(dx, dy)
+    this.boundaries.forEach { (_, boundary) ->
+      boundary.translate(dx, dy)
     }
   }
 

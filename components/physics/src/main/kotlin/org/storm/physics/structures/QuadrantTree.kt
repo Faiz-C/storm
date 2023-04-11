@@ -3,13 +3,11 @@ package org.storm.physics.structures
 import org.storm.core.render.Renderable
 import org.storm.physics.entity.Entity
 import org.storm.physics.math.geometry.shapes.AABB
-import org.storm.physics.math.geometry.shapes.Circle
 import org.storm.physics.math.geometry.shapes.Shape
 import org.storm.physics.transforms.UnitConvertor
 
 /**
- * A QuadrantTree is a type of SpatialDataStructure which uses a Quad Tree as its underlying data structure. This tree
- * was modified to support multisection boundaries.
+ * A QuadrantTree is a type of SpatialDataStructure which uses a Quad Tree as its underlying data structure.
  */
 class QuadrantTree(
   private val level: Int,
@@ -87,35 +85,35 @@ class QuadrantTree(
       return synchronized(this.contentLock) { size + this@QuadrantTree.content.size }
     }
 
-  override fun insert(e: Entity, boundarySection: Shape): Boolean {
-    if (!this.boundary.contains(boundarySection)) return false
+  override fun insert(e: Entity, boundary: Shape): Boolean {
+    if (!this.boundary.contains(boundary)) return false
 
     return if (this.leaf) {
       synchronized(this.contentLock) {
-        this.content[boundarySection] = e
+        this.content[boundary] = e
         if (this.content.size > MAX_CAPACITY && this.level < MAX_DEPTH) {
           this.expand()
         }
       }
       true
     } else {
-      this.getQuadrantFor(boundarySection)?.insert(e, boundarySection) ?: run {
-        this.content[boundarySection] = e
+      this.getQuadrantFor(boundary)?.insert(e, boundary) ?: run {
+        this.content[boundary] = e
         true
       }
     }
   }
 
-  override fun remove(e: Entity, boundarySection: Shape): Boolean {
-    if (!this.boundary.contains(boundarySection)) return false
+  override fun remove(e: Entity, boundary: Shape): Boolean {
+    if (!this.boundary.contains(boundary)) return false
 
     return if (this.leaf) {
       synchronized(this.contentLock) {
-        this.content.remove(boundarySection)
+        this.content.remove(boundary)
         true
       }
     } else {
-      this.getQuadrantFor(boundarySection)?.remove(e, boundarySection) ?: false
+      this.getQuadrantFor(boundary)?.remove(e, boundary) ?: false
     }
   }
 
@@ -134,7 +132,7 @@ class QuadrantTree(
     this.leaf = true
   }
 
-  override fun getCloseNeighbours(e: Entity, boundarySection: Shape): Map<Shape, Entity> {
+  override fun getCloseNeighbours(e: Entity, boundary: Shape): Map<Shape, Entity> {
     val neighbours = this.content.filterKeys {
       !e.boundaries.containsValue(it)
     }
@@ -142,18 +140,27 @@ class QuadrantTree(
     return if (this.leaf) {
       neighbours
     } else {
-      this.getQuadrantFor(boundarySection)?.let {
-        neighbours.plus(it.getCloseNeighbours(e, boundarySection))
+      this.getQuadrantFor(boundary)?.let {
+        neighbours.plus(it.getCloseNeighbours(e, boundary))
       } ?: neighbours
     }
   }
 
+  override fun transform(unitConvertor: UnitConvertor): Renderable = Renderable { gc, x, y ->
+    this.boundary.transform(unitConvertor).render(gc, 0.0, 0.0)
+    this.quadrants.forEach {
+      it?.transform(unitConvertor)?.render(gc, x, y)
+    }
+  }
+
   /**
-   * Allocates (inserts) the given Entity into the correct quadrant in the tree
-   * @param e Entity to allocate
+   * Allocates (inserts) the Shape for the given Entity into the correct quadrant in the tree.
+   *
+   * @param e Entity for which the boundary belongs too
+   * @param boundary boundary Shape to allocate
    */
-  private fun allocate(e: Entity, s: Shape): Boolean {
-    return this.getQuadrantFor(s)?.insert(e, s) ?: false
+  private fun allocate(e: Entity, boundary: Shape): Boolean {
+    return this.getQuadrantFor(boundary)?.insert(e, boundary) ?: false
   }
 
   /**
@@ -188,19 +195,12 @@ class QuadrantTree(
   }
 
   /**
-   * @param e Entity to check for
-   * @return the QuadrantTree (child or parent) where e belongs to spatially, null if it belongs to no one
+   * @param boundary boundary Shape to check for
+   * @return the QuadrantTree (child or parent) where s belongs to spatially, null if it belongs to no one
    */
-  private fun getQuadrantFor(s: Shape): QuadrantTree? {
+  private fun getQuadrantFor(boundary: Shape): QuadrantTree? {
     return synchronized(this.quadrantLock) {
-      this.quadrants.firstOrNull { it?.boundary?.contains(s) == true }
-    }
-  }
-
-  override fun transform(unitConvertor: UnitConvertor): Renderable = Renderable { gc, x, y ->
-    this.boundary.transform(unitConvertor).render(gc, 0.0, 0.0)
-    this.quadrants.forEach {
-      it?.transform(unitConvertor)?.render(gc, x, y)
+      this.quadrants.firstOrNull { it?.boundary?.contains(boundary) == true }
     }
   }
 

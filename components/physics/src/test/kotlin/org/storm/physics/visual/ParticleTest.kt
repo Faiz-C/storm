@@ -28,25 +28,25 @@ class ParticleTest : Application() {
       "platformTop" to AABB(
         0.0,
         0.0,
-        this.unitConvertor.toUnits(Resolution.SD.width),
+        this.unitConvertor.toUnits(Resolution.HD.width),
         this.unitConvertor.toUnits(5.0)
       ),
       "platformRight" to AABB(
         0.0,
         0.0,
         this.unitConvertor.toUnits(5.0),
-        this.unitConvertor.toUnits(Resolution.SD.height)
+        this.unitConvertor.toUnits(Resolution.HD.height)
       ),
       "platformBottom" to AABB(
-        this.unitConvertor.toUnits(Resolution.SD.width - 5),
+        this.unitConvertor.toUnits(Resolution.HD.width - 5),
         0.0,
         this.unitConvertor.toUnits(5.0),
-        this.unitConvertor.toUnits(Resolution.SD.height)
+        this.unitConvertor.toUnits(Resolution.HD.height)
       ),
       "platformLeft" to AABB(
         0.0,
-        this.unitConvertor.toUnits(Resolution.SD.height - 5),
-        this.unitConvertor.toUnits(Resolution.SD.width),
+        this.unitConvertor.toUnits(Resolution.HD.height - 5),
+        this.unitConvertor.toUnits(Resolution.HD.width),
         this.unitConvertor.toUnits(5.0)
       )
     )
@@ -63,15 +63,15 @@ class ParticleTest : Application() {
   override fun start(stage: Stage) {
 
     // Make a Display
-    val window = Window(Resolution.SD)
-    this.simulator = Simulator(Resolution.SD, 144.0) { render(window) }
+    val window = Window(Resolution.HD)
+    this.simulator = Simulator(Resolution.HD, 144.0) { render(window) }
     this.entities.add(boundingBox)
 
     for (i in 0..999) {
       val (x, y) = Point(
-        ThreadLocalRandom.current().nextInt(10, this.unitConvertor.toUnits(Resolution.SD.width - 10).toInt())
+        ThreadLocalRandom.current().nextInt(10, this.unitConvertor.toUnits(Resolution.HD.width - 10).toInt())
           .toDouble(),
-        ThreadLocalRandom.current().nextInt(10, this.unitConvertor.toUnits(Resolution.SD.height - 10).toInt())
+        ThreadLocalRandom.current().nextInt(10, this.unitConvertor.toUnits(Resolution.HD.height - 10).toInt())
           .toDouble()
       )
       this.entities.add(SimpleEntity(Circle(x, y, this.unitConvertor.toUnits(2.0)), 3.0, 0.5, 1.0))

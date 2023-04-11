@@ -30,10 +30,10 @@ data class Point(
   fun toVector(): Vector = Vector(this.x, this.y)
 
   /**
-   * @param point Point to rotate around
-   * @param angle angle in degrees to rotate by
-   *
    * Rotates this Point around the given Point by the given angle
+   *
+   * @param point Point to rotate around
+   * @param angle angle in radians to rotate by
    */
   fun rotate(point: Point, angle: Double) {
     this.x = FastMath.cos(angle) * (x - point.x) - FastMath.sin(angle) * (y - point.y) + point.x
