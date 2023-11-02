@@ -37,6 +37,7 @@ allprojects {
   dependencies {
     // Versions
     val slf4jVersion = "2.0.3"
+    val jacksonVersion = "2.15.3"
 
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
@@ -44,6 +45,13 @@ allprojects {
 
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
     implementation("org.slf4j:slf4j-simple:$slf4jVersion")
+
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+
+    implementation("org.apache.commons:commons-lang3:3.12.0")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
   }
 
   tasks {

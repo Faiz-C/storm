@@ -1,0 +1,21 @@
+---
+name: concert
+type: dialogue
+next: choice
+#script:
+#  dialogueSegments:
+#    - character: Bob
+#      dialogueLines:
+#        - Hey Alice, how is it going?
+#    - character: Alice
+#      dialogueLines:
+#        - Hey Bob! I'm well, how was the concert last night?
+#    - character: Bob
+#      dialogueLines:
+#        - It was crazy! Iron Maiden, Judas Priest, DragonForce, Band-Maid, Waggaki Band, Unlucky Morpheus, and so many more were there.
+#        - You should come next time.
+#    - character: Alice
+#      dialogueLines:
+#        - Wow! Can't believe I missed that. I'll definitely tag along next time.
+#        - When do you want to go?
+...

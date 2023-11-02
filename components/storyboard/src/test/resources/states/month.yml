@@ -1,0 +1,12 @@
+---
+name: month
+type: dialogue
+script:
+  dialogueSegments:
+    - id: Alice
+      dialogueLines:
+        - Oh sweet, I should be free. Let's go then!
+    - id: Bob
+      dialogueLines:
+        - Cool, I'll message you the details later.
+...

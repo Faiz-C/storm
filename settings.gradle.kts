@@ -5,5 +5,6 @@ include(
   "components:physics",
   "components:sound",
   "components:animation",
-  "components:maps"
+  "components:maps",
+  "components:storyboard"
 )

@@ -5,6 +5,10 @@ javafx {
   modules("javafx.controls", "javafx.graphics")
 }
 
+dependencies {
+  implementation("org.reflections:reflections:0.10.2")
+}
+
 publishing {
   publications {
     create<MavenPublication>("maven") {

@@ -1,0 +1,9 @@
+---
+name: choice
+type: choice
+choices:
+  - option: "There is a concert next month"
+    stateId: "month"
+  - option: "There is a concert next week"
+    stateId: "week"
+...
