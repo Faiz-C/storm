@@ -3,10 +3,10 @@ name: week
 type: dialogue
 script:
   dialogueSegments:
-    - id: Alice
+    - character: Alice
       dialogueLines:
         - Oh shoot, I'm busy next week. Maybe another time?
-    - id: Bob
+    - character: Bob
       dialogueLines:
         - No worries, we'll figure it out.
 ...

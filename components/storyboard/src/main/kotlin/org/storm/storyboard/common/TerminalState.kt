@@ -9,9 +9,7 @@ data class TerminalState(
     override val type: String = "terminal"
 ): StoryBoardState {
 
-    override val next: String = ""
-
-    override val terminal: Boolean = true
+    override val next: String? = null
 
     override val neighbourStates: Set<String> = emptySet()
 

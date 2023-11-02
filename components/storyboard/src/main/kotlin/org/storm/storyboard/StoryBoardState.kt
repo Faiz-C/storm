@@ -14,8 +14,7 @@ import org.storm.core.asset.serialization.AssetResolver
 interface StoryBoardState: Renderable, Updatable, Processor {
     val name: String
     val type: String
-    val next: String
-    val terminal: Boolean
+    val next: String?
     val neighbourStates: Set<String>
 
     fun isComplete(): Boolean

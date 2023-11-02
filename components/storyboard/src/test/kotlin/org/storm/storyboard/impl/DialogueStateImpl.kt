@@ -5,22 +5,21 @@ import javafx.scene.canvas.GraphicsContext
 import org.storm.core.asset.Asset
 import org.storm.core.input.action.ActionManager
 import org.storm.storyboard.dialogue.DialogueState
+import org.storm.storyboard.dialogue.Script
 
 @Asset(type = "dialogue")
 class DialogueStateImpl @JsonCreator constructor(
     name: String,
-    next: String,
-    terminal: Boolean
-) : DialogueState(name, next = next, terminal = terminal) {
+    next: String? = null,
+    script: Script
+) : DialogueState(name, next = next, script = script) {
 
     private var rendered: Boolean = false
 
     override fun render(gc: GraphicsContext, x: Double, y: Double) {
-        script ?: return
+        if (script.currentSegment == null || rendered) return
 
-        if (script?.currentSegment == null || rendered) return
-
-        val segment = script!!.currentSegment!!
+        val segment = script.currentSegment!!
 
         // Renders it to the console
         val dialogue = StringBuilder()

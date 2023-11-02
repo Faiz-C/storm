@@ -1,6 +1,7 @@
 package org.storm.storyboard.impl
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
 import javafx.scene.canvas.GraphicsContext
 import org.storm.core.asset.Asset
 import org.storm.core.input.action.ActionManager

@@ -1,12 +1,9 @@
 package org.storm.storyboard
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
-import com.fasterxml.jackson.module.kotlin.KotlinFeature
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.readValue
-import org.storm.storyboard.dialogue.Script
+import javafx.scene.canvas.Canvas
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.runBlocking
 import java.nio.file.Paths
 
 class StoryBoardEngineTest {
@@ -16,34 +13,19 @@ class StoryBoardEngineTest {
             val resourceDir = Paths.get("components", "storyboard", "src", "test", "resources", "states")
             val engine = StoryBoardEngine(resourceDir.toString())
 
-            //engine.loadStates("concert")
+            engine.loadStatesFrom("concert")
+            engine.setStartingState("concert")
 
-            val yamlMapper = YAMLMapper()
-                .configure(JsonParser.Feature.ALLOW_YAML_COMMENTS, true)
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .registerModules(
-                    KotlinModule.Builder()
-                        .withReflectionCacheSize(512)
-                        .configure(KotlinFeature.NullToEmptyCollection, false)
-                        .configure(KotlinFeature.NullToEmptyMap, false)
-                        .configure(KotlinFeature.NullIsSameAsDefault, false)
-                        .configure(KotlinFeature.SingletonSupport, true)
-                        .configure(KotlinFeature.StrictNullChecks, false)
-                        .build()
-                ).findAndRegisterModules()!!
+            val graphics = Canvas().graphicsContext2D
 
-            data class Thing(
-                private val a: String?,
-                private val b: String?
-            )
+            runBlocking {
+                while (this.isActive) {
+                    engine.update(0.0, 0.0)
+                    engine.render(graphics, 0.0, 0.0)
 
-            data class Thing2(
-                private val thing: List<Thing>
-            )
-
-            val script = yamlMapper.readValue<Thing2>(this.javaClass.classLoader.getResource("example.yml"))
-
-            println(script)
+                    delay(2000)
+                }
+            }
         }
     }
 }

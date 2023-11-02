@@ -1,9 +1,10 @@
 package org.storm.storyboard.dialogue
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class Script (
-    private val dialogueSegments: List<DialogueSegment>
+    @JsonProperty("dialogueSegments") private val dialogueSegments: List<DialogueSegment>
 ) {
 
     val complete: Boolean get() = position >= dialogueSegments.size

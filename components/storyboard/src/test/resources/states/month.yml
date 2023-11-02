@@ -3,10 +3,10 @@ name: month
 type: dialogue
 script:
   dialogueSegments:
-    - id: Alice
+    - character: Alice
       dialogueLines:
         - Oh sweet, I should be free. Let's go then!
-    - id: Bob
+    - character: Bob
       dialogueLines:
         - Cool, I'll message you the details later.
 ...

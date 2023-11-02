@@ -3,19 +3,16 @@ package org.storm.storyboard
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLParser
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import javafx.scene.canvas.GraphicsContext
-import org.apache.commons.lang3.ClassUtils
-import org.storm.core.asset.Asset
-import org.storm.core.asset.AssetManager
 import org.storm.core.input.Processor
 import org.storm.core.input.action.ActionManager
 import org.storm.core.render.Renderable
 import org.storm.core.update.Updatable
+import org.storm.storyboard.exception.StoryBoardEngineException
 import java.io.FileInputStream
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -38,7 +35,7 @@ open class StoryBoardEngine(
                 .withReflectionCacheSize(512)
                 .configure(KotlinFeature.NullToEmptyCollection, false)
                 .configure(KotlinFeature.NullToEmptyMap, false)
-                .configure(KotlinFeature.NullIsSameAsDefault, false)
+                .configure(KotlinFeature.NullIsSameAsDefault, true)
                 .configure(KotlinFeature.SingletonSupport, true)
                 .configure(KotlinFeature.StrictNullChecks, false)
                 .build()
@@ -55,7 +52,7 @@ open class StoryBoardEngine(
         switchState(stateId)
     }
 
-    open fun loadStates(stateId: String) {
+    open fun loadStatesFrom(stateId: String) {
         val queue = ConcurrentLinkedQueue<String>().also {
             it.add(stateId)
         }
@@ -67,13 +64,13 @@ open class StoryBoardEngine(
 
             states[state.name] = state
 
+            visited.add(state.name)
+
             state.neighbourStates.filter {
                 !visited.contains(it)
             }.forEach {
                 queue.add(it)
             }
-
-            visited.add(state.name)
         }
     }
 
@@ -86,30 +83,40 @@ open class StoryBoardEngine(
     }
 
     override fun update(time: Double, elapsedTime: Double) {
-        currentState.update(time, elapsedTime)
+        val state = currentState
+        state.update(time, elapsedTime)
 
-        if (!currentState.isComplete() || currentState.terminal) return
+        if (!state.isComplete() || state.next == null) return
 
-        switchState(currentState.next)
+        switchState(state.next!!)
     }
 
     protected open fun getState(stateId: String): StoryBoardState {
-        return if (useJson) {
-            objectMapper.readValue(FileInputStream("$baseDir/$stateId.json"))
-        } else {
-            yamlMapper.readValue(FileInputStream("$baseDir/$stateId.yml"))
+        return try {
+            if (useJson) {
+                objectMapper.readValue<StoryBoardState>(FileInputStream("$baseDir/$stateId.json"))
+            } else {
+                yamlMapper.readValue<StoryBoardState>(FileInputStream("$baseDir/$stateId.yml"))
+            }
+        } catch (e: Exception) {
+            throw StoryBoardEngineException("Failed to load state $stateId from from disk", e)
         }
     }
 
     private fun switchState(stateId: String) {
-        val previousState = currentState
+        val previousState = if (this::currentState.isInitialized) {
+            currentState
+        } else {
+            null
+        }
+
         currentState = states[stateId] ?: run {
             val state = getState(stateId)
             states[stateId] = state
             state
         }
 
-        if (!preloadNeighbourStates) return
+        if (!preloadNeighbourStates || previousState == null) return
 
         val newNeighbours = currentState.neighbourStates - previousState.neighbourStates
         val oldNeighbours = previousState.neighbourStates - currentState.neighbourStates
