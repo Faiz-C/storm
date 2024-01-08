@@ -1,45 +1,22 @@
 package org.storm.storyboard
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
-import com.fasterxml.jackson.module.kotlin.KotlinFeature
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import javafx.scene.canvas.GraphicsContext
+import org.storm.core.asset.AssetManager
 import org.storm.core.input.Processor
 import org.storm.core.input.action.ActionManager
 import org.storm.core.render.Renderable
 import org.storm.core.update.Updatable
 import org.storm.storyboard.exception.StoryBoardEngineException
-import java.io.FileInputStream
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 
 open class StoryBoardEngine(
-    private val baseDir: String,
-    private val preloadNeighbourStates: Boolean = true,
-    private val useJson: Boolean = false,
+    protected val assetManager: AssetManager = AssetManager(),
+    protected val preloadNeighbourStates: Boolean = true
 ): Renderable, Updatable, Processor {
 
     protected val states: MutableMap<String, StoryBoardState> = ConcurrentHashMap()
     protected lateinit var currentState: StoryBoardState
-
-    protected val objectMapper = jacksonObjectMapper()
-    protected val yamlMapper = YAMLMapper()
-        .configure(JsonParser.Feature.ALLOW_YAML_COMMENTS, true)
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        .registerModules(
-            KotlinModule.Builder()
-                .withReflectionCacheSize(512)
-                .configure(KotlinFeature.NullToEmptyCollection, false)
-                .configure(KotlinFeature.NullToEmptyMap, false)
-                .configure(KotlinFeature.NullIsSameAsDefault, true)
-                .configure(KotlinFeature.SingletonSupport, true)
-                .configure(KotlinFeature.StrictNullChecks, false)
-                .build()
-        ).findAndRegisterModules()!!
 
     fun setStates(states: Map<String, StoryBoardState>) {
         this.states.clear()
@@ -93,11 +70,7 @@ open class StoryBoardEngine(
 
     protected open fun getState(stateId: String): StoryBoardState {
         return try {
-            if (useJson) {
-                objectMapper.readValue<StoryBoardState>(FileInputStream("$baseDir/$stateId.json"))
-            } else {
-                yamlMapper.readValue<StoryBoardState>(FileInputStream("$baseDir/$stateId.yml"))
-            }
+            assetManager.getAsset(stateId, StoryBoardState::class.java)
         } catch (e: Exception) {
             throw StoryBoardEngineException("Failed to load state $stateId from from disk", e)
         }

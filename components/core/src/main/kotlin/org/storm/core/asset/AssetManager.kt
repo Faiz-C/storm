@@ -1,56 +1,56 @@
 package org.storm.core.asset
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.github.benmanes.caffeine.cache.LoadingCache
-import org.reflections.Reflections
-import org.reflections.scanners.Scanners
-import org.reflections.util.ConfigurationBuilder
+import org.storm.core.asset.loaders.AssetLoader
+import org.storm.core.asset.loaders.JsonAssetLoader
+import org.storm.core.asset.loaders.YamlAssetLoader
 import org.storm.core.exception.AssetException
 import java.time.Duration
 
 class AssetManager(
     maxCacheSize: Long = 3000,
     cacheTtl: Duration = Duration.ofMinutes(10),
-    private val assetDir: String = "",
+    private val assetDir: String = "assets",
     private val useCache: Boolean = true,
-    private val objectMapper: ObjectMapper = jacksonObjectMapper(),
 ) {
-    companion object {
-        private val ASSET_REGISTRY: MutableList<String> = mutableListOf("org.storm")
 
-        fun registerAssetPackage(packageName: String) {
-            ASSET_REGISTRY.add(packageName)
+    companion object {
+        private val ASSET_LOADERS = mutableListOf(
+            JsonAssetLoader(),
+            YamlAssetLoader()
+        )
+
+        fun registerLoader(loader: AssetLoader) {
+            ASSET_LOADERS.add(loader)
         }
     }
 
-    private val reflections = Reflections(
-        ConfigurationBuilder()
-            .forPackages(*ASSET_REGISTRY.toTypedArray())
-            .setScanners(Scanners.TypesAnnotated, Scanners.SubTypes)
-    )
-
-    private val assetTypes: Set<Class<*>> = reflections.get(Scanners.TypesAnnotated.of(Asset::class.java).asClass<Asset>())
-
-    private val cache: LoadingCache<String, Any> = Caffeine.newBuilder()
+    // A cache which links asset paths to their loaded objects
+    private val cache: Cache<String, Any> = Caffeine.newBuilder()
         .maximumSize(maxCacheSize)
         .expireAfterWrite(cacheTtl)
-        .refreshAfterWrite(cacheTtl)
-        .build {
-            ""
+        .build()
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T> getAsset(assetPath: String, clazz: Class<T>): T {
+        val fullAssetPath = "$assetDir/$assetPath"
+        val ext = fullAssetPath.substringAfterLast(".")
+
+        return if (useCache) {
+            val a = cache.get(fullAssetPath) {
+                loadAsset(fullAssetPath, ext, clazz)
+            } as T
+            a
+        } else {
+            loadAsset(fullAssetPath, ext, clazz)
         }
-
-    fun getAssetType(clazz: Class<*>): String {
-        val assetDetails = clazz.getAnnotation(Asset::class.java)
-            ?: throw AssetException("Asset annotation not found on ${clazz.simpleName}, cannot auto resolve.")
-
-        return assetDetails.type
     }
 
-    fun getAssetForType(type: String): Class<*>? {
-        return assetTypes.firstOrNull {
-            it.getAnnotation(Asset::class.java).type == type
-        }
+    private fun <T> loadAsset(assetPath: String, assetExt: String, clazz: Class<T>): T {
+        val loader = ASSET_LOADERS.find { it.extensions.contains(assetExt) }
+            ?: throw AssetException("No loader found for asset type ${assetExt}.")
+
+        return loader.load(assetPath, clazz)
     }
 }
