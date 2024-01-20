@@ -4,15 +4,17 @@ import javafx.scene.canvas.Canvas
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
+import org.storm.core.asset.AssetManager
 import java.nio.file.Paths
 
 class StoryBoardEngineTest {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            val resourceDir = Paths.get("components", "storyboard", "src", "test", "resources", "states")
-            val engine = StoryBoardEngine(resourceDir.toString())
+            val resourceDir = Paths.get("components", "storyboard", "src", "test", "resources")
+            val engine = StoryBoardEngine(AssetManager(assetDir = resourceDir.toString()))
 
+            engine.loadStatesFrom("concert")
             engine.loadStatesFrom("concert")
             engine.setStartingState("concert")
 

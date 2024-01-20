@@ -24,7 +24,7 @@ class YamlAssetLoader(override val extensions: List<String> = listOf("yml", "yam
         ).findAndRegisterModules()!!
 
 
-    override fun <T> load(path: String, clazz: Class<T>): T {
+    override fun load(path: String, clazz: Class<*>): Any {
         return yamlMapper.readValue(FileInputStream(path), clazz)
     }
 }

@@ -70,7 +70,7 @@ open class StoryBoardEngine(
 
     protected open fun getState(stateId: String): StoryBoardState {
         return try {
-            assetManager.getAsset(stateId, StoryBoardState::class.java)
+            assetManager.getAsset(stateId, StoryBoardState::class.java, assetSubDir = "states")
         } catch (e: Exception) {
             throw StoryBoardEngineException("Failed to load state $stateId from from disk", e)
         }

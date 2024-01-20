@@ -6,7 +6,7 @@ import java.io.FileInputStream
 class JsonAssetLoader(override val extensions: List<String> = listOf("json")) : AssetLoader {
     private val objectMapper = jacksonObjectMapper()
 
-    override fun <T> load(path: String, clazz: Class<T>): T {
+    override fun load(path: String, clazz: Class<*>): Any {
         return objectMapper.readValue(FileInputStream(path), clazz)
     }
 }
