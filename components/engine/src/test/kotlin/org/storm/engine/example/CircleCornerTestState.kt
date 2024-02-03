@@ -34,7 +34,7 @@ class CircleCornerTestState : SwitchableState() {
     )
     this.mutableEntities.add(player)
 
-    soundManager.add("bgm", MediaSound("music/bgm.mp3", loop = true, resource = true))
+    soundManager.add("bgm", MediaSound("music/bgm.mp3", resource = true))
     soundManager.adjustAllVolume(0.1)
   }
 

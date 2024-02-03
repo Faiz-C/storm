@@ -13,7 +13,7 @@ class MediaSoundTest : Application() {
   private lateinit var bgm: Sound
 
   override fun start(stage: Stage) {
-    bgm = MediaSound(BGM_FILE, loop = false, resource = true)
+    bgm = MediaSound(BGM_FILE, resource = true)
     bgm.adjustVolume(0.1)
     bgm.play()
   }

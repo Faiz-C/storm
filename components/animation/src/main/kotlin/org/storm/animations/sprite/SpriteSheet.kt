@@ -13,8 +13,8 @@ import java.io.FileInputStream
  */
 class SpriteSheet(
   spriteSheet: Image,
-  val spriteWidth: Int,
-  val spriteHeight: Int
+  spriteWidth: Int,
+  spriteHeight: Int
 ) {
 
   private val sprites: Array<Array<Image>> = ImageUtils.toGrid(spriteSheet, spriteWidth, spriteHeight)

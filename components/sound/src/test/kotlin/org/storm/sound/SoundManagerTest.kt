@@ -17,9 +17,9 @@ class SoundManagerTest : Application() {
   private val soundManager = SoundManager()
 
   override fun start(stage: Stage) {
-    soundManager.add("effect", MediaSound(SOUND_EFFECT_FILE, loop = false, resource = true))
-    soundManager.add("bgm1", MediaSound(BGM_FILE, loop = true, resource = true))
-    soundManager.add("bgm2", MediaSound(BGM2_FILE, loop = false, resource = true))
+    soundManager.add("effect", MediaSound(SOUND_EFFECT_FILE, resource = true))
+    soundManager.add("bgm1", MediaSound(BGM_FILE, loops = Sound.LOOP_INDEFINITELY, resource = true))
+    soundManager.add("bgm2", MediaSound(BGM2_FILE, resource = true))
     soundManager.adjustVolume("effect", 0.5)
     soundManager.adjustVolume("bgm1", 0.1)
     soundManager.adjustVolume("bgm2", 0.3)

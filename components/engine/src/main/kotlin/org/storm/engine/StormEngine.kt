@@ -169,7 +169,7 @@ class StormEngine(
    *
    * @param inputTranslator Translator to use
    */
-  fun addKeyRegister(inputTranslator: Translator<KeyEvent, String>) {
+  fun addKeyTranslator(inputTranslator: Translator<KeyEvent, String>) {
     window.onKeyPressed = EventHandler { keyEvent -> actionManager.startUsing(inputTranslator.translate(keyEvent)) }
     window.onKeyReleased = EventHandler { keyEvent -> actionManager.stopUsing(inputTranslator.translate(keyEvent)) }
   }
@@ -180,7 +180,7 @@ class StormEngine(
    *
    * @param inputTranslator Translator to use
    */
-  fun addMouseRegister(inputTranslator: Translator<MouseEvent, String>) {
+  fun addMouseTranslator(inputTranslator: Translator<MouseEvent, String>) {
     window.onMousePressed = EventHandler { mouseEvent -> actionManager.startUsing(inputTranslator.translate(mouseEvent)) }
     window.onMouseReleased = EventHandler { mouseEvent -> actionManager.stopUsing(inputTranslator.translate(mouseEvent)) }
     window.onMouseEntered = EventHandler { mouseEvent -> actionManager.startUsing(inputTranslator.translate(mouseEvent)) }

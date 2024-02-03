@@ -57,12 +57,13 @@ class AssetResolver: TypeIdResolverBase() {
         val assetDetails = clazz.getAnnotation(Asset::class.java)
             ?: throw AssetException("Asset annotation not found on ${clazz.simpleName}, cannot auto resolve.")
 
-        return assetDetails.type
+        return "${assetDetails.type}-${assetDetails.impl}"
     }
 
     private fun getClassForType(type: String): Class<*>? {
         return assetTypes.firstOrNull {
-            it.getAnnotation(Asset::class.java).type == type
+            val annotation = it.getAnnotation(Asset::class.java)
+            "${annotation.type}-${annotation.impl}" == type
         }
     }
 }

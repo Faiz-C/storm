@@ -8,14 +8,55 @@ import org.storm.core.render.Renderable
 import org.storm.core.update.Updatable
 import org.storm.core.asset.serialization.AssetResolver
 
+/**
+ * A State in a StoryBoard. This is a node in a directed graph that represents a specific point in time for a story.
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type", visible = true)
 @JsonTypeIdResolver(AssetResolver::class)
 interface StoryBoardState: Renderable, Updatable, Processor {
-    val name: String
-    val type: String
-    val next: String?
-    val neighbourStates: Set<String>
 
+    /**
+     * The unique identifier for this state.
+     */
+    val id: String
+
+    /**
+     * The type of state, used to help serialize and deserialize the state using Asset loading.
+     */
+    val type: String
+
+    /**
+     * The set of neighbouring states. This is a directed graph, so the neighbours are the states that can be navigated to
+     * from this state.
+     */
+    val neighbours: Set<String>
+
+    /**
+     * Determines if the state is disabled or not. A disabled state cannot be navigated to.
+     */
+    var disabled: Boolean
+
+    /**
+     * Determines if the state is a terminal state or not. A terminal state is a state that has no neighbours.
+     */
+    val terminal get() = neighbours.isEmpty()
+
+    /**
+     * The next state to navigate to. This is the default implementation for a linear story. This should be overridden
+     * in the case of multiple neighbours (i.e. a choice).
+     */
+    val next get() = neighbours.firstOrNull()
+
+    /**
+     * The details of the state. This is the actual content of the state, such as animations, sounds, and dialogue.
+     */
+    val details: StoryBoardDetails
+
+    /**
+     * Determines if the state is complete or not. A complete state is a state that has finished its purpose and is ready
+     * to move on to the next state.
+     */
     fun isComplete(): Boolean
+
 }

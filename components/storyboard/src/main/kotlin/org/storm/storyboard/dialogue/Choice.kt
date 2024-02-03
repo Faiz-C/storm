@@ -1,6 +1,6 @@
 package org.storm.storyboard.dialogue
 
 data class Choice(
-    val stateId: String,
+    val next: String,
     val option: String
 )

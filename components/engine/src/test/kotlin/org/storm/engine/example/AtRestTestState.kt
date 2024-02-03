@@ -80,7 +80,7 @@ class AtRestTestState : SwitchableState() {
 
   override fun preload(requestQueue: RequestQueue) {
     this.mutableEntities.addAll(listOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4))
-    this.soundManager.add("bgm", MediaSound("music/bgm.mp3", loop = false, resource = true))
+    this.soundManager.add("bgm", MediaSound("music/bgm.mp3", resource = true))
     this.soundManager.adjustAllVolume(0.1)
   }
 

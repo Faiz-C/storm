@@ -1,0 +1,28 @@
+---
+- id: bat-idle
+  type: state-bat-idle
+  neighbours:
+    - bat-right
+    - bat-down
+  details:
+    animation:
+      type: sprite
+      delay: 1
+      loop: -1 # infinite
+      sprites:
+        sheet:
+          file: src/test/resources/animation/bat-sprites.png
+          width: 32
+          height: 32
+        row: 0
+    script:
+      - speaker: bat
+        lines:
+          - "I'm a bat!"
+          - "Which direction should I go?"
+        choices:
+          - option: "Right"
+            next: bat-right
+          - option: "Down"
+            next: bat-down
+...
