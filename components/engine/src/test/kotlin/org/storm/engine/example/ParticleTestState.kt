@@ -85,7 +85,7 @@ class ParticleTestState : SwitchableState() {
   override fun process(actionManager: ActionManager, requestQueue: RequestQueue) {
     super.process(actionManager, requestQueue)
 
-    if (actionManager.isPerforming(KeyActionConstants.SPACE)) {
+    if (actionManager.isActive(KeyActionConstants.SPACE)) {
       requestQueue.submit(TogglePhysicsRequest(false))
     }
   }

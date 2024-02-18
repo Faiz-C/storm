@@ -1,80 +1,77 @@
 package org.storm.core.asset
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
-import org.storm.core.asset.loaders.AssetLoader
-import org.storm.core.asset.loaders.ImageAssetLoader
-import org.storm.core.asset.loaders.JsonAssetLoader
-import org.storm.core.asset.loaders.YamlAssetLoader
+import org.storm.core.asset.source.AssetSource
+import org.storm.core.asset.source.loaders.AssetLoader
 import org.storm.core.exception.AssetException
-import java.io.File
 import java.time.Duration
 
 class AssetManager(
     maxCacheSize: Long = 3000,
     cacheTtl: Duration = Duration.ofMinutes(10),
-    private val assetDir: String = "assets",
     private val useCache: Boolean = true,
 ) {
 
-    companion object {
-        private val ASSET_LOADERS = mutableListOf(
-            JsonAssetLoader(),
-            YamlAssetLoader(),
-            ImageAssetLoader()
-        )
-
-        private val loadableExtensions get() = ASSET_LOADERS.flatMap { it.extensions }
-
-        fun registerLoader(loader: AssetLoader) {
-            ASSET_LOADERS.add(loader)
-        }
-    }
+    // A map of asset loaders for each storage source
+    private val assetSources: MutableMap<String, AssetSource> = mutableMapOf()
 
     // A cache which links asset paths to their loaded objects
-    private val cache: Cache<String, Any> = Caffeine.newBuilder()
+    private val assetCache: Cache<String, Any> = Caffeine.newBuilder()
         .maximumSize(maxCacheSize)
         .expireAfterWrite(cacheTtl)
         .build()
 
+    fun registerSource(source: AssetSource) {
+        assetSources[source.id] = source
+    }
+
+    fun registerLoader(assetSourceId: String, assetLoader: AssetLoader) {
+        val existingSource = assetSources[assetSourceId]
+            ?: throw AssetException("No AssetSource found for id $assetSourceId")
+
+        assetSources[assetSourceId] = existingSource.copy(loaders = existingSource.loaders.plus(assetLoader))
+    }
+
     @Suppress("UNCHECKED_CAST")
-    fun <T> getAsset(assetName: String, clazz: Class<T>, assetSubDir: String = "", assetExt: String = ""): T {
-
-        // Build the full asset path
-        val assetPathWithoutExt = "$assetDir${File.separator}${if (assetSubDir.isBlank()) "" else "$assetSubDir${File.separator}"}$assetName"
-        val assetPath = if (assetExt.isBlank()) {
-            // Best effort to find the correct extension using the registered loaders if no extension is provided
-            val ext = loadableExtensions.firstOrNull { ext ->
-                val path = "$assetPathWithoutExt.$ext"
-                File(path).exists()
-            } ?: throw AssetException("No extension provided and no file with name $assetName exists with supported file extensions $loadableExtensions.")
-
-            "$assetPathWithoutExt.$ext"
+    fun <T> getAsset(
+        assetId: String,
+        sourceId: String,
+        typeRef: TypeReference<T>,
+        updateContext: (MutableMap<String, String>) -> Unit = {}
+    ): T {
+        val cached = if (useCache) {
+            assetCache.getIfPresent(assetId) as? T
         } else {
-            "$assetPathWithoutExt.$assetExt"
+            null
         }
 
-        return if (useCache) {
-            return cache.get(assetName) {
-                loadAsset(assetPath, clazz)
+        return cached ?: run {
+            val source = assetSources[sourceId]
+                ?: throw AssetException("No AssetSource found for id $sourceId")
+
+            val context = source.contextBuilder
+                .build()
+                .toMutableMap()
+
+            updateContext(context)
+
+            val loader = assetSources[sourceId]?.loaders?.firstOrNull {
+                it.supports(assetId, context)
+            } ?: throw AssetException("No AssetLoader found for source $sourceId which supports loading asset with id $assetId and context: $context")
+
+            assetCache.get(assetId) {
+                loader.load(assetId, context, typeRef)
             } as T
-        } else {
-            loadAsset(assetPath, clazz)
         }
     }
 
-    fun addAssets(assetName: String, vararg asset: Any) {
-        asset.forEach {
-            cache.put(assetName, it)
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun <T> loadAsset(assetPath: String, clazz: Class<T>): T {
-        val assetExt = assetPath.substringAfterLast(".")
-        val loader = ASSET_LOADERS.find { it.extensions.contains(assetExt) }
-            ?: throw AssetException("No loader found for asset type ${assetExt}.")
-
-        return loader.load(assetPath, clazz) as T
+    inline fun <reified T> getAsset(
+        assetId: String,
+        sourceId: String,
+        noinline updateContext: (MutableMap<String, String>) -> Unit = {}
+    ): T {
+        return getAsset(assetId, sourceId, object: TypeReference<T>() {}, updateContext)
     }
 }

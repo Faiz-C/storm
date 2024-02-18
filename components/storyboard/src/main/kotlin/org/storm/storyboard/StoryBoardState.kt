@@ -27,10 +27,10 @@ interface StoryBoardState: Renderable, Updatable, Processor {
     val type: String
 
     /**
-     * The set of neighbouring states. This is a directed graph, so the neighbours are the states that can be navigated to
+     * The list of neighbouring states. This is a directed graph, so the neighbours are the states that can be navigated to
      * from this state.
      */
-    val neighbours: Set<String>
+    val neighbours: List<String>
 
     /**
      * Determines if the state is disabled or not. A disabled state cannot be navigated to.

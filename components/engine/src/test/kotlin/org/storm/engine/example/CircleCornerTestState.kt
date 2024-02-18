@@ -6,7 +6,6 @@ import org.storm.engine.request.RequestQueue
 import org.storm.engine.request.types.TogglePhysicsRequest
 import org.storm.physics.constants.Vectors
 import org.storm.physics.entity.Entity
-import org.storm.physics.math.Vector
 import org.storm.physics.math.geometry.shapes.Circle
 import org.storm.sound.types.MediaSound
 
@@ -50,13 +49,13 @@ class CircleCornerTestState : SwitchableState() {
   override fun process(actionManager: ActionManager, requestQueue: RequestQueue) {
     super.process(actionManager, requestQueue)
 
-    this.player.velocity = if (actionManager.isPerforming(KeyActionConstants.W)) {
+    this.player.velocity = if (actionManager.isActive(KeyActionConstants.W)) {
       Vectors.UNIT_NORTH.scale(this.player.speed)
-    } else if (actionManager.isPerforming(KeyActionConstants.S)) {
+    } else if (actionManager.isActive(KeyActionConstants.S)) {
       Vectors.UNIT_SOUTH.scale(this.player.speed)
-    } else if (actionManager.isPerforming(KeyActionConstants.D)) {
+    } else if (actionManager.isActive(KeyActionConstants.D)) {
       Vectors.UNIT_EAST.scale(this.player.speed)
-    } else if (actionManager.isPerforming(KeyActionConstants.A)) {
+    } else if (actionManager.isActive(KeyActionConstants.A)) {
       Vectors.UNIT_WEST.scale(this.player.speed)
     } else {
       Vectors.ZERO_VECTOR

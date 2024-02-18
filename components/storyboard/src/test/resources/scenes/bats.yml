@@ -1,9 +1,7 @@
 ---
 - id: bat-idle
   type: state-bat-idle
-  neighbours:
-    - bat-right
-    - bat-down
+  neighbours: []
   details:
     animation:
       type: sprite
@@ -21,8 +19,6 @@
           - "I'm a bat!"
           - "Which direction should I go?"
         choices:
-          - option: "Right"
-            next: bat-right
-          - option: "Down"
-            next: bat-down
+          - "Right"
+          - "Down"
 ...

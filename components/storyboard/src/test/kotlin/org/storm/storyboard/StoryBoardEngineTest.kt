@@ -1,16 +1,14 @@
 package org.storm.storyboard
 
 import javafx.application.Application
-import javafx.scene.canvas.Canvas
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.runBlocking
 import org.storm.core.asset.AssetManager
+import org.storm.core.asset.source.AssetSource
+import org.storm.core.asset.source.context.LocalStorageAssetContextBuilder
+import org.storm.core.asset.source.loaders.localstorage.YamlLocalStorageAssetLoader
 import org.storm.core.input.Translator
-import org.storm.core.input.action.ActionManager
 import org.storm.core.input.action.SimpleActionManager
 import org.storm.core.ui.Resolution
 import org.storm.core.ui.Window
@@ -20,8 +18,24 @@ import java.nio.file.Paths
 class StoryBoardEngineTest: Application() {
 
     override fun start(stage: Stage) {
-        val resourceDir = Paths.get("components", "storyboard", "src", "test", "resources")
-        val engine = StoryBoardEngine(assetManager = AssetManager(assetDir = resourceDir.toString()))
+        val resourceDir = Paths.get("components", "storyboard", "src", "test", "resources", "scenes")
+
+        val assetManager = AssetManager()
+        val assetContextBuilder = LocalStorageAssetContextBuilder(resourceDir.toString(), "yml")
+
+        assetManager.registerSource(AssetSource(
+            "local-storage",
+            assetContextBuilder,
+            listOf(
+                YamlLocalStorageAssetLoader()
+            )
+        ))
+
+        val story: StoryBoardState = assetManager.getAsset("bat-singular", "local-storage")
+        println(story)
+
+        val engine = StoryBoardEngine(assetManager = assetManager, assetSourceId = "local-storage")
+        engine.loadScene("bats")
 
         val window = Window(Resolution.SD)
 
@@ -51,9 +65,15 @@ class StoryBoardEngineTest: Application() {
         })
 
         simulator.simulate()
+
         stage.scene = window
         stage.show()
     }
 
+}
+
+
+fun main(args: Array<String>) {
+    Application.launch(StoryBoardEngineTest::class.java, *args)
 }
 

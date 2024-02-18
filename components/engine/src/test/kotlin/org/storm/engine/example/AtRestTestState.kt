@@ -10,7 +10,6 @@ import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
 import org.storm.sound.types.MediaSound
-import java.util.*
 
 class AtRestTestState : SwitchableState() {
 
@@ -94,7 +93,7 @@ class AtRestTestState : SwitchableState() {
 
   override fun process(actionManager: ActionManager, requestQueue: RequestQueue) {
     super.process(actionManager, requestQueue)
-    if (actionManager.isPerforming(KeyActionConstants.SPACE)) {
+    if (actionManager.isActive(KeyActionConstants.SPACE)) {
       requestQueue.submit(TogglePhysicsRequest(false))
     }
   }

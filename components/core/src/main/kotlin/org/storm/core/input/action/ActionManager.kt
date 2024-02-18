@@ -40,7 +40,7 @@ abstract class ActionManager(
    * @param action wanted action
    * @return true if the action is active, false if action is non-active or isn't being tracked
    */
-  fun isPerforming(action: String): Boolean {
+  fun isActive(action: String): Boolean {
     return state[action] ?: false
   }
 

@@ -1,7 +1,6 @@
 package org.storm.animations.sprite
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import javafx.scene.canvas.GraphicsContext
 import javafx.scene.image.Image
 import org.storm.animations.Animation
