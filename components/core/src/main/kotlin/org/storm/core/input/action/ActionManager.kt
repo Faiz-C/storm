@@ -8,6 +8,8 @@ abstract class ActionManager(
   protected val state: MutableMap<String, Boolean>
 ) {
 
+  // TODO: This needs to handle debouncing or clearing in a way where one input doesn't execute over multiple frames
+
   /**
    * Adds an action to be used within the game
    *

@@ -14,11 +14,12 @@ import org.storm.core.ui.Resolution
 import org.storm.core.ui.Window
 import org.storm.storyboard.helpers.StoryBoardSimulator
 import java.nio.file.Paths
+import kotlin.io.path.absolutePathString
 
 class StoryBoardEngineTest: Application() {
 
     override fun start(stage: Stage) {
-        val resourceDir = Paths.get("components", "storyboard", "src", "test", "resources", "scenes")
+        val resourceDir = Paths.get("src", "test", "resources", "scenes")
 
         val assetManager = AssetManager()
         val assetContextBuilder = LocalStorageAssetContextBuilder(resourceDir.toString(), "yml")
@@ -31,11 +32,9 @@ class StoryBoardEngineTest: Application() {
             )
         ))
 
-        val story: StoryBoardState = assetManager.getAsset("bat-singular", "local-storage")
-        println(story)
-
         val engine = StoryBoardEngine(assetManager = assetManager, assetSourceId = "local-storage")
         engine.loadScene("bats")
+        engine.switchState("bat-start")
 
         val window = Window(Resolution.SD)
 
@@ -43,8 +42,10 @@ class StoryBoardEngineTest: Application() {
 
         val inputTranslator = Translator<KeyEvent, String> { t ->
             when (t.code) {
-                KeyCode.SPACE -> "next"
+                KeyCode.ENTER -> "progress"
                 KeyCode.ESCAPE -> "exit"
+                KeyCode.UP -> "up"
+                KeyCode.DOWN -> "down"
                 else -> ""
             }
         }
@@ -58,6 +59,7 @@ class StoryBoardEngineTest: Application() {
         }
 
         val simulator = StoryBoardSimulator(144.0, {
+            window.clear()
             engine.render(window.graphicsContext, 0.0, 0.0)
         }, { time, elapsedTime ->
             engine.process(actionManager)
@@ -71,7 +73,6 @@ class StoryBoardEngineTest: Application() {
     }
 
 }
-
 
 fun main(args: Array<String>) {
     Application.launch(StoryBoardEngineTest::class.java, *args)

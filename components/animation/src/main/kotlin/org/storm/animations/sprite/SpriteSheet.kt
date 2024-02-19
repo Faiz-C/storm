@@ -42,7 +42,7 @@ class SpriteSheet(
    * @param col column number of the wanted sprite column
    * @return returns all sprites in the wanted column
    */
-  fun col(col: Int): Array<Image> {
+  fun column(col: Int): Array<Image> {
     return this.sprites.indices.map {
       this.sprites[it][col]
     }.toTypedArray()

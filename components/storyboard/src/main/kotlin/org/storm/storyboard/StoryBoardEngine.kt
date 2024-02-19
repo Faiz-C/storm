@@ -12,18 +12,14 @@ import java.util.concurrent.ConcurrentHashMap
 open class StoryBoardEngine(
     protected val assetSourceId: String,
     protected val assetManager: AssetManager = AssetManager(),
-    startState: StoryBoardState? = null,
 ): Renderable, Updatable, Processor {
 
     protected val states: MutableMap<String, StoryBoardState> = ConcurrentHashMap()
-    protected var currentState: StoryBoardState? = startState
+    protected var currentState: StoryBoardState? = null
 
     open fun loadScene(sceneId: String) {
         val scene = assetManager.getAsset<List<StoryBoardState>>(sceneId, sourceId = assetSourceId)
-
-        scene.forEach {
-            states[it.id] = it
-        }
+        setStates(scene.associateBy { it.id })
     }
 
     open fun switchState(stateId: String) {
@@ -44,6 +40,10 @@ open class StoryBoardEngine(
         states.forEach { (k, v) ->
             this.states[k] = v
         }
+    }
+
+    fun clearStates() {
+        states.clear()
     }
 
     override fun process(actionManager: ActionManager) {

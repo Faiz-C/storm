@@ -40,6 +40,7 @@ fun setupJavaFx(exec: JavaExec) {
     sourceSets.main.configure {
       exec.classpath(this.runtimeClasspath.asPath)
     }
+
     sourceSets.test.configure {
       exec.classpath(this.runtimeClasspath.asPath)
     }

@@ -3,6 +3,7 @@ package org.storm.storyboard
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
+import org.storm.core.asset.Asset
 import org.storm.core.input.Processor
 import org.storm.core.render.Renderable
 import org.storm.core.update.Updatable
@@ -25,6 +26,10 @@ interface StoryBoardState: Renderable, Updatable, Processor {
      * The type of state, used to help serialize and deserialize the state using Asset loading.
      */
     val type: String
+        get() {
+            val assetAnnotation = this::class.java.getAnnotation(Asset::class.java)
+            return "${assetAnnotation.type}-${assetAnnotation.impl}"
+        }
 
     /**
      * The list of neighbouring states. This is a directed graph, so the neighbours are the states that can be navigated to
@@ -47,11 +52,6 @@ interface StoryBoardState: Renderable, Updatable, Processor {
      * in the case of multiple neighbours (i.e. a choice).
      */
     val next get() = neighbours.firstOrNull()
-
-    /**
-     * The details of the state. This is the actual content of the state, such as animations, sounds, and dialogue.
-     */
-    val details: StoryBoardDetails
 
     /**
      * Determines if the state is complete or not. A complete state is a state that has finished its purpose and is ready

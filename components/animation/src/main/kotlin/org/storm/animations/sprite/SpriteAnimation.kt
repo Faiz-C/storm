@@ -1,19 +1,15 @@
 package org.storm.animations.sprite
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import javafx.scene.canvas.GraphicsContext
 import javafx.scene.image.Image
 import org.storm.animations.Animation
-import org.storm.animations.serialization.SpriteAnimationDeserializer
 import org.storm.core.asset.Asset
 
 /**
  * A specific type of Animation focusing on the use of 2D Sprites and SpriteSheets.
  */
 @Asset("animation", "sprite")
-@JsonDeserialize(using = SpriteAnimationDeserializer::class)
 class SpriteAnimation(
-  override val type: String = "animation-sprite",
   override val delay: Int,
   override val loops: Int,
   private val sprites: Array<Image>
@@ -22,6 +18,7 @@ class SpriteAnimation(
   private var currentIteration = 0
   private var currentLoop = 0
   private var currentSprite = 0
+
 
   private var hasCompletedOnce = false
 

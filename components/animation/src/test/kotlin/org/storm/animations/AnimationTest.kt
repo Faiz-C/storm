@@ -33,7 +33,6 @@ class AnimationTest : Application() {
   override fun start(primaryStage: Stage) {
     val window = Window(Resolution(320.0, 240.0))
     val spriteSheet = SpriteSheet("src/test/resources/spriteSheet.png", 32, 32)
-
     downSpriteAnimation = SpriteAnimation(sprites = spriteSheet.row(0), delay = 8, loops = Animation.LOOP_INDEFINITELY)
     rightSpriteAnimation = SpriteAnimation(sprites = spriteSheet.row(1), delay = 8, loops = 6)
     upSpriteAnimation = SpriteAnimation(sprites = spriteSheet.row(2), delay = 8, loops = 10)
