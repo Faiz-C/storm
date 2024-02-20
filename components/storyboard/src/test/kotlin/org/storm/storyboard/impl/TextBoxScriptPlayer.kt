@@ -2,11 +2,10 @@ package org.storm.storyboard.impl
 
 import javafx.scene.canvas.GraphicsContext
 import javafx.scene.paint.Color
-import javafx.scene.paint.Paint
 import javafx.scene.text.Font
 import javafx.scene.text.FontSmoothingType
 import javafx.scene.text.FontWeight
-import org.storm.core.input.action.ActionManager
+import org.storm.core.input.ActionState
 import org.storm.core.ui.Resolution
 import org.storm.storyboard.dialogue.Script
 import org.storm.storyboard.dialogue.player.ScriptPlayer
@@ -76,19 +75,19 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
         }
     }
 
-    override fun process(actionManager: ActionManager) {
-        if (actionManager.isActive("progress") && !makingChoice) {
+    override fun process(actionState: ActionState) {
+        if (actionState.isFirstTrigger("progress") && !makingChoice) {
             if (currentLength < line.length) {
                 currentLength = line.length - 1
             } else {
                 currentLength = 0
                 this.progress()
             }
-        } else if (actionManager.isActive("up") && makingChoice) {
+        } else if (actionState.isFirstTrigger("up") && makingChoice) {
             currentChoice = (currentChoice - 1).coerceAtLeast(0)
-        } else if (actionManager.isActive("down") && makingChoice) {
+        } else if (actionState.isFirstTrigger("down") && makingChoice) {
             currentChoice = (currentChoice + 1).coerceAtMost(script.choices.size - 1)
-        } else if (actionManager.isActive("progress") && makingChoice) {
+        } else if (actionState.isFirstTrigger("progress") && makingChoice) {
             choiceMade = true
         }
     }

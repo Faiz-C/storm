@@ -6,9 +6,8 @@ import org.storm.animations.Animation
 import org.storm.animations.sprite.SpriteAnimation
 import org.storm.animations.sprite.SpriteSheet
 import org.storm.core.asset.Asset
-import org.storm.core.input.action.ActionManager
+import org.storm.core.input.ActionState
 import org.storm.storyboard.StoryBoardState
-import org.storm.storyboard.dialogue.Dialogue
 import org.storm.storyboard.dialogue.Script
 
 @Asset("state", "bat-adventure")
@@ -49,8 +48,8 @@ class BatState(
         scriptPlayer.update(time, elapsedTime)
     }
 
-    override fun process(actionManager: ActionManager) {
-        scriptPlayer.process(actionManager)
+    override fun process(actionState: ActionState) {
+        scriptPlayer.process(actionState)
     }
 
     private fun getSprites(): Array<Image> {

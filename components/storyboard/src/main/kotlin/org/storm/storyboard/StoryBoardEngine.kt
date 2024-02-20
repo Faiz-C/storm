@@ -2,8 +2,8 @@ package org.storm.storyboard
 
 import javafx.scene.canvas.GraphicsContext
 import org.storm.core.asset.AssetManager
-import org.storm.core.input.Processor
-import org.storm.core.input.action.ActionManager
+import org.storm.core.input.ActionStateProcessor
+import org.storm.core.input.ActionState
 import org.storm.core.render.Renderable
 import org.storm.core.update.Updatable
 import org.storm.storyboard.exception.StoryBoardEngineException
@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap
 open class StoryBoardEngine(
     protected val assetSourceId: String,
     protected val assetManager: AssetManager = AssetManager(),
-): Renderable, Updatable, Processor {
+): Renderable, Updatable, ActionStateProcessor {
 
     protected val states: MutableMap<String, StoryBoardState> = ConcurrentHashMap()
     protected var currentState: StoryBoardState? = null
@@ -23,8 +23,6 @@ open class StoryBoardEngine(
     }
 
     open fun switchState(stateId: String) {
-        val previousState = currentState
-
         val nextState = states[stateId]
             ?: throw StoryBoardEngineException("Failed to switch state from ${currentState?.id} to $stateId. No state found for id $stateId.")
 
@@ -46,8 +44,8 @@ open class StoryBoardEngine(
         states.clear()
     }
 
-    override fun process(actionManager: ActionManager) {
-        currentState?.process(actionManager)
+    override fun process(actionState: ActionState) {
+        currentState?.process(actionState)
     }
 
     override fun render(gc: GraphicsContext, x: Double, y: Double) {

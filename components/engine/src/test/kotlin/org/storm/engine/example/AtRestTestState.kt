@@ -1,6 +1,6 @@
 package org.storm.engine.example
 
-import org.storm.core.input.action.ActionManager
+import org.storm.core.input.ActionState
 import org.storm.core.ui.Resolution
 import org.storm.engine.KeyActionConstants
 import org.storm.engine.request.RequestQueue
@@ -91,9 +91,9 @@ class AtRestTestState : SwitchableState() {
     soundManager.play("bgm")
   }
 
-  override fun process(actionManager: ActionManager, requestQueue: RequestQueue) {
-    super.process(actionManager, requestQueue)
-    if (actionManager.isActive(KeyActionConstants.SPACE)) {
+  override fun process(actionState: ActionState, requestQueue: RequestQueue) {
+    super.process(actionState, requestQueue)
+    if (actionState.isFirstTrigger(KeyActionConstants.SPACE)) {
       requestQueue.submit(TogglePhysicsRequest(false))
     }
   }

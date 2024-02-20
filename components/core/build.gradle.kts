@@ -1,7 +1,7 @@
 version = "1.1.0"
 
 javafx {
-  version = "18.0.1"
+  version = "20.0.2"
   modules("javafx.controls", "javafx.graphics")
 }
 

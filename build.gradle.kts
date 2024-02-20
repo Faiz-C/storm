@@ -1,17 +1,17 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version("1.8.0")
-  id("org.openjfx.javafxplugin") version ("0.0.13")
+  kotlin("jvm") version("1.9.22")
+  id("org.openjfx.javafxplugin") version ("0.1.0")
 }
 
 javafx {
-  version = "18.0.1"
+  version = "20.0.2"
   modules("javafx.controls", "javafx.graphics", "javafx.media")
 }
 
 tasks.wrapper {
-  gradleVersion = "7.6"
+  gradleVersion = "8.6"
   distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -23,15 +23,15 @@ allprojects {
   apply(plugin = "org.jetbrains.kotlin.jvm")
 
   group = "org.storm"
-  buildDir = File("${rootProject.projectDir}${File.separator}build", project.name)
+  layout.buildDirectory.set(File("${rootProject.projectDir}${File.separator}build", project.name))
 
   repositories {
     mavenCentral()
   }
 
   java {
-    sourceCompatibility = JavaVersion.VERSION_18
-    targetCompatibility = JavaVersion.VERSION_18
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
   }
 
   dependencies {
@@ -56,7 +56,7 @@ allprojects {
 
   tasks {
     withType<KotlinCompile> {
-      kotlinOptions.jvmTarget = "18"
+      kotlinOptions.jvmTarget = "21"
     }
   }
 }

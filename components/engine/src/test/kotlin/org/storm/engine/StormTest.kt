@@ -14,7 +14,7 @@ class StormTest : Application() {
     stormEngine.addState(KeyActionConstants.THREE, ParticleTestState())
     stormEngine.addState(KeyActionConstants.FOUR, CircleCornerTestState())
 
-    stormEngine.addKeyTranslator(TranslatorImpl())
+    stormEngine.addKeyTranslator(ActionTranslatorImpl())
     stormEngine.fpsChangeAllow = false
 
     stormEngine.swapState(KeyActionConstants.THREE)

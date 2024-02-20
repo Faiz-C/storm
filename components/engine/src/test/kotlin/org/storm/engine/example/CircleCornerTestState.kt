@@ -1,6 +1,6 @@
 package org.storm.engine.example
 
-import org.storm.core.input.action.ActionManager
+import org.storm.core.input.ActionState
 import org.storm.engine.KeyActionConstants
 import org.storm.engine.request.RequestQueue
 import org.storm.engine.request.types.TogglePhysicsRequest
@@ -46,16 +46,16 @@ class CircleCornerTestState : SwitchableState() {
     soundManager.pause("bgm")
   }
 
-  override fun process(actionManager: ActionManager, requestQueue: RequestQueue) {
-    super.process(actionManager, requestQueue)
+  override fun process(actionState: ActionState, requestQueue: RequestQueue) {
+    super.process(actionState, requestQueue)
 
-    this.player.velocity = if (actionManager.isActive(KeyActionConstants.W)) {
+    this.player.velocity = if (actionState.isFirstTrigger(KeyActionConstants.W)) {
       Vectors.UNIT_NORTH.scale(this.player.speed)
-    } else if (actionManager.isActive(KeyActionConstants.S)) {
+    } else if (actionState.isFirstTrigger(KeyActionConstants.S)) {
       Vectors.UNIT_SOUTH.scale(this.player.speed)
-    } else if (actionManager.isActive(KeyActionConstants.D)) {
+    } else if (actionState.isFirstTrigger(KeyActionConstants.D)) {
       Vectors.UNIT_EAST.scale(this.player.speed)
-    } else if (actionManager.isActive(KeyActionConstants.A)) {
+    } else if (actionState.isFirstTrigger(KeyActionConstants.A)) {
       Vectors.UNIT_WEST.scale(this.player.speed)
     } else {
       Vectors.ZERO_VECTOR

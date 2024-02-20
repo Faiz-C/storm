@@ -5,7 +5,7 @@ dependencies {
 
   api(project(":components:core"))
   api("org.apache.commons:commons-math3:3.6.1")
-  api("com.google.guava:guava:31.1-jre")
+  api("com.google.guava:guava:33.0.0-jre")
 
   testImplementation("org.mockito:mockito-core:4.10.0")
   testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
@@ -13,7 +13,7 @@ dependencies {
 }
 
 javafx {
-  version = "18.0.1"
+  version = "20.0.2"
   modules("javafx.graphics")
 }
 
@@ -66,22 +66,18 @@ publishing {
 
 fun setupJavaFx(exec: JavaExec) {
   exec.doFirst {
-    // Setup our class paths
-    sourceSets.main.configure {
-      exec.classpath(this.runtimeClasspath.asPath)
-    }
-    sourceSets.test.configure {
-      exec.classpath(this.runtimeClasspath.asPath)
-    }
+    exec.classpath(sourceSets.main.get().runtimeClasspath)
+    exec.classpath(sourceSets.test.get().runtimeClasspath)
 
     // For some reason tasks are ignored by the JavaFx Plugin (because why not) so we have to
     // do what the plugin does ourselves
     exec.jvmArgs = listOf(
       "--module-path", exec.classpath.asPath,
-      "--add-modules", "javafx.graphics"
+      "--add-modules", "javafx.graphics,javafx.media"
     )
   }
 }
+
 
 
 

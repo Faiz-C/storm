@@ -1,16 +1,14 @@
 package org.storm.storyboard.dialogue.player
 
-import org.storm.core.input.Processor
-import org.storm.core.input.action.ActionManager
+import org.storm.core.input.ActionStateProcessor
 import org.storm.core.render.Renderable
 import org.storm.core.update.Updatable
 import org.storm.storyboard.dialogue.Script
-import kotlin.math.max
 import kotlin.math.min
 
 abstract class ScriptPlayer(
     protected val script: Script
-): Updatable, Renderable, Processor {
+): Updatable, Renderable, ActionStateProcessor {
 
     protected var currentDialogue = 0
     protected var currentLine = 0

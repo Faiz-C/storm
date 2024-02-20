@@ -1,6 +1,6 @@
 package org.storm.engine.example
 
-import org.storm.core.input.action.ActionManager
+import org.storm.core.input.ActionState
 import org.storm.core.ui.Resolution
 import org.storm.engine.KeyActionConstants
 import org.storm.engine.request.RequestQueue
@@ -82,10 +82,10 @@ class ParticleTestState : SwitchableState() {
     requestQueue.submit(TogglePhysicsRequest(true))
   }
 
-  override fun process(actionManager: ActionManager, requestQueue: RequestQueue) {
-    super.process(actionManager, requestQueue)
+  override fun process(actionState: ActionState, requestQueue: RequestQueue) {
+    super.process(actionState, requestQueue)
 
-    if (actionManager.isActive(KeyActionConstants.SPACE)) {
+    if (actionState.isFirstTrigger(KeyActionConstants.SPACE)) {
       requestQueue.submit(TogglePhysicsRequest(false))
     }
   }

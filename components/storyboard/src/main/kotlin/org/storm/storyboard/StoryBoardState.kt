@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
 import org.storm.core.asset.Asset
-import org.storm.core.input.Processor
+import org.storm.core.input.ActionStateProcessor
 import org.storm.core.render.Renderable
 import org.storm.core.update.Updatable
 import org.storm.core.asset.serialization.AssetResolver
@@ -15,7 +15,7 @@ import org.storm.core.asset.serialization.AssetResolver
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type", visible = true)
 @JsonTypeIdResolver(AssetResolver::class)
-interface StoryBoardState: Renderable, Updatable, Processor {
+interface StoryBoardState: Renderable, Updatable, ActionStateProcessor {
 
     /**
      * The unique identifier for this state.

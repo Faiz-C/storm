@@ -6,9 +6,9 @@ import javafx.scene.input.MouseEvent
 import kotlinx.coroutines.*
 import kotlinx.coroutines.javafx.JavaFx
 import org.apache.commons.math3.util.FastMath
-import org.storm.core.input.Translator
-import org.storm.core.input.action.ActionManager
-import org.storm.core.input.action.SimpleActionManager
+import org.storm.core.input.ActionTranslator
+import org.storm.core.input.ActionEvent
+import org.storm.core.input.ActionManager
 import org.storm.core.ui.Resolution
 import org.storm.core.ui.Window
 import org.storm.core.utils.onInterval
@@ -27,7 +27,7 @@ import org.storm.physics.transforms.UnitConvertor
 class StormEngine(
   private val resolution: Resolution = Resolution.SD, // Default to 640 x 480
   private val unitConvertor: UnitConvertor = object : UnitConvertor {}, // Default to standard Unit Convertor (1 unit = 10 pixels)
-  private val actionManager: ActionManager = SimpleActionManager(),
+  private val actionManager: ActionManager = ActionManager(),
   val physicsEngine: PhysicsEngine = ImpulseResolutionPhysicsEngine(resolution, unitConvertor),
   renderFps: Int = 60,
   val logicFps: Int = renderFps,
@@ -167,24 +167,36 @@ class StormEngine(
    * Registers the given translator to translate KeyEvents to String actions for the following events:
    * key pressed, key released
    *
-   * @param inputTranslator Translator to use
+   * @param inputActionActionTranslator Translator to use
    */
-  fun addKeyTranslator(inputTranslator: Translator<KeyEvent, String>) {
-    window.onKeyPressed = EventHandler { keyEvent -> actionManager.startUsing(inputTranslator.translate(keyEvent)) }
-    window.onKeyReleased = EventHandler { keyEvent -> actionManager.stopUsing(inputTranslator.translate(keyEvent)) }
+  fun addKeyTranslator(inputActionActionTranslator: ActionTranslator<KeyEvent>) {
+    window.onKeyPressed = EventHandler { keyEvent ->
+      actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(keyEvent), true))
+    }
+    window.onKeyReleased = EventHandler { keyEvent ->
+      actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(keyEvent), true))
+    }
   }
 
   /**
    * Registers the given translator to translate MouseEvents to String actions for the following events:
    * mouse pressed, mouse released, mouse entered, mouse exited
    *
-   * @param inputTranslator Translator to use
+   * @param inputActionActionTranslator Translator to use
    */
-  fun addMouseTranslator(inputTranslator: Translator<MouseEvent, String>) {
-    window.onMousePressed = EventHandler { mouseEvent -> actionManager.startUsing(inputTranslator.translate(mouseEvent)) }
-    window.onMouseReleased = EventHandler { mouseEvent -> actionManager.stopUsing(inputTranslator.translate(mouseEvent)) }
-    window.onMouseEntered = EventHandler { mouseEvent -> actionManager.startUsing(inputTranslator.translate(mouseEvent)) }
-    window.onMouseExited = EventHandler { mouseEvent -> actionManager.stopUsing(inputTranslator.translate(mouseEvent)) }
+  fun addMouseTranslator(inputActionActionTranslator: ActionTranslator<MouseEvent>) {
+    window.onMousePressed = EventHandler { mouseEvent ->
+      actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), true))
+    }
+    window.onMouseReleased = EventHandler { mouseEvent ->
+      actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), false))
+    }
+    window.onMouseEntered = EventHandler { mouseEvent ->
+      actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), true))
+    }
+    window.onMouseExited = EventHandler { mouseEvent ->
+      actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), false))
+    }
   }
 
   /**
@@ -218,7 +230,9 @@ class StormEngine(
     }
 
     // Process Input
-    this.currentState!!.process(this.actionManager.readonly, this.requestQueue)
+    this.actionManager.getStateSnapshot()?.let {
+      this.currentState!!.process(it, this.requestQueue)
+    }
 
     // Then allow the state to do any internal updating
     this.currentState!!.update(toSeconds(this.lastUpdateTime), toSeconds(elapsedFrameTime))

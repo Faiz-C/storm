@@ -8,13 +8,13 @@ import org.storm.core.asset.AssetManager
 import org.storm.core.asset.source.AssetSource
 import org.storm.core.asset.source.context.LocalStorageAssetContextBuilder
 import org.storm.core.asset.source.loaders.localstorage.YamlLocalStorageAssetLoader
-import org.storm.core.input.Translator
-import org.storm.core.input.action.SimpleActionManager
+import org.storm.core.input.ActionTranslator
+import org.storm.core.input.ActionEvent
+import org.storm.core.input.ActionManager
 import org.storm.core.ui.Resolution
 import org.storm.core.ui.Window
 import org.storm.storyboard.helpers.StoryBoardSimulator
 import java.nio.file.Paths
-import kotlin.io.path.absolutePathString
 
 class StoryBoardEngineTest: Application() {
 
@@ -38,9 +38,9 @@ class StoryBoardEngineTest: Application() {
 
         val window = Window(Resolution.SD)
 
-        val actionManager = SimpleActionManager()
+        val actionManager = ActionManager()
 
-        val inputTranslator = Translator<KeyEvent, String> { t ->
+        val inputActionActionTranslator = ActionTranslator<KeyEvent> { t ->
             when (t.code) {
                 KeyCode.ENTER -> "progress"
                 KeyCode.ESCAPE -> "exit"
@@ -51,20 +51,20 @@ class StoryBoardEngineTest: Application() {
         }
 
         window.addKeyPressedHandler {
-            actionManager.startUsing(inputTranslator.translate(it))
+            actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(it), true))
         }
 
         window.addKeyReleasedHandler {
-            actionManager.stopUsing(inputTranslator.translate(it))
+            actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(it), false))
         }
 
         val simulator = StoryBoardSimulator(144.0, {
             window.clear()
             engine.render(window.graphicsContext, 0.0, 0.0)
-        }, { time, elapsedTime ->
-            engine.process(actionManager)
+        }) { time, elapsedTime ->
+            engine.process(actionManager.getStateSnapshot())
             engine.update(time, elapsedTime)
-        })
+        }
 
         simulator.simulate()
 
