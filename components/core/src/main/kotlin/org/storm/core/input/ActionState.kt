@@ -27,7 +27,7 @@ data class ActionState(
      * @return true if the action is active and it has only been triggered once
      */
     fun isFirstTrigger(action: String): Boolean {
-        return activeActions[action]?.let { it.triggers == 1 } ?: false
+        return activeActions[action]?.let { it.triggers == 1 && it.activeSnapshots == 1 } ?: false
     }
 
     /**

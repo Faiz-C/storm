@@ -7,8 +7,10 @@ import org.storm.animations.sprite.SpriteAnimation
 import org.storm.animations.sprite.SpriteSheet
 import org.storm.core.asset.Asset
 import org.storm.core.input.ActionState
+import org.storm.core.ui.Resolution
 import org.storm.storyboard.StoryBoardState
-import org.storm.storyboard.dialogue.Script
+import org.storm.storyboard.dialogue.script.Script
+import kotlin.math.abs
 
 @Asset("state", "bat-adventure")
 class BatState(
@@ -19,14 +21,22 @@ class BatState(
     script: Script,
 ) : StoryBoardState {
 
+    companion object {
+        private const val MOVEMENT_SPEED = 4.0 // px
+        private const val X_BOUNDARY = 80.0 // px away from each side
+        private const val Y_TOP_BOUNDARY = 20.0 // px away from each side
+        private const val Y_BOTTOM_BOUNDARY = 250.0 // px away from each side
+
+        private var batX = X_BOUNDARY
+        private var batY = Y_TOP_BOUNDARY
+    }
+
     private val scriptPlayer = TextBoxScriptPlayer(script)
     private val animation = SpriteAnimation(8, Animation.LOOP_INDEFINITELY, getSprites())
 
-    private var dx = 0.0
-    private var dy = 0.0
-
     private val movementFrameDelay = 5
     private var currentFrame = 0
+    private var movementComplete = animationType == "idle"
 
     override val next: String? get() = if (scriptPlayer.isChoiceRequired()) {
         scriptPlayer.choice?.let { neighbours.getOrNull(it) }
@@ -35,15 +45,27 @@ class BatState(
     }
 
     override fun isComplete(): Boolean {
-        return animation.isComplete() && scriptPlayer.isComplete()
+        return movementComplete && animation.isComplete() && scriptPlayer.isComplete()
     }
 
+    override fun reset() {
+        scriptPlayer.reset()
+        animation.reset()
+        movementComplete = false
+        currentFrame = 0
+   }
+
     override fun render(gc: GraphicsContext, x: Double, y: Double) {
-        animation.render(gc, 60.0 + dx, 20.0 + dy)
+        animation.render(gc, x + batX, y + batY)
         scriptPlayer.render(gc, x, y)
     }
 
     override fun update(time: Double, elapsedTime: Double) {
+        if (currentFrame++ < movementFrameDelay) {
+            updateMovementDeltas(animationType)
+            currentFrame = 0
+        }
+
         animation.update(time, elapsedTime)
         scriptPlayer.update(time, elapsedTime)
     }
@@ -64,23 +86,29 @@ class BatState(
         }
     }
 
-    private fun move(direction: String) {
+    private fun updateMovementDeltas(direction: String) {
+        // Because this is just for testing we can hardcode this
+        val (screenWidth, screenHeight) = Resolution.SD
+
         when (direction) {
             "up" -> {
-                dx = 0.0
-                dy = -1.0
+                batY = (batY - MOVEMENT_SPEED).coerceAtLeast(Y_TOP_BOUNDARY)
+                movementComplete = batY >= Y_TOP_BOUNDARY
             }
             "down" -> {
-                dx = 0.0
-                dy = 1.0
+                batY = (batY + MOVEMENT_SPEED).coerceAtMost(screenHeight - Y_BOTTOM_BOUNDARY)
+                movementComplete = batY <= screenHeight - Y_TOP_BOUNDARY
             }
             "left" -> {
-                dx = -1.0
-                dy = 0.0
+                batX = (batX - MOVEMENT_SPEED).coerceAtLeast(X_BOUNDARY)
+                movementComplete = batX <= X_BOUNDARY
             }
             "right" -> {
-                dx = 1.0
-                dy = 0.0
+                batX += MOVEMENT_SPEED
+                movementComplete = batX >= screenWidth - X_BOUNDARY
+            }
+            "idle" -> {
+                movementComplete = true
             }
         }
     }

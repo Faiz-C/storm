@@ -1,35 +1,142 @@
 ---
-- id: bat-start
+- id: top-left
   type: state-bat-adventure
   neighbours:
-    - bat-moving-right
-    - bat-moving-down
+    - top-left-to-top-right
+    - top-left-to-bottom-left
   animationType: idle
   script:
     dialogue:
       - speaker: Bat
         lines:
-          - "I'm a bat!"
+          - "I'm top left!"
           - "Which direction should I go?"
     choices:
       - "Right"
       - "Down"
-- id: bat-moving-right
+- id: top-right
   type: state-bat-adventure
-  neighbours: []
+  neighbours:
+    - top-right-to-top-left
+    - top-right-to-bottom-right
+  animationType: idle
+  script:
+    dialogue:
+      - speaker: Bat
+        lines:
+          - "I'm top right!"
+          - "Which direction should I go?"
+    choices:
+      - "Left"
+      - "Down"
+- id: bottom-left
+  type: state-bat-adventure
+  neighbours:
+    - bottom-left-to-bottom-right
+    - bottom-left-to-top-left
+  animationType: idle
+  script:
+    dialogue:
+      - speaker: Bat
+        lines:
+          - "I'm bottom left!"
+          - "Which direction should I go?"
+    choices:
+      - "Right"
+      - "Up"
+- id: bottom-right
+  type: state-bat-adventure
+  neighbours:
+    - bottom-right-to-bottom-left
+    - bottom-right-to-top-right
+  animationType: idle
+  script:
+    dialogue:
+      - speaker: Bat
+        lines:
+          - "I'm bottom right!"
+          - "Which direction should I go?"
+    choices:
+      - "Left"
+      - "Up"
+- id: top-left-to-top-right
+  type: state-bat-adventure
+  neighbours:
+    - top-right
   animationType: right
   script:
     dialogue:
       - speaker: Bat
         lines:
           - "Moving right!"
-- id: bat-moving-down
+- id: top-left-to-bottom-left
   type: state-bat-adventure
-  neighbours: []
+  neighbours:
+    - bottom-left
   animationType: down
   script:
     dialogue:
       - speaker: Bat
         lines:
           - "Moving down!"
+- id: top-right-to-top-left
+  type: state-bat-adventure
+  neighbours:
+    - top-left
+  animationType: left
+  script:
+    dialogue:
+      - speaker: Bat
+        lines:
+          - "Moving left!"
+- id: top-right-to-bottom-right
+  type: state-bat-adventure
+  neighbours:
+    - bottom-right
+  animationType: down
+  script:
+    dialogue:
+      - speaker: Bat
+        lines:
+          - "Moving down!"
+- id: bottom-left-to-top-left
+  type: state-bat-adventure
+  neighbours:
+    - top-left
+  animationType: up
+  script:
+    dialogue:
+      - speaker: Bat
+        lines:
+          - "Moving up!"
+- id: bottom-left-to-bottom-right
+  type: state-bat-adventure
+  neighbours:
+    - bottom-right
+  animationType: right
+  script:
+    dialogue:
+      - speaker: Bat
+        lines:
+          - "Moving right!"
+- id: bottom-right-to-top-right
+  type: state-bat-adventure
+  neighbours:
+    - top-right
+  animationType: up
+  script:
+    dialogue:
+      - speaker: Bat
+        lines:
+          - "Moving up!"
+- id: bottom-right-to-bottom-left
+  type: state-bat-adventure
+  neighbours:
+    - bottom-left
+  animationType: left
+  script:
+    dialogue:
+      - speaker: Bat
+        lines:
+          - "Moving left!"
 ...

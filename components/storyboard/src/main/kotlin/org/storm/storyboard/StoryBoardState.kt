@@ -59,4 +59,9 @@ interface StoryBoardState: Renderable, Updatable, ActionStateProcessor {
      */
     fun isComplete(): Boolean
 
+    /**
+     * Resets the state to its initial state.
+     */
+    fun reset()
+
 }

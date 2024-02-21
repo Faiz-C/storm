@@ -7,8 +7,8 @@ import javafx.scene.text.FontSmoothingType
 import javafx.scene.text.FontWeight
 import org.storm.core.input.ActionState
 import org.storm.core.ui.Resolution
-import org.storm.storyboard.dialogue.Script
-import org.storm.storyboard.dialogue.player.ScriptPlayer
+import org.storm.storyboard.dialogue.script.Script
+import org.storm.storyboard.dialogue.script.player.ScriptPlayer
 
 /**
  * This is a TEST script player that is used to simulate a dialogue box in the StoryBoardEngineTest.
@@ -17,12 +17,19 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
 
     companion object {
         private const val TEXT_BOX_HEIGHT = 120.0 // pixels
-        private const val TEXT_FRAME_DELAY = 10 // number of frames to wait before adding the next character to the screen
+        private const val TEXT_FRAME_DELAY = 5 // number of frames to wait before adding the next character to the screen
     }
 
     private var screenText = ""
     private var currentFrame = 0
     private var currentLength = 0
+
+    override fun reset() {
+        screenText = ""
+        currentFrame = 0
+        currentLength = 0
+        super.reset()
+    }
 
     override fun update(time: Double, elapsedTime: Double) {
         if (currentFrame++ >= TEXT_FRAME_DELAY) {
@@ -60,7 +67,7 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
         // Draw the current line of dialogue
         gc.fillText(screenText, 5.0, screenHeight - TEXT_BOX_HEIGHT + 25.0)
 
-        if (!makingChoice) return
+        if (scriptState != Script.State.MAKING_CHOICE) return
 
         // Draw choices
         script.choices.forEachIndexed { i, choice ->
@@ -76,19 +83,19 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
     }
 
     override fun process(actionState: ActionState) {
-        if (actionState.isFirstTrigger("progress") && !makingChoice) {
+        if (actionState.isFirstTrigger("progress")) {
             if (currentLength < line.length) {
                 currentLength = line.length - 1
-            } else {
+            } else if (!isDialogueComplete()) {
                 currentLength = 0
                 this.progress()
+            } else {
+                this.progress()
             }
-        } else if (actionState.isFirstTrigger("up") && makingChoice) {
+        } else if (actionState.isFirstTrigger("up") && scriptState == Script.State.MAKING_CHOICE) {
             currentChoice = (currentChoice - 1).coerceAtLeast(0)
-        } else if (actionState.isFirstTrigger("down") && makingChoice) {
+        } else if (actionState.isFirstTrigger("down") && scriptState == Script.State.MAKING_CHOICE) {
             currentChoice = (currentChoice + 1).coerceAtMost(script.choices.size - 1)
-        } else if (actionState.isFirstTrigger("progress") && makingChoice) {
-            choiceMade = true
         }
     }
 }

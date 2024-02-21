@@ -1,6 +1,10 @@
 package org.storm.storyboard
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import javafx.scene.canvas.GraphicsContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
 import org.storm.core.asset.AssetManager
 import org.storm.core.input.ActionStateProcessor
 import org.storm.core.input.ActionState
@@ -30,7 +34,9 @@ open class StoryBoardEngine(
            throw StoryBoardEngineException("Failed to switch state from ${currentState?.id} to $stateId. State $stateId is disabled.")
         }
 
-        currentState = nextState
+        currentState = nextState.also {
+            it.reset()
+        }
     }
 
     fun setStates(states: Map<String, StoryBoardState>) {

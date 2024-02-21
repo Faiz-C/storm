@@ -34,7 +34,7 @@ class StoryBoardEngineTest: Application() {
 
         val engine = StoryBoardEngine(assetManager = assetManager, assetSourceId = "local-storage")
         engine.loadScene("bats")
-        engine.switchState("bat-start")
+        engine.switchState("top-left")
 
         val window = Window(Resolution.SD)
 
@@ -73,8 +73,3 @@ class StoryBoardEngineTest: Application() {
     }
 
 }
-
-fun main(args: Array<String>) {
-    Application.launch(StoryBoardEngineTest::class.java, *args)
-}
-
