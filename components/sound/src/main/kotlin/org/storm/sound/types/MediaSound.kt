@@ -9,47 +9,55 @@ import java.nio.file.Paths
 
 /**
  * A Sound implementation which uses a Javax MediaPlayer
+ * TODO: revisit as an asset
  */
 class MediaSound(
-  path: String,
-  loop: Boolean = false,
-  resource: Boolean = true,
-  private val loopCount: Int? = null,
+    path: String,
+    resource: Boolean = true,
+    override val delay: Int = 0,
+    override val loops: Int = 1,
 ) : Sound {
 
-  companion object {
-    private val logger = LoggerFactory.getLogger(MediaSound::class.java)
-  }
-
-  private val sound: MediaPlayer = run {
-    val uri = if (resource) {
-      logger.debug("loading sound file $path from resources")
-      javaClass.classLoader.getResource(path)
-        ?: throw SoundException("failed to find $path in resources")
-    } else {
-      logger.debug("loading sound file $path from file system")
-      Paths.get(path).toUri()
+    companion object {
+        private val logger = LoggerFactory.getLogger(MediaSound::class.java)
     }
 
-    MediaPlayer(Media(uri.toString())).also {
-      it.cycleCount = if (loop) MediaPlayer.INDEFINITE else loopCount ?: 1
-      it.onError = Runnable { logger.error("error occurred with background music") }
+    private var hasCompletedOnce = false
+
+    private val sound: MediaPlayer = run {
+        val uri = if (resource) {
+            logger.debug("loading sound file $path from resources")
+            javaClass.classLoader.getResource(path)
+                ?: throw SoundException("failed to find $path in resources")
+        } else {
+            logger.debug("loading sound file $path from file system")
+            Paths.get(path).toUri()
+        }
+
+        MediaPlayer(Media(uri.toString())).also {
+            it.cycleCount = if (loops == Sound.LOOP_INDEFINITELY) MediaPlayer.INDEFINITE else loops
+            it.onRepeat = Runnable { hasCompletedOnce = true }
+            it.onError = Runnable { logger.error("error occurred with sound from file $path") }
+        }
     }
-  }
 
-  override fun play() {
-    sound.play()
-  }
+    override fun play() {
+        sound.play()
+    }
 
-  override fun pause() {
-    sound.pause()
-  }
+    override fun pause() {
+        sound.pause()
+    }
 
-  override fun stop() {
-    sound.stop()
-  }
+    override fun stop() {
+        sound.stop()
+    }
 
-  override fun adjustVolume(volume: Double) {
-    sound.volume = volume
-  }
+    override fun adjustVolume(volume: Double) {
+        sound.volume = volume
+    }
+
+    override fun isComplete(): Boolean {
+        return sound.status == MediaPlayer.Status.STOPPED || (loops == Sound.LOOP_INDEFINITELY && hasCompletedOnce)
+    }
 }

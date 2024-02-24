@@ -7,11 +7,11 @@ import org.storm.physics.entity.Entity
  */
 interface Impulsive {
 
-  /**
-   * Executes a reaction based on the Entity.
-   *
-   * @param entity the Entity which collided with this one
-   */
-  fun react(entity: Entity)
+    /**
+     * Executes a reaction based on the Entity.
+     *
+     * @param entity the Entity which collided with this one
+     */
+    fun react(entity: Entity)
 
 }

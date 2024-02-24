@@ -16,174 +16,174 @@ import org.storm.physics.transforms.UnitConvertor
  * and edges.
  */
 open class ConvexPolygon(
-  vararg vertices: Point
+    vararg vertices: Point
 ) : Shape {
 
-  companion object {
-    private const val RAY_CASTING_EPSILON = 0.00001
-  }
-
-  // Order and uniqueness matters for vertices
-  val vertices: List<Point> = vertices.distinct()
-
-  override val edges: List<LineSegment> = findEdges()
-
-  override val center: Point = findCenter()
-
-  init {
-    require(this.vertices.size > 2) { "a polygon must have a minimum of 3 distinct vertices" }
-  }
-
-  /**
-   * @param p point to check against
-   * @return the vertex (Point) of the ConvexPolygon which is closest to p
-   */
-  fun getClosestVertex(p: Point): Point {
-    var min = Double.POSITIVE_INFINITY
-    var nearest: Point = vertices[0]
-
-    vertices.forEach {
-      val d = p.getSquaredDistance(it)
-      if (d < min) {
-        min = d
-        nearest = it
-      }
+    companion object {
+        private const val RAY_CASTING_EPSILON = 0.00001
     }
 
-    return nearest
-  }
+    // Order and uniqueness matters for vertices
+    val vertices: List<Point> = vertices.distinct()
 
-  override fun translate(dx: Double, dy: Double) {
-    this.vertices.forEach { point -> point.translate(dx, dy) }
-    this.edges.forEach { edge -> edge.translate(dx, dy) }
-    this.center.translate(dx, dy)
-  }
+    override val edges: List<LineSegment> = findEdges()
 
-  override fun rotate(point: Point, angle: Double) {
-    this.vertices.forEach {
-      it.rotate(point, angle)
+    override val center: Point = findCenter()
+
+    init {
+        require(this.vertices.size > 2) { "a polygon must have a minimum of 3 distinct vertices" }
     }
 
-    this.center.rotate(point, angle)
-  }
+    /**
+     * @param p point to check against
+     * @return the vertex (Point) of the ConvexPolygon which is closest to p
+     */
+    fun getClosestVertex(p: Point): Point {
+        var min = Double.POSITIVE_INFINITY
+        var nearest: Point = vertices[0]
 
-  /**
-   * Returns the projection of this Polygon onto the given axis
-   *
-   * The projection of a Polygon on a given axis is the 1d line segment (or interval)
-   * [A, B] where A = min dot product between the axis and the vertices of the polygon
-   * and B = max dot product between the axis and the vertices of the polygon
-   *
-   * @param axis the vector axis to project onto
-   * @return Interval representing the projection
-   */
-  override fun project(axis: Vector): Interval {
-    var min = Double.POSITIVE_INFINITY
-    var max = 0.0
+        vertices.forEach {
+            val d = p.getSquaredDistance(it)
+            if (d < min) {
+                min = d
+                nearest = it
+            }
+        }
 
-    vertices.forEach {
-      val d = axis.dot(it.toVector())
-      if (d < min) min = d
-      if (d > max) max = d
+        return nearest
     }
 
-    return Interval(min, max)
-  }
-
-  /**
-   * An implementation of contains for a generic polygon using the Ray Casting Algorithm
-   *
-   * @param p Point to check
-   * @return true if p is contained within the convex polygon
-   */
-  override fun contains(p: Point): Boolean {
-    val totalIntersections = edges
-      // Only look for non-horizontal edges
-      .filter { it.start.y != it.end.y }
-      .map { castRay(p, it) }
-      .fold(0) { acc, it -> acc + it }
-    return totalIntersections and 1 != 0 // Check if odd
-  }
-
-  override fun transform(unitConvertor: UnitConvertor): Renderable = Renderable { gc, x, y ->
-    val vertexCount = vertices.size
-    val xCoordinates = DoubleArray(vertexCount)
-    val yCoordinates = DoubleArray(vertexCount)
-
-    for (i in 0 until vertexCount) {
-      val (x1, y1) = vertices[i]
-      xCoordinates[i] = unitConvertor.toPixels(x + x1)
-      yCoordinates[i] = unitConvertor.toPixels(y + y1)
+    override fun translate(dx: Double, dy: Double) {
+        this.vertices.forEach { point -> point.translate(dx, dy) }
+        this.edges.forEach { edge -> edge.translate(dx, dy) }
+        this.center.translate(dx, dy)
     }
 
-    gc.fillPolygon(xCoordinates, yCoordinates, vertexCount)
-  }
+    override fun rotate(point: Point, angle: Double) {
+        this.vertices.forEach {
+            it.rotate(point, angle)
+        }
 
-  override fun toString(): String = "ConvexPolygon(vertices: $vertices)"
-
-  /**
-   * Returns the edges of the polygon as vectors. The edges are defined as such:
-   *
-   * e_i = <v_i, v_{i+1}> and e_V = <v, v_0> where v_i is the ith vertex of the polygon.
-   *
-   * @return the edges of the polygon
-   */
-  protected fun findEdges(): List<LineSegment> {
-    return (0 until vertices.size - 1).map { i ->
-      LineSegment(vertices[i], vertices[i + 1])
-    }.plus(LineSegment(vertices[vertices.size - 1], vertices[0]))
-  }
-
-  /**
-   * @return calculates and returns the center of a generic ConvexPolygon
-   */
-  protected fun findCenter(): Point {
-    var xNumerator = 0.0
-    var yNumerator = 0.0
-    var denominator = 0.0
-    val vertexCount = vertices.size
-
-    vertices.forEachIndexed { i, vertex ->
-      val (x, y) = vertex
-
-      // Neighboring Vertex
-      val (nx, ny) = if (i == vertexCount - 1) vertices[0] else vertices[i + 1]
-
-      // Calculate the determinant of the follow 2x2 matrix
-      // [a b] = [x   y]
-      // [c d] = [nx ny]
-      // --> ad - bc = x * ny - y * nx
-      val det = x * ny - y * nx
-      xNumerator += (x + nx) * det
-      yNumerator += (y + ny) * det
-      denominator += det
+        this.center.rotate(point, angle)
     }
 
-    return Point(xNumerator / (3 * denominator), yNumerator / (3 * denominator))
-  }
+    /**
+     * Returns the projection of this Polygon onto the given axis
+     *
+     * The projection of a Polygon on a given axis is the 1d line segment (or interval)
+     * [A, B] where A = min dot product between the axis and the vertices of the polygon
+     * and B = max dot product between the axis and the vertices of the polygon
+     *
+     * @param axis the vector axis to project onto
+     * @return Interval representing the projection
+     */
+    override fun project(axis: Vector): Interval {
+        var min = Double.POSITIVE_INFINITY
+        var max = 0.0
 
-  /**
-   * @param point Point to ray cast
-   * @param edge edge (LineSegment) to check against
-   * @return 1 iff the ray cast of the given point passes through the given edge, 0 otherwise
-   */
-  private fun castRay(point: Point, edge: LineSegment): Int {
-    // Get the highest and lowest points
-    val (hx, hy) = if (edge.end.y > edge.start.y) edge.end else edge.start
-    val (lx, ly) = if (edge.end.y > edge.start.y) edge.start else edge.end
+        vertices.forEach {
+            val d = axis.dot(it.toVector())
+            if (d < min) min = d
+            if (d > max) max = d
+        }
 
-    // Considering "on vertex" case
-    val p = if (point.y == hy || point.y == ly) Point(point.x, point.y + RAY_CASTING_EPSILON) else point
+        return Interval(min, max)
+    }
 
-    if (p.y > hy || p.y < ly || p.x > FastMath.max(hx, lx)) return 0
+    /**
+     * An implementation of contains for a generic polygon using the Ray Casting Algorithm
+     *
+     * @param p Point to check
+     * @return true if p is contained within the convex polygon
+     */
+    override fun contains(p: Point): Boolean {
+        val totalIntersections = edges
+            // Only look for non-horizontal edges
+            .filter { it.start.y != it.end.y }
+            .map { castRay(p, it) }
+            .fold(0) { acc, it -> acc + it }
+        return totalIntersections and 1 != 0 // Check if odd
+    }
 
-    if (p.x < FastMath.min(hx, lx)) return 1
+    override fun transform(unitConvertor: UnitConvertor): Renderable = Renderable { gc, x, y ->
+        val vertexCount = vertices.size
+        val xCoordinates = DoubleArray(vertexCount)
+        val yCoordinates = DoubleArray(vertexCount)
 
-    // dividing a double by 0 --> INFINITY
-    val higherLowerSlope = (hy - ly) / (hx - lx)
-    val startLowerSlope = (p.y - ly) / (p.x - lx)
+        for (i in 0 until vertexCount) {
+            val (x1, y1) = vertices[i]
+            xCoordinates[i] = unitConvertor.toPixels(x + x1)
+            yCoordinates[i] = unitConvertor.toPixels(y + y1)
+        }
 
-    return if (startLowerSlope >= higherLowerSlope) 1 else 0
-  }
+        gc.fillPolygon(xCoordinates, yCoordinates, vertexCount)
+    }
+
+    override fun toString(): String = "ConvexPolygon(vertices: $vertices)"
+
+    /**
+     * Returns the edges of the polygon as vectors. The edges are defined as such:
+     *
+     * e_i = <v_i, v_{i+1}> and e_V = <v, v_0> where v_i is the ith vertex of the polygon.
+     *
+     * @return the edges of the polygon
+     */
+    protected fun findEdges(): List<LineSegment> {
+        return (0 until vertices.size - 1).map { i ->
+            LineSegment(vertices[i], vertices[i + 1])
+        }.plus(LineSegment(vertices[vertices.size - 1], vertices[0]))
+    }
+
+    /**
+     * @return calculates and returns the center of a generic ConvexPolygon
+     */
+    protected fun findCenter(): Point {
+        var xNumerator = 0.0
+        var yNumerator = 0.0
+        var denominator = 0.0
+        val vertexCount = vertices.size
+
+        vertices.forEachIndexed { i, vertex ->
+            val (x, y) = vertex
+
+            // Neighboring Vertex
+            val (nx, ny) = if (i == vertexCount - 1) vertices[0] else vertices[i + 1]
+
+            // Calculate the determinant of the follow 2x2 matrix
+            // [a b] = [x   y]
+            // [c d] = [nx ny]
+            // --> ad - bc = x * ny - y * nx
+            val det = x * ny - y * nx
+            xNumerator += (x + nx) * det
+            yNumerator += (y + ny) * det
+            denominator += det
+        }
+
+        return Point(xNumerator / (3 * denominator), yNumerator / (3 * denominator))
+    }
+
+    /**
+     * @param point Point to ray cast
+     * @param edge edge (LineSegment) to check against
+     * @return 1 iff the ray cast of the given point passes through the given edge, 0 otherwise
+     */
+    private fun castRay(point: Point, edge: LineSegment): Int {
+        // Get the highest and lowest points
+        val (hx, hy) = if (edge.end.y > edge.start.y) edge.end else edge.start
+        val (lx, ly) = if (edge.end.y > edge.start.y) edge.start else edge.end
+
+        // Considering "on vertex" case
+        val p = if (point.y == hy || point.y == ly) Point(point.x, point.y + RAY_CASTING_EPSILON) else point
+
+        if (p.y > hy || p.y < ly || p.x > FastMath.max(hx, lx)) return 0
+
+        if (p.x < FastMath.min(hx, lx)) return 1
+
+        // dividing a double by 0 --> INFINITY
+        val higherLowerSlope = (hy - ly) / (hx - lx)
+        val startLowerSlope = (p.y - ly) / (p.x - lx)
+
+        return if (startLowerSlope >= higherLowerSlope) 1 else 0
+    }
 
 }

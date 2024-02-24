@@ -8,13 +8,13 @@ import javafx.scene.canvas.GraphicsContext
  */
 fun interface Renderable {
 
-  /**
-   * Renders the object onto the given GraphicsContext.
-   *
-   * @param gc GraphicsContext to render onto
-   * @param x base x position to render from
-   * @param y base y position to render from
-   */
-  fun render(gc: GraphicsContext, x: Double, y: Double)
+    /**
+     * Renders the object onto the given GraphicsContext.
+     *
+     * @param gc GraphicsContext to render onto
+     * @param x base x position to render from
+     * @param y base y position to render from
+     */
+    fun render(gc: GraphicsContext, x: Double, y: Double)
 
 }

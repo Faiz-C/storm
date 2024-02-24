@@ -1,0 +1,12 @@
+---
+name: week
+type: dialogue
+script:
+  dialogueSegments:
+    - character: Alice
+      dialogueLines:
+        - Oh shoot, I'm busy next week. Maybe another time?
+    - character: Bob
+      dialogueLines:
+        - No worries, we'll figure it out.
+...
