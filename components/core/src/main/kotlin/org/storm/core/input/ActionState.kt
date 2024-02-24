@@ -40,12 +40,12 @@ data class ActionState(
 
     /**
      * @param action The action to check
-     * @param threshold Minimum required time in milliseconds to be considered held
+     * @param activeFrameThreshold Minimum required active snapshots to be considered held
      * @return true if the action is held for at least the given threshold in milliseconds
      */
-    fun isActionHeld(action: String, threshold: Int = 50): Boolean {
+    fun isActionHeld(action: String, activeFrameThreshold: Int = 2): Boolean {
         return activeActions[action]?.let {
-            it.timeHeldInMillis >= threshold
+            it.activeSnapshots >= activeFrameThreshold
         } ?: false
     }
 

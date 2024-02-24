@@ -174,7 +174,7 @@ class StormEngine(
       actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(keyEvent), true))
     }
     window.onKeyReleased = EventHandler { keyEvent ->
-      actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(keyEvent), true))
+      actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(keyEvent), false))
     }
   }
 
@@ -219,7 +219,11 @@ class StormEngine(
     val elapsedFrameTime = now - this.lastUpdateTime
 
     // Don't let it creep up too much, upper bound it
-    val adjustedElapsedFrameTime = if (elapsedFrameTime > ELAPSED_TIME_UPPER_BOUND) ELAPSED_TIME_UPPER_BOUND else elapsedFrameTime
+    val adjustedElapsedFrameTime = if (elapsedFrameTime > ELAPSED_TIME_UPPER_BOUND) {
+      ELAPSED_TIME_UPPER_BOUND
+    } else {
+      elapsedFrameTime
+    }
 
     this.lastUpdateTime = now
     this.accumulator += adjustedElapsedFrameTime
@@ -229,13 +233,15 @@ class StormEngine(
       requests.forEach { request -> request.execute(this) }
     }
 
+    // Capture the current state of the game here so the next steps of the game loop don't
+    // get disrupted by potential changes to the current state
+    val frameState = this.currentState!!
+
     // Process Input
-    this.actionManager.getStateSnapshot()?.let {
-      this.currentState!!.process(it, this.requestQueue)
-    }
+    frameState.process(this.actionManager.getStateSnapshot(), this.requestQueue)
 
     // Then allow the state to do any internal updating
-    this.currentState!!.update(toSeconds(this.lastUpdateTime), toSeconds(elapsedFrameTime))
+    frameState.update(toSeconds(this.lastUpdateTime), toSeconds(elapsedFrameTime))
 
     if (++this.physicsDelay >= this.physicsFpsRatio) {
       // Apply Physics for as long as we have leeway through our accumulator

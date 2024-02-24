@@ -24,8 +24,8 @@ class BatState(
     companion object {
         private const val MOVEMENT_SPEED = 4.0 // px
         private const val X_BOUNDARY = 80.0 // px away from each side
-        private const val Y_TOP_BOUNDARY = 20.0 // px away from each side
-        private const val Y_BOTTOM_BOUNDARY = 250.0 // px away from each side
+        private const val Y_TOP_BOUNDARY = 20.0 // px away from top
+        private const val Y_BOTTOM_BOUNDARY = 240.0 // px away from bottom
 
         private var batX = X_BOUNDARY
         private var batY = Y_TOP_BOUNDARY
@@ -93,18 +93,18 @@ class BatState(
         when (direction) {
             "up" -> {
                 batY = (batY - MOVEMENT_SPEED).coerceAtLeast(Y_TOP_BOUNDARY)
-                movementComplete = batY >= Y_TOP_BOUNDARY
+                movementComplete = batY <= Y_TOP_BOUNDARY
             }
             "down" -> {
                 batY = (batY + MOVEMENT_SPEED).coerceAtMost(screenHeight - Y_BOTTOM_BOUNDARY)
-                movementComplete = batY <= screenHeight - Y_TOP_BOUNDARY
+                movementComplete = batY >= screenHeight - Y_BOTTOM_BOUNDARY
             }
             "left" -> {
                 batX = (batX - MOVEMENT_SPEED).coerceAtLeast(X_BOUNDARY)
                 movementComplete = batX <= X_BOUNDARY
             }
             "right" -> {
-                batX += MOVEMENT_SPEED
+                batX = (batX + MOVEMENT_SPEED).coerceAtMost(screenWidth - X_BOUNDARY)
                 movementComplete = batX >= screenWidth - X_BOUNDARY
             }
             "idle" -> {

@@ -149,6 +149,9 @@ data class Vector(
     return Vector(x - dx, y - dy)
   }
 
+  operator fun plus(v: Vector): Vector = this.add(v)
+  operator fun minus(v: Vector): Vector = this.subtract(v)
+
   /**
    * @return a Point object of this Vector
    */

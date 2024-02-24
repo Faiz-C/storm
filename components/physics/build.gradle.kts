@@ -73,7 +73,8 @@ fun setupJavaFx(exec: JavaExec) {
     // do what the plugin does ourselves
     exec.jvmArgs = listOf(
       "--module-path", exec.classpath.asPath,
-      "--add-modules", "javafx.graphics,javafx.media"
+      "--add-modules", "javafx.graphics",
+      "-Djavafx.animation.fullspeed=true"
     )
   }
 }

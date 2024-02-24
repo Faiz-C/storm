@@ -11,4 +11,6 @@ object KeyActionConstants {
   const val A = "a"
   const val D = "d"
   const val SPACE = "pause"
+
+  val MOVEMENT_KEYS = listOf(W, S, A, D)
 }

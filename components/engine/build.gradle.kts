@@ -14,12 +14,11 @@ javafx {
 tasks {
   task<JavaExec>("engineTest") {
     dependsOn(compileKotlin, compileTestKotlin)
-
-    //setupJavaFx(this)
+    setupJavaFx(this)
 
     group = "Execution"
     description = "A more involved test which tests the storm engines many components and uses multiple states"
-    mainClass.set("org.storm.engine.StormTest")
+    mainClass.set("org.storm.engine.StormEngineTest")
   }
 }
 
@@ -44,7 +43,8 @@ fun setupJavaFx(exec: JavaExec) {
     // do what the plugin does ourselves
     exec.jvmArgs = listOf(
       "--module-path", exec.classpath.asPath,
-      "--add-modules", "javafx.graphics,javafx.media"
+      "--add-modules", "javafx.graphics,javafx.media",
+      "-Djavafx.animation.fullspeed=true"
     )
   }
 }
