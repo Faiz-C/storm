@@ -1,10 +1,6 @@
 package org.storm.storyboard
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import javafx.scene.canvas.GraphicsContext
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Mutex
 import org.storm.core.asset.AssetManager
 import org.storm.core.input.ActionStateProcessor
 import org.storm.core.input.ActionState
@@ -13,25 +9,39 @@ import org.storm.core.update.Updatable
 import org.storm.storyboard.exception.StoryBoardEngineException
 import java.util.concurrent.ConcurrentHashMap
 
+/**
+ * A StoryBoardEngine is a state machine which can be used to navigate between different storyboard states. States are
+ * loaded as assets from a single source.
+ */
 open class StoryBoardEngine(
     protected val assetSourceId: String,
     protected val assetManager: AssetManager = AssetManager(),
-): Renderable, Updatable, ActionStateProcessor {
+) : Renderable, Updatable, ActionStateProcessor {
 
     protected val states: MutableMap<String, StoryBoardState> = ConcurrentHashMap()
     protected var currentState: StoryBoardState? = null
 
+    /**
+     * Load a "Scene", a collection of states, and ready the states for use.
+     *
+     * @param sceneId the asset id of the scene to load
+     */
     open fun loadScene(sceneId: String) {
-        val scene = assetManager.getAsset<List<StoryBoardState>>(sceneId, sourceId = assetSourceId)
+        val scene = assetManager.getAsset<List<StoryBoardState>>(sceneId, assetSourceId = assetSourceId)
         setStates(scene.associateBy { it.id })
     }
 
+    /**
+     * Switch the current state of the StoryBoardEngine to the state with the given id.
+     *
+     * @param stateId the asset id of the state to switch to
+     */
     open fun switchState(stateId: String) {
         val nextState = states[stateId]
             ?: throw StoryBoardEngineException("Failed to switch state from ${currentState?.id} to $stateId. No state found for id $stateId.")
 
         if (nextState.disabled) {
-           throw StoryBoardEngineException("Failed to switch state from ${currentState?.id} to $stateId. State $stateId is disabled.")
+            throw StoryBoardEngineException("Failed to switch state from ${currentState?.id} to $stateId. State $stateId is disabled.")
         }
 
         currentState = nextState.also {
@@ -39,6 +49,11 @@ open class StoryBoardEngine(
         }
     }
 
+    /**
+     * Set the states of the StoryBoardEngine to the given states.
+     *
+     * @param states a map of state ids to states
+     */
     fun setStates(states: Map<String, StoryBoardState>) {
         this.states.clear()
         states.forEach { (k, v) ->
@@ -46,6 +61,9 @@ open class StoryBoardEngine(
         }
     }
 
+    /**
+     * Clear all states from the StoryBoardEngine.
+     */
     fun clearStates() {
         states.clear()
     }

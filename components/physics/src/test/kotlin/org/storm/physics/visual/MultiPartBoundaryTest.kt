@@ -17,7 +17,7 @@ import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
 import org.storm.physics.transforms.UnitConvertor
 
-class MultiPartBoundaryTest: Application() {
+class MultiPartBoundaryTest : Application() {
 
     private val unitConvertor: UnitConvertor = object : UnitConvertor {}
 

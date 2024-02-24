@@ -13,9 +13,14 @@ import org.storm.core.asset.serialization.AssetResolver
  * A State in a StoryBoard. This is a node in a directed graph that represents a specific point in time for a story.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type", visible = true)
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "type",
+    visible = true
+)
 @JsonTypeIdResolver(AssetResolver::class)
-interface StoryBoardState: Renderable, Updatable, ActionStateProcessor {
+interface StoryBoardState : Renderable, Updatable, ActionStateProcessor {
 
     /**
      * The unique identifier for this state.

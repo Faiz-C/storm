@@ -6,6 +6,9 @@ import org.storm.core.asset.source.context.LocalStorageAssetContextBuilder
 import org.storm.core.exception.AssetException
 import java.io.FileInputStream
 
+/**
+ * An AssetLoader that loads JSON from the local storage.
+ */
 class JsonLocalStorageAssetLoader : LocalStorageAssetLoader(extensions = setOf("json")) {
 
     companion object {

@@ -8,18 +8,18 @@ import org.storm.engine.state.State
 
 abstract class SwitchableState : State() {
 
-  override fun process(actionState: ActionState, requestQueue: RequestQueue) {
-    if (actionState.isFirstTrigger(KeyActionConstants.ONE)) {
-      requestQueue.submit(StateChangeRequest(KeyActionConstants.ONE))
-    } else if (actionState.isFirstTrigger(KeyActionConstants.TWO)) {
-      requestQueue.submit(StateChangeRequest(KeyActionConstants.TWO))
-    } else if (actionState.isFirstTrigger(KeyActionConstants.THREE)) {
-      requestQueue.submit(StateChangeRequest(KeyActionConstants.THREE))
-    } else if (actionState.isFirstTrigger(KeyActionConstants.FOUR)) {
-      requestQueue.submit(StateChangeRequest(KeyActionConstants.FOUR))
-    } else if (actionState.isFirstTrigger(KeyActionConstants.FIVE)) {
-      requestQueue.submit(StateChangeRequest(KeyActionConstants.FIVE))
+    override fun process(actionState: ActionState, requestQueue: RequestQueue) {
+        if (actionState.isFirstTrigger(KeyActionConstants.ONE)) {
+            requestQueue.submit(StateChangeRequest(KeyActionConstants.ONE))
+        } else if (actionState.isFirstTrigger(KeyActionConstants.TWO)) {
+            requestQueue.submit(StateChangeRequest(KeyActionConstants.TWO))
+        } else if (actionState.isFirstTrigger(KeyActionConstants.THREE)) {
+            requestQueue.submit(StateChangeRequest(KeyActionConstants.THREE))
+        } else if (actionState.isFirstTrigger(KeyActionConstants.FOUR)) {
+            requestQueue.submit(StateChangeRequest(KeyActionConstants.FOUR))
+        } else if (actionState.isFirstTrigger(KeyActionConstants.FIVE)) {
+            requestQueue.submit(StateChangeRequest(KeyActionConstants.FIVE))
+        }
     }
-  }
 
 }

@@ -17,7 +17,8 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
 
     companion object {
         private const val TEXT_BOX_HEIGHT = 120.0 // pixels
-        private const val TEXT_FRAME_DELAY = 2 // number of frames to wait before adding the next character to the screen
+        private const val TEXT_FRAME_DELAY =
+            2 // number of frames to wait before adding the next character to the screen
     }
 
     private var screenText = ""

@@ -10,13 +10,13 @@ import org.storm.core.input.ActionState
  */
 interface StormEngineProcessor {
 
-  /**
-   * Determines what actions should be taken based on what actions the User performs and places any additional requests
-   * for the StormEngine onto the given RequestQueue.
-   *
-   * @param actionManager an ActionManager which details what in game actions the User is currently performing
-   * @param requestQueue the RequestQueue that the StormEngine will use to handle input requests
-   */
-  fun process(actionState: ActionState, requestQueue: RequestQueue)
+    /**
+     * Determines what actions should be taken based on what actions the User performs and places any additional requests
+     * for the StormEngine onto the given RequestQueue.
+     *
+     * @param actionManager an ActionManager which details what in game actions the User is currently performing
+     * @param requestQueue the RequestQueue that the StormEngine will use to handle input requests
+     */
+    fun process(actionState: ActionState, requestQueue: RequestQueue)
 
 }

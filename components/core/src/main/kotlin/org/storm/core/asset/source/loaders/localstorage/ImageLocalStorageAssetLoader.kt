@@ -7,7 +7,8 @@ import org.storm.core.exception.AssetException
 import java.io.FileInputStream
 
 /**
- * This is a special asset loader as it specializes in loading images into one specific implementation.
+ * An AssetLoader that loads images from the local storage. This is a special loader that only has one supported type,
+ * Image.
  */
 class ImageLocalStorageAssetLoader : LocalStorageAssetLoader(setOf("png", "jpeg", "jpg")) {
 

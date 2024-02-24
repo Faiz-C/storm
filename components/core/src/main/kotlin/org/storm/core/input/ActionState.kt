@@ -2,6 +2,9 @@ package org.storm.core.input
 
 import kotlin.math.min
 
+/**
+ * A snapshot of the current state of actions within the game.
+ */
 data class ActionState(
     val activeActions: Map<String, ActionInputInfo>,
     val activeActionHistory: List<String>,
@@ -24,7 +27,7 @@ data class ActionState(
 
     /**
      * @param action The action to check
-     * @return true if the action is active and it has only been triggered once
+     * @return true if the action is active, only been triggered once and has only been active for one snapshot
      */
     fun isFirstTrigger(action: String): Boolean {
         return activeActions[action]?.let { it.triggers == 1 && it.activeSnapshots == 1 } ?: false
@@ -35,17 +38,17 @@ data class ActionState(
      * @return true if all actions in the list are active
      */
     fun isCombinationPresent(actions: List<String>): Boolean {
-        return actions.all { isFirstTrigger(it) }
+        return actions.all { activeActions.containsKey(it) }
     }
 
     /**
      * @param action The action to check
-     * @param activeFrameThreshold Minimum required active snapshots to be considered held
+     * @param activeSnapshotThreshold Minimum required active snapshots to be considered held
      * @return true if the action is held for at least the given threshold in milliseconds
      */
-    fun isActionHeld(action: String, activeFrameThreshold: Int = 2): Boolean {
+    fun isActionHeld(action: String, activeSnapshotThreshold: Int = 2): Boolean {
         return activeActions[action]?.let {
-            it.activeSnapshots >= activeFrameThreshold
+            it.activeSnapshots >= activeSnapshotThreshold
         } ?: false
     }
 

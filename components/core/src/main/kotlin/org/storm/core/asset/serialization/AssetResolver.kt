@@ -10,11 +10,26 @@ import org.reflections.util.ConfigurationBuilder
 import org.storm.core.asset.Asset
 import org.storm.core.exception.AssetException
 
-class AssetResolver: TypeIdResolverBase() {
+/**
+ * AssetResolver is a Jackson Serialization Resolver that is used to resolve the implementation class for an Asset.
+ * This is used to allow for polymorphic serialization and deserialization of assets.
+ *
+ * The resolver uses the Asset annotation to determine the type and implementation of the asset.
+ *
+ * The resolver will scan the classpath for all classes that are annotated with the Asset annotation and store them
+ * in a set. When a type is resolved, the resolver will look for the class that matches the type and implementation
+ * and return the class.
+ */
+class AssetResolver : TypeIdResolverBase() {
 
     companion object {
         private val ASSET_PACKAGES: MutableList<String> = mutableListOf("org.storm")
 
+        /**
+         * Adds a package to the list of packages to scan for Asset classes
+         *
+         * @param packageName The package name to scan for assets
+         */
         fun includePackage(packageName: String) {
             ASSET_PACKAGES.add(packageName)
         }
@@ -26,7 +41,8 @@ class AssetResolver: TypeIdResolverBase() {
             .setScanners(Scanners.TypesAnnotated, Scanners.SubTypes)
     )
 
-    private val assetTypes: Set<Class<*>> = reflections.get(Scanners.TypesAnnotated.of(Asset::class.java).asClass<Asset>())
+    private val assetTypes: Set<Class<*>> =
+        reflections.get(Scanners.TypesAnnotated.of(Asset::class.java).asClass<Asset>())
 
     private lateinit var superType: JavaType
 
@@ -39,7 +55,6 @@ class AssetResolver: TypeIdResolverBase() {
     }
 
     override fun idFromValueAndType(value: Any, suggestedType: Class<*>): String {
-        // The class needs to be annotated with the Asset annotation to allow for auto resolution
         return getAssetType(suggestedType)
     }
 

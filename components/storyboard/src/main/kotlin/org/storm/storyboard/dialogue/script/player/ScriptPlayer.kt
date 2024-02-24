@@ -6,6 +6,9 @@ import org.storm.core.update.Updatable
 import org.storm.storyboard.dialogue.script.Script
 import kotlin.math.min
 
+/**
+ * A ScriptPlayer is a state machine which can be used to navigate between different states of a script.
+ */
 abstract class ScriptPlayer(
     protected val script: Script
 ) : Updatable, Renderable, ActionStateProcessor {
@@ -13,9 +16,7 @@ abstract class ScriptPlayer(
     protected var currentDialogue = 0
     protected var currentLine = 0
     protected var currentChoice = 0
-
     protected var scriptState = getInitialState()
-
 
     protected val speaker get() = script.dialogue[currentDialogue].speaker
     protected val line get() = script.dialogue[currentDialogue].lines[currentLine]
@@ -28,7 +29,7 @@ abstract class ScriptPlayer(
         }
 
     /**
-     * Progress the dialogue to the next line or segment
+     * Progress the dialogue to the next state
      */
     open fun progress() {
         when {
@@ -87,6 +88,9 @@ abstract class ScriptPlayer(
         return isDialogueSegmentComplete() && currentDialogue == script.dialogue.size - 1
     }
 
+    /**
+     * @return true if the current dialogue segment is complete, false otherwise
+     */
     open fun isDialogueSegmentComplete(): Boolean {
         return currentLine >= script.dialogue[currentDialogue].lines.size - 1
     }
@@ -98,6 +102,9 @@ abstract class ScriptPlayer(
         return scriptState == Script.State.FULLY_COMPLETE
     }
 
+    /**
+     * @return the initial state of the script
+     */
     protected fun getInitialState(): Script.State {
         return when {
             // intentionally forcing a call to progress to go to MAKING_CHOICE to avoid instant MAKING_CHOICE behavior

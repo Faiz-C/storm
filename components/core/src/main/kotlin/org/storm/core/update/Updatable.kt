@@ -5,12 +5,12 @@ package org.storm.core.update
  */
 fun interface Updatable {
 
-  /**
-   * Updates the object internally
-   *
-   * @param time the time in seconds at which the update method is called
-   * @param elapsedTime the time in seconds it has been since the update method was last called
-   */
-  fun update(time: Double, elapsedTime: Double)
+    /**
+     * Updates the object internally
+     *
+     * @param time the time in seconds at which the update method is called
+     * @param elapsedTime the time in seconds it has been since the update method was last called
+     */
+    fun update(time: Double, elapsedTime: Double)
 
 }

@@ -1,3 +1,6 @@
 package org.storm.core.exception
 
-class AssetException(msg: String, throwable: Throwable? = null): RuntimeException(msg, throwable)
+/**
+ * An AssetException is thrown when an error occurs while dealing with assets.
+ */
+class AssetException(msg: String, throwable: Throwable? = null) : RuntimeException(msg, throwable)

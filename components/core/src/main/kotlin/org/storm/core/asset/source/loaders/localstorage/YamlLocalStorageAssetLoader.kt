@@ -11,6 +11,9 @@ import org.storm.core.asset.source.context.LocalStorageAssetContextBuilder
 import org.storm.core.exception.AssetException
 import java.io.FileInputStream
 
+/**
+ * An AssetLoader that loads YAML from the local storage.
+ */
 class YamlLocalStorageAssetLoader : LocalStorageAssetLoader(extensions = setOf("yaml", "yml")) {
 
     companion object {

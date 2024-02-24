@@ -7,10 +7,10 @@ package org.storm.core.input
  */
 fun interface ActionTranslator<T> {
 
-  /**
-   * @param t input object to be translated
-   * @return returns the translation of the given input type to an action
-   */
-  fun translate(t: T): String
+    /**
+     * @param t input object to be translated
+     * @return returns the translation of the given input type to an action
+     */
+    fun translate(t: T): String
 
 }

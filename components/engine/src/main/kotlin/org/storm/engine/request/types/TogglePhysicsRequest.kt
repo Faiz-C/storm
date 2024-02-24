@@ -7,11 +7,11 @@ import org.storm.engine.request.Request
  * A Request which pauses or unpauses the PhysicsEngine.
  */
 class TogglePhysicsRequest(
-  private val paused: Boolean
+    private val paused: Boolean
 ) : Request {
 
-  override fun execute(stormEngine: StormEngine) {
-    stormEngine.physicsEngine.paused = paused
-  }
+    override fun execute(stormEngine: StormEngine) {
+        stormEngine.physicsEngine.paused = paused
+    }
 
 }

@@ -8,11 +8,11 @@ import org.storm.engine.StormEngine
  */
 interface Request {
 
-  /**
-   * Executes the Request using the given StormEngine
-   *
-   * @param stormEngine instance of the StormEngine which will be used to handle this request
-   */
-  fun execute(stormEngine: StormEngine)
+    /**
+     * Executes the Request using the given StormEngine
+     *
+     * @param stormEngine instance of the StormEngine which will be used to handle this request
+     */
+    fun execute(stormEngine: StormEngine)
 
 }

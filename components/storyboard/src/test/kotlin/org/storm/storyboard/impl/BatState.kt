@@ -38,11 +38,12 @@ class BatState(
     private var currentFrame = 0
     private var movementComplete = animationType == "idle"
 
-    override val next: String? get() = if (scriptPlayer.isChoiceRequired()) {
-        scriptPlayer.choice?.let { neighbours.getOrNull(it) }
-    } else {
-        neighbours.firstOrNull()
-    }
+    override val next: String?
+        get() = if (scriptPlayer.isChoiceRequired()) {
+            scriptPlayer.choice?.let { neighbours.getOrNull(it) }
+        } else {
+            neighbours.firstOrNull()
+        }
 
     override fun isComplete(): Boolean {
         return movementComplete && animation.isComplete() && scriptPlayer.isComplete()
@@ -53,7 +54,7 @@ class BatState(
         animation.reset()
         movementComplete = false
         currentFrame = 0
-   }
+    }
 
     override fun render(gc: GraphicsContext, x: Double, y: Double) {
         animation.render(gc, x + batX, y + batY)
@@ -95,18 +96,22 @@ class BatState(
                 batY = (batY - MOVEMENT_SPEED).coerceAtLeast(Y_TOP_BOUNDARY)
                 movementComplete = batY <= Y_TOP_BOUNDARY
             }
+
             "down" -> {
                 batY = (batY + MOVEMENT_SPEED).coerceAtMost(screenHeight - Y_BOTTOM_BOUNDARY)
                 movementComplete = batY >= screenHeight - Y_BOTTOM_BOUNDARY
             }
+
             "left" -> {
                 batX = (batX - MOVEMENT_SPEED).coerceAtLeast(X_BOUNDARY)
                 movementComplete = batX <= X_BOUNDARY
             }
+
             "right" -> {
                 batX = (batX + MOVEMENT_SPEED).coerceAtMost(screenWidth - X_BOUNDARY)
                 movementComplete = batX >= screenWidth - X_BOUNDARY
             }
+
             "idle" -> {
                 movementComplete = true
             }

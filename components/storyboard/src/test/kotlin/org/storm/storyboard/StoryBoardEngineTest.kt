@@ -16,7 +16,7 @@ import org.storm.core.ui.Window
 import org.storm.storyboard.helpers.StoryBoardSimulator
 import java.nio.file.Paths
 
-class StoryBoardEngineTest: Application() {
+class StoryBoardEngineTest : Application() {
 
     override fun start(stage: Stage) {
         val resourceDir = Paths.get("src", "test", "resources", "scenes")
@@ -24,13 +24,15 @@ class StoryBoardEngineTest: Application() {
         val assetManager = AssetManager()
         val assetContextBuilder = LocalStorageAssetContextBuilder(resourceDir.toString(), "yml")
 
-        assetManager.registerSource(AssetSource(
-            "local-storage",
-            assetContextBuilder,
-            listOf(
-                YamlLocalStorageAssetLoader()
+        assetManager.registerSource(
+            AssetSource(
+                "local-storage",
+                assetContextBuilder,
+                listOf(
+                    YamlLocalStorageAssetLoader()
+                )
             )
-        ))
+        )
 
         val engine = StoryBoardEngine(assetManager = assetManager, assetSourceId = "local-storage")
         engine.loadScene("bats")
