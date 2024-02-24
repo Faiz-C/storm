@@ -74,7 +74,7 @@ a song/sound first.
 
 ## _How to Use_
 
-1. Install [Eclipse Temurin](https://adoptium.net/temurin/releases/?version=20) (Java 20.2) if you haven't already.
+1. Install [Eclipse Temurin](https://adoptium.net/temurin/releases/?version=21) (Java 21.0.2) if you haven't already.
 2. Clone this repo.
 3. Use gradle wrapper to build the component(s) you would like to: `./gradlew build`, `./gradlew :components:{component}:build`, 
    or through your IDE (e.g., Intellij).
