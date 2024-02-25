@@ -13,7 +13,6 @@ import org.storm.physics.entity.SimpleEntity
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.transforms.UnitConvertor
-import java.util.*
 
 class VisualAtRestTest : Application() {
 
@@ -70,13 +69,13 @@ class VisualAtRestTest : Application() {
         10.0,
         0.2
     )
-    private lateinit var simulator: Simulator
+    private lateinit var physicsSimulator: PhysicsSimulator
 
     override fun start(stage: Stage) {
         // Make a Display
         val window = Window(Resolution.SD)
-        simulator = Simulator(Resolution.SD, 400.0) { render(window) }
-        simulator.physicsEngine.entities =
+        physicsSimulator = PhysicsSimulator(Resolution.SD, 400.0) { render(window) }
+        physicsSimulator.physicsEngine.entities =
             setOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4)
         repellingBall.addForce(Direction.SOUTH.vector.scale(unitConvertor.toUnits(10.0)))
         repellingBall.addForce(Direction.NORTH.vector.scale(unitConvertor.toUnits(30.0)), 2.0)
@@ -84,21 +83,21 @@ class VisualAtRestTest : Application() {
         repellingBall3.addForce(Direction.SOUTH.vector.scale(unitConvertor.toUnits(25.0)))
         repellingBall4.addForce(Direction.SOUTH.vector.scale(unitConvertor.toUnits(25.0)))
 
-        simulator.physicsEngine.paused = true
+        physicsSimulator.physicsEngine.paused = true
         window.onKeyPressed = EventHandler { keyEvent: KeyEvent ->
             if (keyEvent.code == KeyCode.SPACE) {
-                simulator.physicsEngine.paused = !simulator.physicsEngine.paused
+                physicsSimulator.physicsEngine.paused = !physicsSimulator.physicsEngine.paused
             }
         }
 
-        simulator.simulate()
+        physicsSimulator.simulate()
         stage.scene = window
         stage.show()
     }
 
-    private fun render(window: Window) {
+    private suspend fun render(window: Window) {
         window.clear()
-        simulator.physicsEngine.render(window.graphicsContext, 0.0, 0.0)
+        physicsSimulator.physicsEngine.render(window.graphicsContext, 0.0, 0.0)
         platform.transform().render(window.graphicsContext, 0.0, 0.0)
         repellingBall.transform().render(window.graphicsContext, 0.0, 0.0)
         repellingBall2.transform().render(window.graphicsContext, 0.0, 0.0)

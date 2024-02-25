@@ -14,10 +14,10 @@ class TileLayer(
 ) : Layer(active, resolution) {
 
     companion object {
-        private fun Array<IntArray>.doubleForEach(consumer: (Int, Int) -> Unit) {
+        private fun Array<IntArray>.iterateMatrix(block: (Int, Int) -> Unit) {
             for (r in this.indices) {
                 for (c in this[0].indices) {
-                    consumer(r, c)
+                    block(r, c)
                 }
             }
         }
@@ -29,11 +29,11 @@ class TileLayer(
         }
     }
 
-    override fun render(gc: GraphicsContext, x: Double, y: Double) {
+    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
         val screenRect = AABB(x, y, resolution.width, resolution.height)
 
-        skeleton.doubleForEach { r, c ->
-            if (skeleton[r][c] < 0) return@doubleForEach
+        skeleton.iterateMatrix { r, c ->
+            if (skeleton[r][c] < 0) return@iterateMatrix
 
             val tileImage = tileSet.tile(skeleton[r][c])
             val tx = c * tileImage.width
@@ -48,13 +48,13 @@ class TileLayer(
         }
     }
 
-    override fun update(time: Double, elapsedTime: Double) {
+    override suspend fun update(time: Double, elapsedTime: Double) {
         // Tile Layers do not update by default
     }
 
     private fun loadTiles() {
-        skeleton.doubleForEach { r, c ->
-            if (skeleton[r][c] < 0) return@doubleForEach
+        skeleton.iterateMatrix { r, c ->
+            if (skeleton[r][c] < 0) return@iterateMatrix
 
             addEntity(
                 Tile(

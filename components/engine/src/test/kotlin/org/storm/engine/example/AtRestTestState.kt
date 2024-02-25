@@ -91,7 +91,7 @@ class AtRestTestState : SwitchableState() {
         soundManager.play("bgm")
     }
 
-    override fun process(actionState: ActionState, requestQueue: RequestQueue) {
+    override suspend fun process(actionState: ActionState, requestQueue: RequestQueue) {
         super.process(actionState, requestQueue)
         if (actionState.isFirstTrigger(KeyActionConstants.SPACE)) {
             requestQueue.submit(TogglePhysicsRequest(false))

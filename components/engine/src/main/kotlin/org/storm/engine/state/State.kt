@@ -27,12 +27,12 @@ abstract class State protected constructor(
     protected val mutableUpdatables: MutableSet<Updatable> = mutableSetOf()
     protected val mutableRenderables: MutableSet<Renderable> = mutableSetOf()
 
-    override fun render(gc: GraphicsContext, x: Double, y: Double) {
+    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
         this.entities.forEach { entity -> entity.transform(this.unitConvertor).render(gc, x, y) }
         this.renderables.forEach { renderable -> renderable.render(gc, x, y) }
     }
 
-    override fun update(time: Double, elapsedTime: Double) {
+    override suspend fun update(time: Double, elapsedTime: Double) {
         this.updatables.forEach { updatable -> updatable.update(time, elapsedTime) }
     }
 

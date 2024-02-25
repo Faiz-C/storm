@@ -8,7 +8,7 @@ import org.storm.engine.state.State
 
 abstract class SwitchableState : State() {
 
-    override fun process(actionState: ActionState, requestQueue: RequestQueue) {
+    override suspend fun process(actionState: ActionState, requestQueue: RequestQueue) {
         if (actionState.isFirstTrigger(KeyActionConstants.ONE)) {
             requestQueue.submit(StateChangeRequest(KeyActionConstants.ONE))
         } else if (actionState.isFirstTrigger(KeyActionConstants.TWO)) {

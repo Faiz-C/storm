@@ -2,10 +2,8 @@ package org.storm.animations
 
 import javafx.application.Application
 import javafx.stage.Stage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.javafx.JavaFx
 import org.slf4j.LoggerFactory
 import org.storm.animations.sprite.SpriteAnimation
 import org.storm.animations.sprite.SpriteSheet
@@ -33,17 +31,12 @@ class AnimationTest : Application() {
     override fun start(primaryStage: Stage) {
         val window = Window(Resolution(320.0, 240.0))
         val spriteSheet = SpriteSheet("src/test/resources/spriteSheet.png", 32, 32)
-        downSpriteAnimation =
-            SpriteAnimation(sprites = spriteSheet.row(0), delay = 8, loops = Animation.LOOP_INDEFINITELY)
+        downSpriteAnimation = SpriteAnimation(sprites = spriteSheet.row(0), delay = 8, loops = Animation.LOOP_INDEFINITELY)
         rightSpriteAnimation = SpriteAnimation(sprites = spriteSheet.row(1), delay = 8, loops = 6)
         upSpriteAnimation = SpriteAnimation(sprites = spriteSheet.row(2), delay = 8, loops = 10)
         leftSpriteAnimation = SpriteAnimation(sprites = spriteSheet.row(3), delay = 8, loops = 20)
 
-        val coroutineScope = CoroutineScope(Executors.newSingleThreadExecutor {
-            Thread(it).also { thread ->
-                thread.isDaemon = true
-            }
-        }.asCoroutineDispatcher())
+        val coroutineScope = CoroutineScope(Dispatchers.JavaFx)
 
         // Loop logic just for testing
         coroutineScope.launch {
@@ -77,7 +70,7 @@ class AnimationTest : Application() {
         primaryStage.show()
     }
 
-    private fun render(window: Window) {
+    private suspend fun render(window: Window) {
         window.clear()
         downSpriteAnimation.render(window.graphicsContext, 100.0, 100.0)
         rightSpriteAnimation.render(window.graphicsContext, 100.0, 150.0)
@@ -85,7 +78,7 @@ class AnimationTest : Application() {
         leftSpriteAnimation.render(window.graphicsContext, 150.0, 150.0)
     }
 
-    private fun updateAnimations() {
+    private suspend fun updateAnimations() {
         downSpriteAnimation.update(0.0, 0.0)
         rightSpriteAnimation.update(0.0, 0.0)
         upSpriteAnimation.update(0.0, 0.0)

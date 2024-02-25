@@ -17,7 +17,6 @@ import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
 import org.storm.physics.transforms.UnitConvertor
 import java.util.concurrent.ThreadLocalRandom
-import java.util.function.Consumer
 
 class ParticleTest : Application() {
 
@@ -53,7 +52,7 @@ class ParticleTest : Application() {
     )
 
     private val entities: MutableSet<Entity> = mutableSetOf()
-    private lateinit var simulator: Simulator
+    private lateinit var physicsSimulator: PhysicsSimulator
     private val ballColour = Color.rgb(
         ThreadLocalRandom.current().nextInt(255),
         ThreadLocalRandom.current().nextInt(255),
@@ -64,7 +63,7 @@ class ParticleTest : Application() {
 
         // Make a Display
         val window = Window(Resolution.HD)
-        this.simulator = Simulator(Resolution.HD, 144.0) { render(window) }
+        this.physicsSimulator = PhysicsSimulator(Resolution.HD, 144.0) { render(window) }
         this.entities.add(boundingBox)
 
         for (i in 0..999) {
@@ -77,30 +76,30 @@ class ParticleTest : Application() {
             this.entities.add(SimpleEntity(Circle(x, y, this.unitConvertor.toUnits(2.0)), 3.0, 0.5, 1.0))
         }
 
-        this.simulator.physicsEngine.entities = this.entities
+        this.physicsSimulator.physicsEngine.entities = this.entities
 
         this.entities.forEach {
             it.addForce(Direction.random().vector.scale(this.unitConvertor.toUnits(2.0)), 0.1)
         }
 
-        this.simulator.physicsEngine.paused = true
+        this.physicsSimulator.physicsEngine.paused = true
 
         window.onKeyPressed = EventHandler { keyEvent: KeyEvent ->
             if (keyEvent.code == KeyCode.SPACE) {
-                this.simulator.physicsEngine.paused = !this.simulator.physicsEngine.paused
+                this.physicsSimulator.physicsEngine.paused = !this.physicsSimulator.physicsEngine.paused
             }
         }
 
-        this.simulator.simulate()
+        this.physicsSimulator.simulate()
         stage.scene = window
         stage.show()
     }
 
-    private fun render(window: Window) {
+    private suspend fun render(window: Window) {
         window.clear()
         val gc = window.graphicsContext
         window.graphicsContext.save()
-        this.simulator.physicsEngine.render(gc, 0.0, 0.0)
+        this.physicsSimulator.physicsEngine.render(gc, 0.0, 0.0)
         this.entities.forEach { e: Entity ->
             if (e is ImmovableEntity) {
                 gc.fill = Color.RED

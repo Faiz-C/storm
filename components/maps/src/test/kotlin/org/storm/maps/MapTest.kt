@@ -2,6 +2,7 @@ package org.storm.maps
 
 import javafx.application.Application
 import javafx.stage.Stage
+import kotlinx.coroutines.runBlocking
 import org.storm.core.ui.Resolution
 import org.storm.core.ui.Window
 import org.storm.maps.layer.BackgroundLayer
@@ -61,7 +62,9 @@ class MapTest : Application() {
         map.addLayer(background)
         map.addLayer(backingTiles)
         map.addLayer(wallTiles)
-        map.render(window.graphicsContext, 0.0, 0.0)
+
+        runBlocking { map.render(window.graphicsContext, 0.0, 0.0) }
+
         primaryStage.scene = window
         primaryStage.show()
     }

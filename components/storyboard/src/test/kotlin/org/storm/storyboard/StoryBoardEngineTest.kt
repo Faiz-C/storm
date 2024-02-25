@@ -4,6 +4,7 @@ import javafx.application.Application
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
+import kotlinx.coroutines.runBlocking
 import org.storm.core.asset.AssetManager
 import org.storm.core.asset.source.AssetSource
 import org.storm.core.asset.source.context.LocalStorageAssetContextBuilder
@@ -53,11 +54,11 @@ class StoryBoardEngineTest : Application() {
         }
 
         window.addKeyPressedHandler {
-            actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(it), true))
+            runBlocking { actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(it), true)) }
         }
 
         window.addKeyReleasedHandler {
-            actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(it), false))
+            runBlocking { actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(it), false)) }
         }
 
         val simulator = StoryBoardSimulator(144.0, {

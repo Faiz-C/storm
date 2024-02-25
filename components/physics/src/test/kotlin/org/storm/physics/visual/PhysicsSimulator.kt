@@ -1,14 +1,20 @@
-package org.storm.storyboard.helpers
+package org.storm.physics.visual
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.javafx.JavaFx
+import kotlinx.coroutines.withContext
+import org.storm.core.ui.Resolution
 import org.storm.core.utils.scheduleOnInterval
+import org.storm.physics.ImpulseResolutionPhysicsEngine
+import org.storm.physics.PhysicsEngine
 import java.util.concurrent.Executors
 
-class StoryBoardSimulator(
+class PhysicsSimulator(
+    resolution: Resolution,
     private val targetFps: Double,
-    private val renderHandler: suspend () -> Unit,
-    private val updateHandler: suspend (Double, Double) -> Unit
+    private val renderHandler: suspend () -> Unit
 ) {
 
     companion object {
@@ -20,6 +26,8 @@ class StoryBoardSimulator(
     private val coroutineScope = CoroutineScope(Executors.newSingleThreadExecutor() {
         Thread(it).apply { isDaemon = true }
     }.asCoroutineDispatcher())
+
+    val physicsEngine: PhysicsEngine = ImpulseResolutionPhysicsEngine(resolution)
 
     private var lastUpdateTime: Double = System.nanoTime().toDouble()
     private val fixedStepInterval: Double = 1000000000.0 / this.targetFps
@@ -35,12 +43,14 @@ class StoryBoardSimulator(
         lastUpdateTime = now
         accumulator += elapsedFrameTime
         while (accumulator >= fixedStepInterval) {
+            physicsEngine.update(toSeconds(lastUpdateTime), toSeconds(elapsedFrameTime))
             accumulator -= fixedStepInterval
             lastUpdateTime += fixedStepInterval
-            updateHandler(toSeconds(now), toSeconds(elapsedFrameTime))
         }
-        renderHandler()
+
+        withContext(Dispatchers.JavaFx) {
+            renderHandler()
+        }
     }
 
 }
-
