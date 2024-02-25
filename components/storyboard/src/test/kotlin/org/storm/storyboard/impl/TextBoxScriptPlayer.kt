@@ -17,8 +17,7 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
 
     companion object {
         private const val TEXT_BOX_HEIGHT = 120.0 // pixels
-        private const val TEXT_FRAME_DELAY =
-            2 // number of frames to wait before adding the next character to the screen
+        private const val TEXT_FRAME_DELAY = 2 // number of frames to wait before adding the next character to the screen
     }
 
     private var screenText = ""
@@ -32,7 +31,7 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
         super.reset()
     }
 
-    override fun update(time: Double, elapsedTime: Double) {
+    override suspend fun update(time: Double, elapsedTime: Double) {
         if (currentFrame++ >= TEXT_FRAME_DELAY) {
             currentFrame = 0
             currentLength = if (currentLength + 1 < line.length) {
@@ -44,7 +43,7 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
         }
     }
 
-    override fun render(gc: GraphicsContext, x: Double, y: Double) {
+    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
         // Because this is just for testing we can hardcode this
         val (screenWidth, screenHeight) = Resolution.SD
 
@@ -83,7 +82,7 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
         }
     }
 
-    override fun process(actionState: ActionState) {
+    override suspend fun process(actionState: ActionState) {
         if (actionState.isFirstTrigger("progress")) {
             if (currentLength < line.length) {
                 currentLength = line.length - 1

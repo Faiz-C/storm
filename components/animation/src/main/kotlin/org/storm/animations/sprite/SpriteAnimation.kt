@@ -49,11 +49,11 @@ class SpriteAnimation(
         return (loops == Animation.LOOP_INDEFINITELY && hasCompletedOnce) || currentLoop == loops
     }
 
-    override fun render(gc: GraphicsContext, x: Double, y: Double) {
+    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
         gc.drawImage(sprites[currentSprite], x, y)
     }
 
-    override fun update(time: Double, elapsedTime: Double) {
+    override suspend fun update(time: Double, elapsedTime: Double) {
         if (!playing || currentLoop == loops) return
 
         if (++currentFrame == delay) {
@@ -63,8 +63,7 @@ class SpriteAnimation(
 
         if (currentSprite == sprites.size) {
             currentSprite = 0
-            currentLoop =
-                if (currentLoop == Animation.LOOP_INDEFINITELY) Animation.LOOP_INDEFINITELY else currentLoop + 1
+            currentLoop = if (currentLoop == Animation.LOOP_INDEFINITELY) Animation.LOOP_INDEFINITELY else currentLoop + 1
             hasCompletedOnce = true
         }
     }

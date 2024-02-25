@@ -11,7 +11,7 @@ import org.storm.core.input.ActionEvent
 import org.storm.core.input.ActionManager
 import org.storm.core.ui.Resolution
 import org.storm.core.ui.Window
-import org.storm.core.utils.onInterval
+import org.storm.core.utils.scheduleOnInterval
 import org.storm.engine.exception.StormEngineException
 import org.storm.engine.request.Request
 import org.storm.engine.request.RequestQueue
@@ -19,6 +19,7 @@ import org.storm.engine.state.State
 import org.storm.physics.ImpulseResolutionPhysicsEngine
 import org.storm.physics.PhysicsEngine
 import org.storm.physics.transforms.UnitConvertor
+import java.util.concurrent.Executors
 
 /**
  * The StormEngine combines the multiple components of the Storm libraries to create a simple, straight forward and
@@ -26,8 +27,7 @@ import org.storm.physics.transforms.UnitConvertor
  */
 class StormEngine(
     private val resolution: Resolution = Resolution.SD, // Default to 640 x 480
-    private val unitConvertor: UnitConvertor = object :
-        UnitConvertor {}, // Default to standard Unit Convertor (1 unit = 10 pixels)
+    private val unitConvertor: UnitConvertor = object : UnitConvertor {}, // Default to standard Unit Convertor (1 unit = 10 pixels)
     private val actionManager: ActionManager = ActionManager(),
     val physicsEngine: PhysicsEngine = ImpulseResolutionPhysicsEngine(resolution, unitConvertor),
     renderFps: Int = 60,
@@ -66,7 +66,9 @@ class StormEngine(
     private var physicsDelay: Int = 0
 
     private var gameLoop: Job? = null
-    private val gameLoopScope: CoroutineScope = CoroutineScope(Dispatchers.JavaFx)
+    private val engineCoroutineScope: CoroutineScope = CoroutineScope(Executors.newSingleThreadExecutor() {
+        Thread(it).apply { isDaemon = true }
+    }.asCoroutineDispatcher())
 
     // Stateful Vars
     private var currentState: State? = null
@@ -102,7 +104,7 @@ class StormEngine(
             this.fixedTimeStepInterval = 1000000000L / this.logicFps
 
             // Restart the loop with the new interval rate
-            this.gameLoop = this.gameLoopScope.onInterval(1000L / higher) {
+            this.gameLoop = this.engineCoroutineScope.scheduleOnInterval(1000L / higher) {
                 this.runGameLogic()
             }
 
@@ -172,10 +174,14 @@ class StormEngine(
      */
     fun addKeyTranslator(inputActionActionTranslator: ActionTranslator<KeyEvent>) {
         window.onKeyPressed = EventHandler { keyEvent ->
-            actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(keyEvent), true))
+            runBlocking {
+                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(keyEvent), true))
+            }
         }
         window.onKeyReleased = EventHandler { keyEvent ->
-            actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(keyEvent), false))
+            runBlocking {
+                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(keyEvent), false))
+            }
         }
     }
 
@@ -187,16 +193,24 @@ class StormEngine(
      */
     fun addMouseTranslator(inputActionActionTranslator: ActionTranslator<MouseEvent>) {
         window.onMousePressed = EventHandler { mouseEvent ->
-            actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), true))
+            runBlocking {
+                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), true))
+            }
         }
         window.onMouseReleased = EventHandler { mouseEvent ->
-            actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), false))
+            runBlocking {
+                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), false))
+            }
         }
         window.onMouseEntered = EventHandler { mouseEvent ->
-            actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), true))
+            runBlocking {
+                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), true))
+            }
         }
         window.onMouseExited = EventHandler { mouseEvent ->
-            actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), false))
+            runBlocking {
+                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), false))
+            }
         }
     }
 
@@ -213,7 +227,7 @@ class StormEngine(
     /**
      * Internal run method which represents the game loop and actually runs the engine
      */
-    private fun runGameLogic() {
+    private suspend fun runGameLogic() {
         if (this.paused || !this.running || this.currentState == null) return
 
         val now = System.nanoTime()
@@ -255,9 +269,13 @@ class StormEngine(
         }
 
         if (++this.renderDelay >= this.renderFpsRatio) {
-            this.window.clear()
-            this.currentState!!.render(this.window.graphicsContext, 0.0, 0.0)
-            this.renderDelay = 0
+            withContext(Dispatchers.JavaFx) {
+                this@StormEngine.window.clear()
+                this@StormEngine.window.graphicsContext.save()
+                this@StormEngine.currentState!!.render(this@StormEngine.window.graphicsContext, 0.0, 0.0)
+                this@StormEngine.window.graphicsContext.restore()
+                this@StormEngine.renderDelay = 0
+            }
         }
     }
 }

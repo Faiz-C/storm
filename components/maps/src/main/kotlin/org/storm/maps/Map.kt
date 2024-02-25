@@ -45,12 +45,11 @@ class Map(
         renderPoint.translate(dx, dy)
     }
 
-    override fun render(gc: GraphicsContext, x: Double, y: Double) {
-        layers
-            .forEach(Consumer { layer -> layer.render(gc, renderPoint.x, renderPoint.y) })
+    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
+        layers.forEach { layer -> layer.render(gc, renderPoint.x, renderPoint.y) }
     }
 
-    override fun update(time: Double, elapsedTime: Double) {
+    override suspend fun update(time: Double, elapsedTime: Double) {
         layers.filter {
             it.active
         }.forEach {

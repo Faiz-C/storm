@@ -73,7 +73,7 @@ class BouncingBallTestState : SwitchableState() {
         soundManager.pause("bgm")
     }
 
-    override fun process(actionState: ActionState, requestQueue: RequestQueue) {
+    override suspend fun process(actionState: ActionState, requestQueue: RequestQueue) {
         super.process(actionState, requestQueue)
         if (actionState.isFirstTrigger(KeyActionConstants.SPACE)) {
             requestQueue.submit(TogglePhysicsRequest(false))

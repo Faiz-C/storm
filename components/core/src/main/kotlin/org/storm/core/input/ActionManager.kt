@@ -16,7 +16,6 @@ open class ActionManager(
     protected val maxActionHistory: Int = 10
 ) {
 
-    // TODO: Potentially update this class to be coroutine aware
     protected val actionMutex: Mutex = Mutex()
 
     protected val activeActions: MutableMap<String, ActionInputInfo> = ConcurrentHashMap()
@@ -31,18 +30,16 @@ open class ActionManager(
      *
      * @param actionEvent The action event to submit
      */
-    fun submitActionEvent(actionEvent: ActionEvent) {
-        runBlocking {
-            actionMutex.withLock {
-                updateEventHistory(actionEvent)
+    suspend fun submitActionEvent(actionEvent: ActionEvent) {
+        actionMutex.withLock {
+            updateEventHistory(actionEvent)
 
-                updateActiveActions(actionEvent)
+            updateActiveActions(actionEvent)
 
-                activeActions[actionEvent.action]?.let { actionInputInfo ->
-                    if (actionInputInfo.inDebounce) return@withLock
+            activeActions[actionEvent.action]?.let { actionInputInfo ->
+                if (actionInputInfo.inDebounce) return@withLock
 
-                    updateActionHistory(actionEvent)
-                }
+                updateActionHistory(actionEvent)
             }
         }
     }
@@ -50,28 +47,26 @@ open class ActionManager(
     /**
      * @return A snapshot of the current state of the action manager
      */
-    fun getStateSnapshot(): ActionState {
-        return runBlocking {
-            actionMutex.withLock {
-                activeActions.forEach { (action, info) ->
-                    activeActions[action] = info.copy(
-                        activeSnapshots = info.activeSnapshots + 1
-                    )
-                }
-
-                val actionState = ActionState(
-                    activeActions = activeActions,
-                    activeActionHistory = activeActionHistory,
-                    eventHistory = eventHistory,
-                    eventCountSinceLastSnapshot = eventCountSinceLastSnapshot,
-                    actionCountSinceLastSnapshot = actionCountSinceLastSnapshot
+    suspend fun getStateSnapshot(): ActionState {
+        return actionMutex.withLock {
+            activeActions.forEach { (action, info) ->
+                activeActions[action] = info.copy(
+                    activeSnapshots = info.activeSnapshots + 1
                 )
-
-                eventCountSinceLastSnapshot = 0
-                actionCountSinceLastSnapshot = 0
-
-                actionState
             }
+
+            val actionState = ActionState(
+                activeActions = activeActions,
+                activeActionHistory = activeActionHistory,
+                eventHistory = eventHistory,
+                eventCountSinceLastSnapshot = eventCountSinceLastSnapshot,
+                actionCountSinceLastSnapshot = actionCountSinceLastSnapshot
+            )
+
+            eventCountSinceLastSnapshot = 0
+            actionCountSinceLastSnapshot = 0
+
+            actionState
         }
     }
 

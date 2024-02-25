@@ -4,6 +4,7 @@ import javafx.application.Application
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
+import kotlinx.coroutines.runBlocking
 import org.storm.core.ui.Resolution
 import org.storm.core.ui.Window
 import org.storm.maps.tile.TileSet
@@ -40,7 +41,7 @@ class TileLayerTest : Application() {
         val layer: Layer = TileLayer(false, Resolution.SD, tileSet, skeleton)
         val renderPoint = Point(0.0, 0.0)
 
-        layer.render(window.graphicsContext, renderPoint.x, renderPoint.y)
+        runBlocking { layer.render(window.graphicsContext, renderPoint.x, renderPoint.y) }
 
         val shiftAmount = 16.0
         val mapWidth = (tileSet.tileWidth * skeleton[0].size).toDouble()
@@ -61,7 +62,7 @@ class TileLayerTest : Application() {
             }
 
             window.clear()
-            layer.render(window.graphicsContext, renderPoint.x, renderPoint.y)
+            runBlocking { layer.render(window.graphicsContext, renderPoint.x, renderPoint.y) }
         }
 
         primaryStage.scene = window

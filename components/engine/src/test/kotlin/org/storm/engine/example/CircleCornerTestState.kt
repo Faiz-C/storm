@@ -53,7 +53,7 @@ class CircleCornerTestState : SwitchableState() {
         soundManager.pause("bgm")
     }
 
-    override fun process(actionState: ActionState, requestQueue: RequestQueue) {
+    override suspend fun process(actionState: ActionState, requestQueue: RequestQueue) {
         super.process(actionState, requestQueue)
 
         this.player.velocity = Vectors.ZERO_VECTOR

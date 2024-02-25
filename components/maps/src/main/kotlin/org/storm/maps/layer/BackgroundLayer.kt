@@ -23,7 +23,7 @@ class BackgroundLayer(
         throw MapLayerException("cannot remove entities to the background layer")
     }
 
-    override fun render(gc: GraphicsContext, x: Double, y: Double) {
+    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
         val croppedBackground = crop(
             background, x.toInt(), y.toInt(), (x + resolution.width).toInt(), (y + resolution.height)
                 .toInt()
@@ -31,7 +31,7 @@ class BackgroundLayer(
         gc.drawImage(croppedBackground, 0.0, 0.0)
     }
 
-    override fun update(time: Double, elapsedTime: Double) {
+    override suspend fun update(time: Double, elapsedTime: Double) {
         // Default behaviour involves no updating but something like Parallax might involve the need to update
     }
 }

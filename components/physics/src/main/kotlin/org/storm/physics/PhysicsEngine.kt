@@ -45,7 +45,7 @@ abstract class PhysicsEngine protected constructor(
         synchronized(this.entityLock) { this.entities.forEach { entity -> entity.actingForces.clear() } }
     }
 
-    override fun update(time: Double, elapsedTime: Double) {
+    override suspend fun update(time: Double, elapsedTime: Double) {
         if (this.paused) return
 
         synchronized(this.entityLock) {
@@ -54,7 +54,7 @@ abstract class PhysicsEngine protected constructor(
         }
     }
 
-    override fun render(gc: GraphicsContext, x: Double, y: Double) {
+    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
         this.collisionStructure.transform(this.unitConvertor).render(gc, 0.0, 0.0)
     }
 

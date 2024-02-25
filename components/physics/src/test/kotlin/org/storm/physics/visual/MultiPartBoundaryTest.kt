@@ -87,40 +87,40 @@ class MultiPartBoundaryTest : Application() {
     )
 
     private val entities: MutableSet<Entity> = mutableSetOf()
-    private lateinit var simulator: Simulator
+    private lateinit var physicsSimulator: PhysicsSimulator
 
     override fun start(stage: Stage) {
 
         // Make a Display
         val window = Window(Resolution.SD)
-        this.simulator = Simulator(Resolution.SD, 144.0) { render(window) }
+        this.physicsSimulator = PhysicsSimulator(Resolution.SD, 144.0) { render(window) }
         this.entities.add(boundingBox)
         this.entities.add(multiPartBoundaryEntity)
 
-        this.simulator.physicsEngine.entities = this.entities
+        this.physicsSimulator.physicsEngine.entities = this.entities
 
         multiPartBoundaryEntity.addForce(Direction.NORTH_WEST.vector.scale(this.unitConvertor.toUnits(100.0)), 0.1)
         multiPartBoundaryEntity.addForce(Direction.NORTH.vector.scale(this.unitConvertor.toUnits(100.0)), 0.1)
 
-        this.simulator.physicsEngine.paused = true
+        this.physicsSimulator.physicsEngine.paused = true
 
         window.onKeyPressed = EventHandler { keyEvent: KeyEvent ->
             if (keyEvent.code == KeyCode.SPACE) {
-                this.simulator.physicsEngine.paused = !this.simulator.physicsEngine.paused
+                this.physicsSimulator.physicsEngine.paused = !this.physicsSimulator.physicsEngine.paused
             }
         }
 
-        this.simulator.simulate()
+        this.physicsSimulator.simulate()
         stage.scene = window
         stage.show()
     }
 
-    private fun render(window: Window) {
+    private suspend fun render(window: Window) {
         window.clear()
         val gc = window.graphicsContext
         window.graphicsContext.save()
 
-        this.simulator.physicsEngine.render(gc, 0.0, 0.0)
+        this.physicsSimulator.physicsEngine.render(gc, 0.0, 0.0)
         this.entities.forEach { e: Entity ->
             if (e is ImmovableEntity) {
                 gc.fill = Color.RED

@@ -68,20 +68,20 @@ open class StoryBoardEngine(
         states.clear()
     }
 
-    override fun process(actionState: ActionState) {
+    override suspend fun process(actionState: ActionState) {
         currentState?.process(actionState)
     }
 
-    override fun render(gc: GraphicsContext, x: Double, y: Double) {
+    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
         currentState?.render(gc, x, y)
     }
 
-    override fun update(time: Double, elapsedTime: Double) {
+    override suspend fun update(time: Double, elapsedTime: Double) {
         val state = currentState ?: return
 
         state.update(time, elapsedTime)
 
-        if (!state.isComplete() || state.next == null) return
+        if (!state.isComplete() || state.terminal || state.next == null) return
 
         switchState(state.next!!)
     }

@@ -17,6 +17,6 @@ interface StormEngineProcessor {
      * @param actionManager an ActionManager which details what in game actions the User is currently performing
      * @param requestQueue the RequestQueue that the StormEngine will use to handle input requests
      */
-    fun process(actionState: ActionState, requestQueue: RequestQueue)
+    suspend fun process(actionState: ActionState, requestQueue: RequestQueue)
 
 }
