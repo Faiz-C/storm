@@ -1,6 +1,9 @@
 package org.storm.physics.math.geometry.shapes
 
+import javafx.scene.canvas.GraphicsContext
+import org.storm.core.context.Context
 import org.storm.core.render.Renderable
+import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.math.Interval
 import org.storm.physics.math.Vector
 import org.storm.physics.math.geometry.LineSegment
@@ -10,8 +13,9 @@ import org.storm.physics.transforms.UnitConvertor
 open class Circle(
     override val center: Point,
     val radius: Double,
-    val diameter: Double = radius * 2
 ) : Shape {
+
+    val diameter: Double = radius * 2
 
     override val edges: List<LineSegment> = emptyList()
 
@@ -19,7 +23,9 @@ open class Circle(
 
     override fun contains(p: Point): Boolean = this.center.getSquaredDistance(p) <= this.radius * this.radius
 
-    override fun transform(unitConvertor: UnitConvertor) = Renderable { gc, x, y ->
+    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
+        val unitConvertor = Context.UNIT_CONVERTOR
+
         gc.fillOval(
             x + unitConvertor.toPixels(this.center.x - this.radius),
             y + unitConvertor.toPixels(this.center.y - this.radius),

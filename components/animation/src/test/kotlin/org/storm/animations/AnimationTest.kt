@@ -7,9 +7,10 @@ import kotlinx.coroutines.javafx.JavaFx
 import org.slf4j.LoggerFactory
 import org.storm.animations.sprite.SpriteAnimation
 import org.storm.animations.sprite.SpriteSheet
+import org.storm.core.context.Context
+import org.storm.core.context.setResolution
 import org.storm.core.ui.Resolution
 import org.storm.core.ui.Window
-import java.util.concurrent.Executors
 
 class AnimationTest : Application() {
 
@@ -29,7 +30,8 @@ class AnimationTest : Application() {
     private lateinit var leftSpriteAnimation: SpriteAnimation
 
     override fun start(primaryStage: Stage) {
-        val window = Window(Resolution(320.0, 240.0))
+        Context.setResolution(Resolution(320.0, 240.0))
+        val window = Window()
         val spriteSheet = SpriteSheet("src/test/resources/spriteSheet.png", 32, 32)
         downSpriteAnimation = SpriteAnimation(sprites = spriteSheet.row(0), delay = 8, loops = Animation.LOOP_INDEFINITELY)
         rightSpriteAnimation = SpriteAnimation(sprites = spriteSheet.row(1), delay = 8, loops = 6)

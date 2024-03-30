@@ -2,7 +2,7 @@ package org.storm.storyboard.helpers
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
-import org.storm.core.utils.scheduleOnInterval
+import org.storm.core.extensions.scheduleOnInterval
 import java.util.concurrent.Executors
 
 class StoryBoardSimulator(

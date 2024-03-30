@@ -5,14 +5,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.withContext
-import org.storm.core.ui.Resolution
-import org.storm.core.utils.scheduleOnInterval
+import org.storm.core.extensions.scheduleOnInterval
 import org.storm.physics.ImpulseResolutionPhysicsEngine
 import org.storm.physics.PhysicsEngine
 import java.util.concurrent.Executors
 
 class PhysicsSimulator(
-    resolution: Resolution,
     private val targetFps: Double,
     private val renderHandler: suspend () -> Unit
 ) {
@@ -27,7 +25,7 @@ class PhysicsSimulator(
         Thread(it).apply { isDaemon = true }
     }.asCoroutineDispatcher())
 
-    val physicsEngine: PhysicsEngine = ImpulseResolutionPhysicsEngine(resolution)
+    val physicsEngine: PhysicsEngine = ImpulseResolutionPhysicsEngine()
 
     private var lastUpdateTime: Double = System.nanoTime().toDouble()
     private val fixedStepInterval: Double = 1000000000.0 / this.targetFps

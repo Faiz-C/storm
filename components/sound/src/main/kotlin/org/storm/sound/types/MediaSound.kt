@@ -16,6 +16,7 @@ class MediaSound(
     resource: Boolean = true,
     override val delay: Int = 0,
     override val loops: Int = 1,
+    override val type: String = Sound.Type.BGM.value
 ) : Sound {
 
     companion object {

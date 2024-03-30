@@ -5,8 +5,11 @@ import javafx.event.EventHandler
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
+import org.storm.core.context.Context
+import org.storm.core.context.RESOLUTION
 import org.storm.core.ui.Resolution
 import org.storm.core.ui.Window
+import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.entity.Entity
 import org.storm.physics.entity.ImmovableEntity
 import org.storm.physics.entity.SimpleEntity
@@ -16,12 +19,12 @@ import org.storm.physics.transforms.UnitConvertor
 
 class VisualAtRestTest : Application() {
 
-    private val unitConvertor: UnitConvertor = object : UnitConvertor {}
+    private val unitConvertor: UnitConvertor = Context.UNIT_CONVERTOR
     private val platform: Entity = ImmovableEntity(
         AABB(
             unitConvertor.toUnits(1.0),
-            unitConvertor.toUnits(Resolution.SD.height - 20),
-            unitConvertor.toUnits(Resolution.SD.width - 2),
+            unitConvertor.toUnits(Context.RESOLUTION.height - 20),
+            unitConvertor.toUnits(Context.RESOLUTION.width - 2),
             unitConvertor.toUnits(10.0)
         )
     )
@@ -73,8 +76,8 @@ class VisualAtRestTest : Application() {
 
     override fun start(stage: Stage) {
         // Make a Display
-        val window = Window(Resolution.SD)
-        physicsSimulator = PhysicsSimulator(Resolution.SD, 400.0) { render(window) }
+        val window = Window()
+        physicsSimulator = PhysicsSimulator(400.0) { render(window) }
         physicsSimulator.physicsEngine.entities =
             setOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4)
         repellingBall.addForce(Direction.SOUTH.vector.scale(unitConvertor.toUnits(10.0)))
@@ -98,11 +101,11 @@ class VisualAtRestTest : Application() {
     private suspend fun render(window: Window) {
         window.clear()
         physicsSimulator.physicsEngine.render(window.graphicsContext, 0.0, 0.0)
-        platform.transform().render(window.graphicsContext, 0.0, 0.0)
-        repellingBall.transform().render(window.graphicsContext, 0.0, 0.0)
-        repellingBall2.transform().render(window.graphicsContext, 0.0, 0.0)
-        repellingBall3.transform().render(window.graphicsContext, 0.0, 0.0)
-        repellingBall4.transform().render(window.graphicsContext, 0.0, 0.0)
+        platform.render(window.graphicsContext, 0.0, 0.0)
+        repellingBall.render(window.graphicsContext, 0.0, 0.0)
+        repellingBall2.render(window.graphicsContext, 0.0, 0.0)
+        repellingBall3.render(window.graphicsContext, 0.0, 0.0)
+        repellingBall4.render(window.graphicsContext, 0.0, 0.0)
     }
 
 }

@@ -1,10 +1,12 @@
 package org.storm.engine.example
 
+import org.storm.core.context.Context
 import org.storm.core.input.ActionState
 import org.storm.core.ui.Resolution
 import org.storm.engine.KeyActionConstants
-import org.storm.engine.request.RequestQueue
+import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
+import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.Circle
 import org.storm.sound.types.MediaSound
@@ -15,46 +17,46 @@ class BouncingBallTestState : SwitchableState() {
             ImmovableRectEntity(
                 0.0,
                 0.0,
-                this.unitConvertor.toUnits(Resolution.SD.width),
-                this.unitConvertor.toUnits(5.0)
+                Context.UNIT_CONVERTOR.toUnits(Resolution.SD.width),
+                Context.UNIT_CONVERTOR.toUnits(5.0)
             )
         )
         this.mutableEntities.add(
             ImmovableRectEntity(
                 0.0,
                 0.0,
-                this.unitConvertor.toUnits(5.0),
-                this.unitConvertor.toUnits(Resolution.SD.height)
+                Context.UNIT_CONVERTOR.toUnits(5.0),
+                Context.UNIT_CONVERTOR.toUnits(Resolution.SD.height)
             )
         )
         this.mutableEntities.add(
             ImmovableRectEntity(
-                this.unitConvertor.toUnits(Resolution.SD.width - 5),
+                Context.UNIT_CONVERTOR.toUnits(Resolution.SD.width - 5),
                 0.0,
-                this.unitConvertor.toUnits(5.0),
-                this.unitConvertor.toUnits(Resolution.SD.height)
+                Context.UNIT_CONVERTOR.toUnits(5.0),
+                Context.UNIT_CONVERTOR.toUnits(Resolution.SD.height)
             )
         )
         this.mutableEntities.add(
             ImmovableRectEntity(
                 0.0,
-                this.unitConvertor.toUnits(Resolution.SD.height - 5),
-                this.unitConvertor.toUnits(Resolution.SD.width),
-                this.unitConvertor.toUnits(5.0)
+                Context.UNIT_CONVERTOR.toUnits(Resolution.SD.height - 5),
+                Context.UNIT_CONVERTOR.toUnits(Resolution.SD.width),
+                Context.UNIT_CONVERTOR.toUnits(5.0)
             )
         )
         this.mutableEntities.add(
             EntityImpl(
                 Circle(
-                    this.unitConvertor.toUnits(25.0),
-                    this.unitConvertor.toUnits(200.0),
-                    this.unitConvertor.toUnits(15.0)
+                    Context.UNIT_CONVERTOR.toUnits(25.0),
+                    Context.UNIT_CONVERTOR.toUnits(200.0),
+                    Context.UNIT_CONVERTOR.toUnits(15.0)
                 ),
-                this.unitConvertor.toUnits(5.0),
+                Context.UNIT_CONVERTOR.toUnits(5.0),
                 11.0,
                 1.0
             ).also {
-                it.addForce(Direction.SOUTH_EAST.vector.scale(this.unitConvertor.toUnits(100.0)), 0.1)
+                it.addForce(Direction.SOUTH_EAST.vector.scale(Context.UNIT_CONVERTOR.toUnits(100.0)), 0.1)
             }
         )
 
@@ -62,21 +64,21 @@ class BouncingBallTestState : SwitchableState() {
         this.soundManager.adjustAllVolume(0.1)
     }
 
-    override fun preload(requestQueue: RequestQueue) {
+    override fun preload() {
     }
 
-    override fun load(requestQueue: RequestQueue) {
+    override fun load() {
         soundManager.play("bgm")
     }
 
-    override fun unload(requestQueue: RequestQueue) {
+    override fun unload() {
         soundManager.pause("bgm")
     }
 
-    override suspend fun process(actionState: ActionState, requestQueue: RequestQueue) {
-        super.process(actionState, requestQueue)
+    override suspend fun process(actionState: ActionState) {
+        super.process(actionState)
         if (actionState.isFirstTrigger(KeyActionConstants.SPACE)) {
-            requestQueue.submit(TogglePhysicsRequest(false))
+            Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
         }
     }
 

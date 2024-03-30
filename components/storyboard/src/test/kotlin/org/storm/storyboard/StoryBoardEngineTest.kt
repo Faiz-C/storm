@@ -39,7 +39,7 @@ class StoryBoardEngineTest : Application() {
         engine.loadScene("bats")
         engine.switchState("top-left")
 
-        val window = Window(Resolution.SD)
+        val window = Window()
 
         val actionManager = ActionManager()
 

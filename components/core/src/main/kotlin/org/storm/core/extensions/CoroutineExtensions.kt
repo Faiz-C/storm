@@ -1,4 +1,4 @@
-package org.storm.core.utils
+package org.storm.core.extensions
 
 import kotlinx.coroutines.*
 

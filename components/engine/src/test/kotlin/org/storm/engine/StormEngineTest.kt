@@ -3,11 +3,16 @@ package org.storm.engine
 import javafx.application.Application
 import javafx.stage.Stage
 import org.storm.engine.example.*
+import org.storm.physics.ImpulseResolutionPhysicsEngine
 
 class StormEngineTest : Application() {
 
     override fun start(primaryStage: Stage) {
-        val stormEngine = StormEngine(renderFps = 144, logicFps = 180)
+        val stormEngine = StormEngine(
+            physicsEngine = ImpulseResolutionPhysicsEngine(),
+            renderFps = 144,
+            logicFps = 240,
+        )
 
         stormEngine.addState(KeyActionConstants.ONE, AtRestTestState())
         stormEngine.addState(KeyActionConstants.TWO, BouncingBallTestState())

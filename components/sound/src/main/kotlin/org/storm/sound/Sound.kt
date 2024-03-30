@@ -9,6 +9,12 @@ interface Sound {
         const val LOOP_INDEFINITELY = -1
     }
 
+    enum class Type(val value: String) {
+        BGM("BGM"),
+        EFFECT("EFFECT"),
+        VOICE("VOICE")
+    }
+
     /**
      * The amount of cycles to delay before starting the sound.
      */
@@ -18,6 +24,12 @@ interface Sound {
      * The amount of times to loop the sound. Use -1 for indefinite looping.
      */
     val loops: Int
+
+
+    /**
+     * The type of sound this is. Ex: BGM, EFFECT, VOICE
+     */
+    val type: String
 
     /**
      * Plays the sound

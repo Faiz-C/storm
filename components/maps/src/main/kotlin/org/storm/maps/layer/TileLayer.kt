@@ -1,6 +1,8 @@
 package org.storm.maps.layer
 
 import javafx.scene.canvas.GraphicsContext
+import org.storm.core.context.Context
+import org.storm.core.context.RESOLUTION
 import org.storm.core.ui.Resolution
 import org.storm.maps.tile.Tile
 import org.storm.maps.tile.TileSet
@@ -8,10 +10,9 @@ import org.storm.physics.math.geometry.shapes.AABB
 
 class TileLayer(
     active: Boolean,
-    resolution: Resolution,
     private val tileSet: TileSet,
     private val skeleton: Array<IntArray>
-) : Layer(active, resolution) {
+) : Layer(active) {
 
     companion object {
         private fun Array<IntArray>.iterateMatrix(block: (Int, Int) -> Unit) {
@@ -30,6 +31,7 @@ class TileLayer(
     }
 
     override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
+        val resolution = Context.RESOLUTION
         val screenRect = AABB(x, y, resolution.width, resolution.height)
 
         skeleton.iterateMatrix { r, c ->

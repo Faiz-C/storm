@@ -1,10 +1,12 @@
 package org.storm.engine.example
 
+import org.storm.core.context.Context
 import org.storm.core.input.ActionState
 import org.storm.engine.KeyActionConstants
-import org.storm.engine.request.RequestQueue
+import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
 import org.storm.physics.constants.Vectors
+import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.entity.Entity
 import org.storm.physics.math.geometry.shapes.Circle
 import org.storm.sound.types.MediaSound
@@ -13,11 +15,11 @@ class CircleCornerTestState : SwitchableState() {
 
     private val player: Entity = EntityImpl(
         Circle(
-            this.unitConvertor.toUnits(25.0),
-            this.unitConvertor.toUnits(200.0),
-            this.unitConvertor.toUnits(10.0)
+            Context.UNIT_CONVERTOR.toUnits(25.0),
+            Context.UNIT_CONVERTOR.toUnits(200.0),
+            Context.UNIT_CONVERTOR.toUnits(10.0)
         ),
-        this.unitConvertor.toUnits(2.0),
+        Context.UNIT_CONVERTOR.toUnits(2.0),
         10.0,
         0.1
     )
@@ -32,10 +34,10 @@ class CircleCornerTestState : SwitchableState() {
     init {
         this.mutableEntities.add(
             ImmovableRectEntity(
-                this.unitConvertor.toUnits(200.0),
-                this.unitConvertor.toUnits(200.0),
-                this.unitConvertor.toUnits(100.0),
-                this.unitConvertor.toUnits(100.0)
+                Context.UNIT_CONVERTOR.toUnits(200.0),
+                Context.UNIT_CONVERTOR.toUnits(200.0),
+                Context.UNIT_CONVERTOR.toUnits(100.0),
+                Context.UNIT_CONVERTOR.toUnits(100.0)
             )
         )
         this.mutableEntities.add(player)
@@ -44,17 +46,17 @@ class CircleCornerTestState : SwitchableState() {
         soundManager.adjustAllVolume(0.1)
     }
 
-    override fun load(requestQueue: RequestQueue) {
+    override fun load() {
         soundManager.play("bgm")
-        requestQueue.submit(TogglePhysicsRequest(false))
+        Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
     }
 
-    override fun unload(requestQueue: RequestQueue) {
+    override fun unload() {
         soundManager.pause("bgm")
     }
 
-    override suspend fun process(actionState: ActionState, requestQueue: RequestQueue) {
-        super.process(actionState, requestQueue)
+    override suspend fun process(actionState: ActionState) {
+        super.process(actionState)
 
         this.player.velocity = Vectors.ZERO_VECTOR
         this.movementVectors.map { (action, vector) ->

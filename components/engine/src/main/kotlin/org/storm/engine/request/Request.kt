@@ -6,7 +6,7 @@ import org.storm.engine.StormEngine
  * Represents a request which can be sent to the StormEngine to handle. Requests are carried out before
  * the logic stage of the engine loop.
  */
-interface Request {
+fun interface Request {
 
     /**
      * Executes the Request using the given StormEngine

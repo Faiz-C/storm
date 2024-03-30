@@ -1,14 +1,14 @@
 package org.storm.physics.structures
 
+import org.storm.core.render.Renderable
 import org.storm.physics.entity.Entity
 import org.storm.physics.math.geometry.shapes.Shape
-import org.storm.physics.transforms.TransformableRender
 
 /**
  * A SpatialDataStructure is a data structure which helps determine closeness of physics entities in 2D space. It is also
  * able to render itself for debug purposes.
  */
-interface SpatialDataStructure : TransformableRender {
+interface SpatialDataStructure: Renderable {
 
     /**
      * @param e Entity for which the boundary belongs too

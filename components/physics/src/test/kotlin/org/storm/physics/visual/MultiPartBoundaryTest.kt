@@ -92,8 +92,8 @@ class MultiPartBoundaryTest : Application() {
     override fun start(stage: Stage) {
 
         // Make a Display
-        val window = Window(Resolution.SD)
-        this.physicsSimulator = PhysicsSimulator(Resolution.SD, 144.0) { render(window) }
+        val window = Window()
+        this.physicsSimulator = PhysicsSimulator(144.0) { render(window) }
         this.entities.add(boundingBox)
         this.entities.add(multiPartBoundaryEntity)
 
@@ -127,7 +127,7 @@ class MultiPartBoundaryTest : Application() {
             } else {
                 gc.fill = Color.BLUE
             }
-            e.transform().render(gc, 0.0, 0.0)
+            e.render(gc, 0.0, 0.0)
         }
         window.graphicsContext.restore()
     }

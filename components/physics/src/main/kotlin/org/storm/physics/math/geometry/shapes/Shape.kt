@@ -1,16 +1,16 @@
 package org.storm.physics.math.geometry.shapes
 
+import org.storm.core.render.Renderable
 import org.storm.physics.math.Interval
 import org.storm.physics.math.Vector
 import org.storm.physics.math.geometry.Geometric
 import org.storm.physics.math.geometry.LineSegment
 import org.storm.physics.math.geometry.Point
-import org.storm.physics.transforms.TransformableRender
 
 /**
  * A Shape is a geometric representation of a (common) shape in Euclidean (2D) space
  */
-interface Shape : Geometric, TransformableRender {
+interface Shape : Geometric, Renderable {
 
     /**
      * @return the edges of the shape as LineSegments if applicable
