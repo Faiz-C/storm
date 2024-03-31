@@ -12,16 +12,6 @@ class RequestQueue {
     private val queue: Queue<List<Request>> = ConcurrentLinkedQueue()
 
     /**
-     * Submits the given Request to the queue. The request will be executed at the start of the next game
-     * loop iteration.
-     *
-     * @param request Request to submit
-     */
-    fun submit(request: Request) {
-        this.queue.add(listOf(request))
-    }
-
-    /**
      * Submits the given Requests to the queue as a list. These will all be executed together and in the order given
      * at the start of the next game loop iteration.
      *

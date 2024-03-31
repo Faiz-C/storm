@@ -14,7 +14,6 @@ import org.storm.physics.structures.SpatialDataStructure
  * forces to Entities within the game and dealing with standard collisions. Physics using this engine are done using
  * arbitrary units in the form of doubles, they may not be 1:1 with pixels.
  *
- * By Default the conversion from units to pixels is 1:10 but a specific unit conversion can be supplied.
  */
 abstract class PhysicsEngine protected constructor(
     protected val collisionStructure: SpatialDataStructure

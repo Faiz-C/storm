@@ -1,6 +1,5 @@
 package org.storm.physics.math.geometry.shapes
 
-import javafx.scene.canvas.GraphicsContext
 import org.storm.physics.math.geometry.Point
 
 /**
