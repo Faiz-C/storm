@@ -4,14 +4,12 @@ import org.storm.engine.StormEngine
 import org.storm.engine.request.Request
 
 /**
- * A Request which pauses or unpauses the PhysicsEngine.
+ * A Request which toggles the pause state of the PhysicsEngine.
  */
-class TogglePhysicsRequest(
-    private val paused: Boolean
-) : Request {
+class TogglePhysicsRequest: Request {
 
     override fun execute(stormEngine: StormEngine) {
-        stormEngine.physicsEngine.paused = paused
+        stormEngine.physicsEngine.paused = !stormEngine.physicsEngine.paused
     }
 
 }

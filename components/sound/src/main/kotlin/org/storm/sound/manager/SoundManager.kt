@@ -1,14 +1,18 @@
 package org.storm.sound.manager
 
+import org.storm.core.context.Context
+import org.storm.core.utils.observation.Observable
+import org.storm.core.utils.observation.Observer
 import org.storm.sound.Sound
+import org.storm.sound.context.*
 import org.storm.sound.exception.SoundException
 
 /**
  * A SoundManager is a helpful way of tracking and using sounds within a game
  */
 class SoundManager(
-    private val soundMap: MutableMap<String, Sound> = mutableMapOf()
-) {
+    private val sounds: MutableMap<String, Sound> = mutableMapOf()
+): Observer {
 
     /**
      * Adds the given sound to the SoundManager under the given id
@@ -17,7 +21,7 @@ class SoundManager(
      * @param sound Sound to track
      */
     fun add(id: String, sound: Sound) {
-        soundMap[id] = sound
+        sounds[id] = sound
     }
 
     /**
@@ -26,7 +30,7 @@ class SoundManager(
      * @param id the id reference for the Sound
      */
     fun remove(id: String) {
-        soundMap.remove(id)
+        sounds.remove(id)
     }
 
     /**
@@ -35,8 +39,8 @@ class SoundManager(
      * @param id the id reference for the Sound
      */
     fun play(id: String) {
-        soundMap[id] ?: throw SoundException("no sound found for id: $id")
-        soundMap[id]!!.play()
+        sounds[id] ?: throw SoundException("no sound found for id: $id")
+        sounds[id]!!.play()
     }
 
     /**
@@ -45,8 +49,8 @@ class SoundManager(
      * @param id the id reference for the Sound
      */
     fun stop(id: String) {
-        soundMap[id] ?: throw SoundException("no sound found for id: $id")
-        soundMap[id]!!.stop()
+        sounds[id] ?: throw SoundException("no sound found for id: $id")
+        sounds[id]!!.stop()
     }
 
     /**
@@ -55,8 +59,8 @@ class SoundManager(
      * @param id the id reference for the Sound
      */
     fun pause(id: String) {
-        soundMap[id] ?: throw SoundException("no sound found for id: $id")
-        soundMap[id]!!.pause()
+        sounds[id] ?: throw SoundException("no sound found for id: $id")
+        sounds[id]!!.pause()
     }
 
     /**
@@ -66,8 +70,8 @@ class SoundManager(
      * @param volume the new volume for the Sound
      */
     fun adjustVolume(id: String, volume: Double) {
-        soundMap[id] ?: throw SoundException("no sound found for id: $id")
-        soundMap[id]!!.adjustVolume(volume)
+        sounds[id] ?: throw SoundException("no sound found for id: $id")
+        sounds[id]!!.adjustVolume(volume)
     }
 
     /**
@@ -75,21 +79,33 @@ class SoundManager(
      *
      * @param volume the new volume for all the Sounds
      */
-    fun adjustAllVolume(volume: Double) {
-        soundMap.forEach { (_, sound: Sound) -> sound.adjustVolume(volume) }
+    fun adjustAllVolume(volume: Double, type: String? = null) {
+        sounds.filter {
+            type == null || it.value.type == type
+        }.forEach { (_, sound: Sound) ->
+            sound.adjustVolume(volume)
+        }
     }
 
     /**
      * Stops all sounds held by the manager
      */
     fun stopAll() {
-        soundMap.forEach { (_, sound: Sound) -> sound.stop() }
+        sounds.forEach { (_, sound: Sound) -> sound.stop() }
     }
 
     /**
      * Pauses all sounds held by the manager
      */
     fun pauseAll() {
-        soundMap.forEach { (_, sound: Sound) -> sound.pause() }
+        sounds.forEach { (_, sound: Sound) -> sound.pause() }
+    }
+
+    override fun update(o: Observable) {
+        if (o !is Context) return
+
+        adjustAllVolume(o.BGM_VOLUME * o.MASTER_VOLUME, Sound.Type.BGM.value)
+        adjustAllVolume(o.EFFECT_VOLUME * o.MASTER_VOLUME, Sound.Type.EFFECT.value)
+        adjustAllVolume(o.VOICE_VOLUME * o.MASTER_VOLUME, Sound.Type.VOICE.value)
     }
 }

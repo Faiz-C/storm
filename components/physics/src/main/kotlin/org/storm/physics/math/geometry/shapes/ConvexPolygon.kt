@@ -1,7 +1,10 @@
 package org.storm.physics.math.geometry.shapes
 
+import javafx.scene.canvas.GraphicsContext
 import org.apache.commons.math3.util.FastMath
+import org.storm.core.context.Context
 import org.storm.core.render.Renderable
+import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.math.Interval
 import org.storm.physics.math.Vector
 import org.storm.physics.math.geometry.LineSegment
@@ -105,7 +108,9 @@ open class ConvexPolygon(
         return totalIntersections and 1 != 0 // Check if odd
     }
 
-    override fun transform(unitConvertor: UnitConvertor): Renderable = Renderable { gc, x, y ->
+    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
+        val unitConvertor = Context.UNIT_CONVERTOR
+
         val vertexCount = vertices.size
         val xCoordinates = DoubleArray(vertexCount)
         val yCoordinates = DoubleArray(vertexCount)
@@ -121,6 +126,7 @@ open class ConvexPolygon(
 
     override fun toString(): String = "ConvexPolygon(vertices: $vertices)"
 
+
     /**
      * Returns the edges of the polygon as vectors. The edges are defined as such:
      *
@@ -128,7 +134,7 @@ open class ConvexPolygon(
      *
      * @return the edges of the polygon
      */
-    protected fun findEdges(): List<LineSegment> {
+    private fun findEdges(): List<LineSegment> {
         return (0 until vertices.size - 1).map { i ->
             LineSegment(vertices[i], vertices[i + 1])
         }.plus(LineSegment(vertices[vertices.size - 1], vertices[0]))
@@ -137,7 +143,7 @@ open class ConvexPolygon(
     /**
      * @return calculates and returns the center of a generic ConvexPolygon
      */
-    protected fun findCenter(): Point {
+    private fun findCenter(): Point {
         var xNumerator = 0.0
         var yNumerator = 0.0
         var denominator = 0.0

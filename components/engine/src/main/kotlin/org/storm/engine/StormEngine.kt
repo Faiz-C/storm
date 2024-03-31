@@ -6,19 +6,22 @@ import javafx.scene.input.MouseEvent
 import kotlinx.coroutines.*
 import kotlinx.coroutines.javafx.JavaFx
 import org.apache.commons.math3.util.FastMath
-import org.storm.core.input.ActionTranslator
+import org.storm.core.context.Context
+import org.storm.core.context.RESOLUTION
 import org.storm.core.input.ActionEvent
 import org.storm.core.input.ActionManager
-import org.storm.core.ui.Resolution
+import org.storm.core.input.ActionTranslator
 import org.storm.core.ui.Window
-import org.storm.core.utils.scheduleOnInterval
+import org.storm.core.utils.TimeUtils.toSeconds
+import org.storm.core.extensions.scheduleOnInterval
+import org.storm.core.utils.observation.Observable
+import org.storm.core.utils.observation.Observer
+import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.exception.StormEngineException
 import org.storm.engine.request.Request
 import org.storm.engine.request.RequestQueue
-import org.storm.engine.state.State
-import org.storm.physics.ImpulseResolutionPhysicsEngine
+import org.storm.engine.state.GameState
 import org.storm.physics.PhysicsEngine
-import org.storm.physics.transforms.UnitConvertor
 import java.util.concurrent.Executors
 
 /**
@@ -26,32 +29,20 @@ import java.util.concurrent.Executors
  * efficient 2D game engine.
  */
 class StormEngine(
-    private val resolution: Resolution = Resolution.SD, // Default to 640 x 480
-    private val unitConvertor: UnitConvertor = object : UnitConvertor {}, // Default to standard Unit Convertor (1 unit = 10 pixels)
-    private val actionManager: ActionManager = ActionManager(),
-    val physicsEngine: PhysicsEngine = ImpulseResolutionPhysicsEngine(resolution, unitConvertor),
     renderFps: Int = 60,
+    val physicsEngine: PhysicsEngine,
     val logicFps: Int = renderFps,
-    singleInputRequestMax: Int = 25
+    private val actionManager: ActionManager = ActionManager(),
 ) {
 
     companion object {
-
         // The upper bound allowed for elapsed time is 1/4 a second, but we represent it in nanoseconds so multiply by
         // 1000000000 -> 1000000000/4 = 250000000
-        private const val ELAPSED_TIME_UPPER_BOUND = 250000000L
-
-        /**
-         * @param nanoSeconds time (in nanoseconds) to convert to seconds
-         * @return the given nanoseconds in seconds
-         */
-        private fun toSeconds(nanoSeconds: Long): Double {
-            return nanoSeconds / 1000000000.0
-        }
+        private const val ELAPSED_TIME_UPPER_BOUND: Long = 250000000L
     }
 
     // Window the game will be run on
-    val window: Window = Window(resolution)
+    val window: Window = Window()
 
     // Game Loop Vars
     private var accumulator: Long = 0L
@@ -71,9 +62,8 @@ class StormEngine(
     }.asCoroutineDispatcher())
 
     // Stateful Vars
-    private var currentState: State? = null
-    private val states: MutableMap<String, State> = mutableMapOf()
-    private val requestQueue: RequestQueue = RequestQueue(singleInputRequestMax)
+    private var currentState: GameState? = null
+    private val states: MutableMap<String, GameState> = mutableMapOf()
 
     // Internal var is used to determine if the Engine has been started at least once and to avoid starting it multiple times
     private var running: Boolean = false
@@ -122,8 +112,8 @@ class StormEngine(
      * @param stateId unique id to identify the state by
      * @param state   State to add
      */
-    fun addState(stateId: String, state: State) {
-        state.preload(requestQueue)
+    fun addState(stateId: String, state: GameState) {
+        state.preload()
         this.states[stateId] = state
     }
 
@@ -150,9 +140,9 @@ class StormEngine(
         // Stop the engine temporarily during the swap
         this.paused = true
 
-        this.currentState?.unload(this.requestQueue)
+        this.currentState?.unload()
 
-        if (reset) newState.reset(this.requestQueue)
+        if (reset) newState.reset()
 
         this.currentState = newState
 
@@ -160,7 +150,7 @@ class StormEngine(
 
         this.physicsEngine.entities = this.currentState!!.entities
 
-        this.currentState!!.load(requestQueue)
+        this.currentState!!.load()
 
         // Resume the engine
         this.paused = false
@@ -243,17 +233,20 @@ class StormEngine(
         this.lastUpdateTime = now
         this.accumulator += adjustedElapsedFrameTime
 
-        // First handle a set of requests
-        this.requestQueue.next()?.let { requests: List<Request> ->
+        // First handle the next set of requests
+        Context.REQUEST_QUEUE.next()?.let { requests: List<Request> ->
             requests.forEach { request -> request.execute(this) }
         }
+
+        // Run all scheduled context updates
+        Context.runScheduledUpdates()
 
         // Capture the current state of the game here so the next steps of the game loop don't
         // get disrupted by potential changes to the current state
         val frameState = this.currentState!!
 
         // Process Input
-        frameState.process(this.actionManager.getStateSnapshot(), this.requestQueue)
+        frameState.process(this.actionManager.getStateSnapshot())
 
         // Then allow the state to do any internal updating
         frameState.update(toSeconds(this.lastUpdateTime), toSeconds(elapsedFrameTime))

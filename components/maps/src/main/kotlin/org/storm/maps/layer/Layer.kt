@@ -7,7 +7,6 @@ import org.storm.physics.entity.Entity
 
 abstract class Layer(
     var active: Boolean,
-    var resolution: Resolution,
     val entities: MutableSet<Entity> = mutableSetOf()
 ) : Renderable, Updatable {
 

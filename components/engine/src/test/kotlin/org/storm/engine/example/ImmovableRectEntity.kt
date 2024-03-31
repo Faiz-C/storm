@@ -1,5 +1,6 @@
 package org.storm.engine.example
 
+import javafx.scene.canvas.GraphicsContext
 import javafx.scene.paint.Color
 import org.storm.core.render.Renderable
 import org.storm.physics.entity.ImmovableEntity
@@ -13,9 +14,9 @@ class ImmovableRectEntity(
     height: Double
 ) : ImmovableEntity(AABB(x, y, width, height)) {
 
-    override fun transform(unitConvertor: UnitConvertor) = Renderable { gc, x, y ->
+    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
         gc.fill = Color.RED
-        super.transform(unitConvertor).render(gc, x, y)
+        super.render(gc, x, y)
     }
 
 }

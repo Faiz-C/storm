@@ -19,9 +19,9 @@ class EntityImpl(
     restitution
 ) {
 
-    override fun transform(unitConvertor: UnitConvertor) = Renderable { gc: GraphicsContext, x: Double, y: Double ->
+    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
         gc.fill = Color.BLACK
-        super.transform(unitConvertor).render(gc, x, y)
+        super.render(gc, x, y)
     }
 
 }

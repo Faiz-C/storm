@@ -1,29 +1,30 @@
 package org.storm.physics
 
 import javafx.scene.canvas.GraphicsContext
+import org.storm.core.context.Context
 import org.storm.core.render.Renderable
 import org.storm.core.update.Updatable
+import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.entity.Entity
 import org.storm.physics.math.Vector
 import org.storm.physics.structures.SpatialDataStructure
-import org.storm.physics.transforms.UnitConvertor
 
 /**
  * A PhysicsEngine is an abstract representation of a game engine's physics core. A PhysicsEngine deals with applying
  * forces to Entities within the game and dealing with standard collisions. Physics using this engine are done using
  * arbitrary units in the form of doubles, they may not be 1:1 with pixels.
  *
- * By Default the conversion from units to pixels is 1:100 but a specific unit conversion can be supplied.
  */
 abstract class PhysicsEngine protected constructor(
-    protected val collisionStructure: SpatialDataStructure,
-    protected val unitConvertor: UnitConvertor = object : UnitConvertor {}
+    protected val collisionStructure: SpatialDataStructure
 ) : Updatable, Renderable {
 
     companion object {
         private const val INFINITE_DURATION = Double.NEGATIVE_INFINITY
         private const val MINIMUM_REST_VELOCITY = 0.0001 // In pixels as the unit conversion is up to the User
     }
+
+    var paused = false
 
     protected val entityLock: Any = Any()
 
@@ -36,7 +37,6 @@ abstract class PhysicsEngine protected constructor(
             }
         }
 
-    var paused = false
 
     /**
      * Clears all forces from all entities being tracked
@@ -55,7 +55,7 @@ abstract class PhysicsEngine protected constructor(
     }
 
     override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
-        this.collisionStructure.transform(this.unitConvertor).render(gc, 0.0, 0.0)
+        this.collisionStructure.render(gc, 0.0, 0.0)
     }
 
     /**
@@ -91,7 +91,7 @@ abstract class PhysicsEngine protected constructor(
         applyForces(entity, elapsedTime)
 
         // If the entity has zero or extremely little velocity then consider it at rest. This means we DON'T check collision
-        val minimumRestVelocity = this.unitConvertor.toUnits(MINIMUM_REST_VELOCITY)
+        val minimumRestVelocity = Context.UNIT_CONVERTOR.toUnits(MINIMUM_REST_VELOCITY)
         if (entity.velocity.squaredMagnitude < minimumRestVelocity * minimumRestVelocity) return
 
         // Check and process any collisions

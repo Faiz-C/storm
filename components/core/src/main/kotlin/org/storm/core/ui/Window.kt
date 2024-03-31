@@ -6,21 +6,23 @@ import javafx.scene.canvas.GraphicsContext
 import javafx.scene.input.KeyEvent
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
+import org.storm.core.context.Context
+import org.storm.core.context.RESOLUTION
+import org.storm.core.utils.observation.Observable
+import org.storm.core.utils.observation.Observer
 
 /**
  * A Window represents a common window which has a settable resolution and can be rendered onto. It can also listen
  * for and act on events from a user (i.e. mouse events and keyboard events).
  */
-class Window(
-    resolution: Resolution
-) : Scene(Pane()) {
+class Window : Scene(Pane()), Observer {
 
     private val canvas: Canvas = Canvas()
     private val pane: Pane = (this.root as Pane).also {
         it.children.add(this.canvas)
     }
 
-    private var resolution: Resolution = resolution
+    private var resolution: Resolution = Context.RESOLUTION
         set(value) {
             field = value
             pane.setMaxSize(value.width, value.height)
@@ -29,15 +31,33 @@ class Window(
             canvas.height = value.height
         }
 
-
     init {
         this.resolution = resolution
+        Context.addObserver(this)
     }
 
     /**
      * @return GraphicsContext of the inner canvas
      */
     val graphicsContext: GraphicsContext get() = canvas.graphicsContext2D
+
+    /**
+     * Resizes the window and it's in canvas to the given resolution
+     * @param resolution new resolution
+     */
+    fun resize(resolution: Resolution) {
+        this.resolution = resolution
+    }
+
+    /**
+     * Resizes the window and it's in canvas to the given width and height
+     *
+     * @param width new width
+     * @param height new height
+     */
+    fun resize(width: Double, height: Double) {
+        resize(Resolution(width, height))
+    }
 
     /**
      * Clears the canvas of the Window
@@ -179,5 +199,11 @@ class Window(
      */
     fun addMouseReleasedHandler(handler: (MouseEvent) -> Unit) {
         addEventHandler(MouseEvent.MOUSE_RELEASED) { t -> handler(t) }
+    }
+
+    override fun update(o: Observable) {
+        if (o !is Context) return
+
+        this.resolution = o.RESOLUTION
     }
 }

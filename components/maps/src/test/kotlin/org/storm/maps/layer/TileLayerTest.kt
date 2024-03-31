@@ -13,7 +13,7 @@ import org.storm.physics.math.geometry.Point
 class TileLayerTest : Application() {
 
     override fun start(primaryStage: Stage) {
-        val window = Window(Resolution.SD)
+        val window = Window()
         val tileSet = TileSet("src/test/resources/tiles/testTileSet.png", 32, 32)
         val skeleton = arrayOf(
             intArrayOf(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2),
@@ -38,7 +38,7 @@ class TileLayerTest : Application() {
             intArrayOf(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
         )
 
-        val layer: Layer = TileLayer(false, Resolution.SD, tileSet, skeleton)
+        val layer: Layer = TileLayer(false, tileSet, skeleton)
         val renderPoint = Point(0.0, 0.0)
 
         runBlocking { layer.render(window.graphicsContext, renderPoint.x, renderPoint.y) }

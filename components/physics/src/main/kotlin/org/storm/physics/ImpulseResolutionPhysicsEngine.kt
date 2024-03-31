@@ -1,9 +1,12 @@
 package org.storm.physics
 
 import org.apache.commons.math3.util.FastMath
+import org.storm.core.context.Context
+import org.storm.core.context.RESOLUTION
 import org.storm.core.ui.Resolution
 import org.storm.physics.collision.CollisionDetector.checkMtv
 import org.storm.physics.constants.Vectors
+import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.entity.Entity
 import org.storm.physics.math.Vector
 import org.storm.physics.structures.QuadrantTree
@@ -13,16 +16,12 @@ import org.storm.physics.transforms.UnitConvertor
  * A ImpulseResolutionPhysicsEngine is straight forward and basic implementation of a PhysicsEngines.
  * It uses a Quad Tree (QuadrantTree) to check likely collisions and then uses impulse resolution to deal with collisions.
  */
-class ImpulseResolutionPhysicsEngine(
-    resolution: Resolution,
-    unitConvertor: UnitConvertor = object : UnitConvertor {}
-) : PhysicsEngine(
+class ImpulseResolutionPhysicsEngine : PhysicsEngine(
     QuadrantTree(
         0,
-        unitConvertor.toUnits(resolution.width),
-        unitConvertor.toUnits(resolution.height)
-    ),
-    unitConvertor
+        Context.UNIT_CONVERTOR.toUnits(Context.RESOLUTION.width),
+        Context.UNIT_CONVERTOR.toUnits(Context.RESOLUTION.height)
+    )
 ) {
 
     companion object {
@@ -89,9 +88,9 @@ class ImpulseResolutionPhysicsEngine(
         e2.velocity = e2.velocity.subtract(impulseVector.scale(e2.inverseMass))
 
         // Positional correction do to eventual floating point arithmetic error
-        val mag = FastMath.max(mtv.magnitude - unitConvertor.toUnits(POSITIONAL_CORRECTION_THRESHOLD), 0.0)
+        val mag = FastMath.max(mtv.magnitude - Context.UNIT_CONVERTOR.toUnits(POSITIONAL_CORRECTION_THRESHOLD), 0.0)
         val correction =
-            mag / (e1.inverseMass + e2.inverseMass) * unitConvertor.toUnits(POSITIONAL_CORRECTION_ADJUSTMENT)
+            mag / (e1.inverseMass + e2.inverseMass) * Context.UNIT_CONVERTOR.toUnits(POSITIONAL_CORRECTION_ADJUSTMENT)
 
         e1.translate(collisionNormal.scale(correction * e1.inverseMass))
         e2.translate(collisionNormal.scale(-correction * e2.inverseMass))

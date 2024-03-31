@@ -6,8 +6,12 @@ import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.scene.paint.Color
 import javafx.stage.Stage
+import org.storm.core.context.Context
+import org.storm.core.context.RESOLUTION
+import org.storm.core.context.setResolution
 import org.storm.core.ui.Resolution
 import org.storm.core.ui.Window
+import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.entity.Entity
 import org.storm.physics.entity.ImmovableEntity
 import org.storm.physics.entity.SimpleEntity
@@ -15,43 +19,13 @@ import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.Point
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
-import org.storm.physics.transforms.UnitConvertor
 import java.util.concurrent.ThreadLocalRandom
 
 class ParticleTest : Application() {
 
-    private val unitConvertor: UnitConvertor = object : UnitConvertor {}
-
-    private val boundingBox = ImmovableEntity(
-        mutableMapOf(
-            "platformTop" to AABB(
-                0.0,
-                0.0,
-                this.unitConvertor.toUnits(Resolution.HD.width),
-                this.unitConvertor.toUnits(5.0)
-            ),
-            "platformRight" to AABB(
-                0.0,
-                0.0,
-                this.unitConvertor.toUnits(5.0),
-                this.unitConvertor.toUnits(Resolution.HD.height)
-            ),
-            "platformBottom" to AABB(
-                this.unitConvertor.toUnits(Resolution.HD.width - 5),
-                0.0,
-                this.unitConvertor.toUnits(5.0),
-                this.unitConvertor.toUnits(Resolution.HD.height)
-            ),
-            "platformLeft" to AABB(
-                0.0,
-                this.unitConvertor.toUnits(Resolution.HD.height - 5),
-                this.unitConvertor.toUnits(Resolution.HD.width),
-                this.unitConvertor.toUnits(5.0)
-            )
-        )
-    )
-
+    private val boundingBox: ImmovableEntity
     private val entities: MutableSet<Entity> = mutableSetOf()
+
     private lateinit var physicsSimulator: PhysicsSimulator
     private val ballColour = Color.rgb(
         ThreadLocalRandom.current().nextInt(255),
@@ -59,27 +33,60 @@ class ParticleTest : Application() {
         ThreadLocalRandom.current().nextInt(255)
     )
 
-    override fun start(stage: Stage) {
+    init {
+        Context.setResolution(Resolution.HD)
+        val resolution = Context.RESOLUTION
+        boundingBox = ImmovableEntity(
+            mutableMapOf(
+                "platformTop" to AABB(
+                    0.0,
+                    0.0,
+                    Context.UNIT_CONVERTOR.toUnits(resolution.width),
+                    Context.UNIT_CONVERTOR.toUnits(5.0)
+                ),
+                "platformRight" to AABB(
+                    0.0,
+                    0.0,
+                    Context.UNIT_CONVERTOR.toUnits(5.0),
+                    Context.UNIT_CONVERTOR.toUnits(resolution.height)
+                ),
+                "platformBottom" to AABB(
+                    Context.UNIT_CONVERTOR.toUnits(resolution.width - 5),
+                    0.0,
+                    Context.UNIT_CONVERTOR.toUnits(5.0),
+                    Context.UNIT_CONVERTOR.toUnits(resolution.height)
+                ),
+                "platformLeft" to AABB(
+                    0.0,
+                    Context.UNIT_CONVERTOR.toUnits(resolution.height - 5),
+                    Context.UNIT_CONVERTOR.toUnits(resolution.width),
+                    Context.UNIT_CONVERTOR.toUnits(5.0)
+                )
+            )
+        )
+    }
 
+    override fun start(stage: Stage) {
         // Make a Display
-        val window = Window(Resolution.HD)
-        this.physicsSimulator = PhysicsSimulator(Resolution.HD, 144.0) { render(window) }
+        val resolution = Context.RESOLUTION
+        val window = Window()
+        this.physicsSimulator = PhysicsSimulator(144.0) { render(window) }
         this.entities.add(boundingBox)
 
         for (i in 0..999) {
             val (x, y) = Point(
-                ThreadLocalRandom.current().nextInt(10, this.unitConvertor.toUnits(Resolution.HD.width - 10).toInt())
+                ThreadLocalRandom.current().nextInt(10, Context.UNIT_CONVERTOR.toUnits(resolution.width - 10).toInt())
                     .toDouble(),
-                ThreadLocalRandom.current().nextInt(10, this.unitConvertor.toUnits(Resolution.HD.height - 10).toInt())
+                ThreadLocalRandom.current().nextInt(10, Context.UNIT_CONVERTOR.toUnits(resolution.height - 10).toInt())
                     .toDouble()
             )
-            this.entities.add(SimpleEntity(Circle(x, y, this.unitConvertor.toUnits(2.0)), 3.0, 0.5, 1.0))
+            this.entities.add(SimpleEntity(Circle(x, y, Context.UNIT_CONVERTOR.toUnits(2.0)), 3.0, 0.5, 1.0))
         }
 
         this.physicsSimulator.physicsEngine.entities = this.entities
 
         this.entities.forEach {
-            it.addForce(Direction.random().vector.scale(this.unitConvertor.toUnits(2.0)), 0.1)
+            it.addForce(Direction.random().vector.scale(Context.UNIT_CONVERTOR.toUnits(2.0)), 0.1)
         }
 
         this.physicsSimulator.physicsEngine.paused = true
@@ -106,7 +113,7 @@ class ParticleTest : Application() {
             } else {
                 gc.fill = ballColour
             }
-            e.transform().render(gc, 0.0, 0.0)
+            e.render(gc, 0.0, 0.0)
         }
         window.graphicsContext.restore()
     }

@@ -1,10 +1,12 @@
 package org.storm.engine.example
 
+import org.storm.core.context.Context
 import org.storm.core.input.ActionState
 import org.storm.core.ui.Resolution
 import org.storm.engine.KeyActionConstants
-import org.storm.engine.request.RequestQueue
+import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
+import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.entity.Entity
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
@@ -13,6 +15,7 @@ import org.storm.sound.types.MediaSound
 
 class AtRestTestState : SwitchableState() {
 
+    private val unitConvertor = Context.UNIT_CONVERTOR
     private val gravity = Direction.SOUTH.vector.scale(unitConvertor.toUnits(25.0))
 
     private val platform: Entity = ImmovableRectEntity(
@@ -77,24 +80,24 @@ class AtRestTestState : SwitchableState() {
         it.addForce(gravity)
     }
 
-    override fun preload(requestQueue: RequestQueue) {
+    override fun preload() {
         this.mutableEntities.addAll(listOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4))
         this.soundManager.add("bgm", MediaSound("music/bgm.mp3", resource = true))
         this.soundManager.adjustAllVolume(0.1)
     }
 
-    override fun unload(requestQueue: RequestQueue) {
+    override fun unload() {
         soundManager.stop("bgm")
     }
 
-    override fun load(requestQueue: RequestQueue) {
+    override fun load() {
         soundManager.play("bgm")
     }
 
-    override suspend fun process(actionState: ActionState, requestQueue: RequestQueue) {
-        super.process(actionState, requestQueue)
+    override suspend fun process(actionState: ActionState) {
+        super.process(actionState)
         if (actionState.isFirstTrigger(KeyActionConstants.SPACE)) {
-            requestQueue.submit(TogglePhysicsRequest(false))
+            Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
         }
     }
 

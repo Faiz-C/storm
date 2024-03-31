@@ -155,6 +155,8 @@ data class Vector(
 
     operator fun times(factor: Double): Vector = this.scale(factor)
 
+    operator fun times(vector: Vector): Double = this.dot(vector)
+
     /**
      * @return a Point object of this Vector
      */

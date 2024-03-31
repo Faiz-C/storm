@@ -1,10 +1,12 @@
 package org.storm.engine.example
 
+import org.storm.core.context.Context
 import org.storm.core.input.ActionState
 import org.storm.core.ui.Resolution
 import org.storm.engine.KeyActionConstants
-import org.storm.engine.request.RequestQueue
+import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
+import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.entity.Entity
 import org.storm.physics.entity.ImmovableEntity
 import org.storm.physics.enums.Direction
@@ -21,48 +23,48 @@ class ParticleTestState : SwitchableState() {
                 "platformTop" to AABB(
                     0.0,
                     0.0,
-                    this.unitConvertor.toUnits(Resolution.SD.width),
-                    this.unitConvertor.toUnits(5.0)
+                    Context.UNIT_CONVERTOR.toUnits(Resolution.SD.width),
+                    Context.UNIT_CONVERTOR.toUnits(5.0)
                 ),
                 "platformRight" to AABB(
                     0.0,
                     0.0,
-                    this.unitConvertor.toUnits(5.0),
-                    this.unitConvertor.toUnits(Resolution.SD.height)
+                    Context.UNIT_CONVERTOR.toUnits(5.0),
+                    Context.UNIT_CONVERTOR.toUnits(Resolution.SD.height)
                 ),
                 "platformBottom" to AABB(
-                    this.unitConvertor.toUnits(Resolution.SD.width - 5),
+                    Context.UNIT_CONVERTOR.toUnits(Resolution.SD.width - 5),
                     0.0,
-                    this.unitConvertor.toUnits(5.0),
-                    this.unitConvertor.toUnits(Resolution.SD.height)
+                    Context.UNIT_CONVERTOR.toUnits(5.0),
+                    Context.UNIT_CONVERTOR.toUnits(Resolution.SD.height)
                 ),
                 "platformLeft" to AABB(
                     0.0,
-                    this.unitConvertor.toUnits(Resolution.SD.height - 5),
-                    this.unitConvertor.toUnits(Resolution.SD.width),
-                    this.unitConvertor.toUnits(5.0)
+                    Context.UNIT_CONVERTOR.toUnits(Resolution.SD.height - 5),
+                    Context.UNIT_CONVERTOR.toUnits(Resolution.SD.width),
+                    Context.UNIT_CONVERTOR.toUnits(5.0)
                 )
             )
         )
         this.mutableEntities.add(boundingBox)
     }
 
-    override fun preload(requestQueue: RequestQueue) {
+    override fun preload() {
         val usedPoints: MutableSet<Point> = mutableSetOf()
 
         for (i in 0..400) {
             var topLeft = Point(
-                ThreadLocalRandom.current().nextInt(5, this.unitConvertor.toUnits(Resolution.SD.width - 5).toInt())
+                ThreadLocalRandom.current().nextInt(5, Context.UNIT_CONVERTOR.toUnits(Resolution.SD.width - 5).toInt())
                     .toDouble(),
-                ThreadLocalRandom.current().nextInt(5, this.unitConvertor.toUnits(Resolution.SD.height - 5).toInt())
+                ThreadLocalRandom.current().nextInt(5, Context.UNIT_CONVERTOR.toUnits(Resolution.SD.height - 5).toInt())
                     .toDouble()
             )
 
             while (usedPoints.contains(topLeft)) {
                 topLeft = Point(
-                    ThreadLocalRandom.current().nextInt(5, this.unitConvertor.toUnits(Resolution.SD.width - 5).toInt())
+                    ThreadLocalRandom.current().nextInt(5, Context.UNIT_CONVERTOR.toUnits(Resolution.SD.width - 5).toInt())
                         .toDouble(),
-                    ThreadLocalRandom.current().nextInt(5, this.unitConvertor.toUnits(Resolution.SD.height - 5).toInt())
+                    ThreadLocalRandom.current().nextInt(5, Context.UNIT_CONVERTOR.toUnits(Resolution.SD.height - 5).toInt())
                         .toDouble()
                 )
             }
@@ -70,27 +72,27 @@ class ParticleTestState : SwitchableState() {
             usedPoints.add(topLeft)
 
             val e: Entity = EntityImpl(
-                Circle(topLeft.x, topLeft.y, this.unitConvertor.toUnits(2.0)),
-                this.unitConvertor.toUnits(2.0),
+                Circle(topLeft.x, topLeft.y, Context.UNIT_CONVERTOR.toUnits(2.0)),
+                Context.UNIT_CONVERTOR.toUnits(2.0),
                 0.5,
                 1.0
             ).also {
-                it.addForce(Direction.random().vector.scale(this.unitConvertor.toUnits(2.0)), 0.1)
+                it.addForce(Direction.random().vector.scale(Context.UNIT_CONVERTOR.toUnits(2.0)), 0.1)
             }
 
             mutableEntities.add(e)
         }
     }
 
-    override fun load(requestQueue: RequestQueue) {
-        requestQueue.submit(TogglePhysicsRequest(true))
+    override fun load() {
+        Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
     }
 
-    override suspend fun process(actionState: ActionState, requestQueue: RequestQueue) {
-        super.process(actionState, requestQueue)
+    override suspend fun process(actionState: ActionState) {
+        super.process(actionState)
 
         if (actionState.isFirstTrigger(KeyActionConstants.SPACE)) {
-            requestQueue.submit(TogglePhysicsRequest(false))
+            Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
         }
     }
 

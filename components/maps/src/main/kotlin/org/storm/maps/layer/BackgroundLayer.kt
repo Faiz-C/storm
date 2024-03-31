@@ -2,6 +2,8 @@ package org.storm.maps.layer
 
 import javafx.scene.canvas.GraphicsContext
 import javafx.scene.image.Image
+import org.storm.core.context.Context
+import org.storm.core.context.RESOLUTION
 import org.storm.core.ui.Resolution
 import org.storm.core.utils.ImageUtils.crop
 import org.storm.maps.exception.MapLayerException
@@ -9,11 +11,10 @@ import org.storm.physics.entity.Entity
 import java.io.FileInputStream
 
 class BackgroundLayer(
-    private val background: Image,
-    resolution: Resolution
-) : Layer(false, resolution) {
+    private val background: Image
+) : Layer(false) {
 
-    constructor(imagePath: String, resolution: Resolution) : this(Image(FileInputStream(imagePath)), resolution)
+    constructor(imagePath: String) : this(Image(FileInputStream(imagePath)))
 
     override fun addEntity(entity: Entity) {
         throw MapLayerException("cannot add entities to the background layer")
@@ -24,6 +25,7 @@ class BackgroundLayer(
     }
 
     override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
+        val resolution = Context.RESOLUTION
         val croppedBackground = crop(
             background, x.toInt(), y.toInt(), (x + resolution.width).toInt(), (y + resolution.height)
                 .toInt()

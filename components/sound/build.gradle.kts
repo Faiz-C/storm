@@ -5,6 +5,10 @@ javafx {
     modules = listOf("javafx.graphics", "javafx.media")
 }
 
+dependencies {
+    api(project(":components:core"))
+}
+
 tasks {
     task<JavaExec>("mediaSoundTest") {
         dependsOn(compileKotlin, compileTestKotlin)
