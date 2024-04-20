@@ -6,7 +6,6 @@ import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
 import kotlinx.coroutines.runBlocking
 import org.storm.core.asset.AssetManager
-import org.storm.core.asset.source.loaders.localstorage.YamlLocalStorageAssetLoader
 import org.storm.core.asset.source.types.LocalStorageAssetSource
 import org.storm.core.input.ActionEvent
 import org.storm.core.input.ActionManager
@@ -21,14 +20,7 @@ class StoryBoardEngineTest : Application() {
         val resourceDir = Paths.get("src", "test", "resources")
         val assetManager = AssetManager()
 
-        assetManager.registerSource(
-            LocalStorageAssetSource(
-                resourceDir.toString(),
-                listOf(
-                    YamlLocalStorageAssetLoader()
-                )
-            )
-        )
+        assetManager.registerSource(LocalStorageAssetSource(resourceDir.toString()))
 
         val engine = StoryBoardEngine(assetManager = assetManager, assetSourceId = "local-storage")
         engine.loadScene("bats")

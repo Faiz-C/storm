@@ -1,8 +1,8 @@
 package org.storm.core.asset.source.types
 
 import com.fasterxml.jackson.core.type.TypeReference
-import org.storm.core.asset.source.AssetSourceBase
 import org.storm.core.asset.source.loaders.AssetLoader
+import org.storm.core.asset.source.loaders.AssetSource
 import org.storm.core.asset.source.loaders.localstorage.ImageLocalStorageAssetLoader
 import org.storm.core.asset.source.loaders.localstorage.JsonLocalStorageAssetLoader
 import org.storm.core.asset.source.loaders.localstorage.YamlLocalStorageAssetLoader
@@ -10,15 +10,13 @@ import org.storm.core.exception.AssetException
 
 class LocalStorageAssetSource(
     baseDir: String,
-    loaders: List<AssetLoader> = listOf(
+    override val id: String = "local-storage",
+    override val loaders: List<AssetLoader> = listOf(
         YamlLocalStorageAssetLoader(),
         JsonLocalStorageAssetLoader(),
         ImageLocalStorageAssetLoader()
     )
-): AssetSourceBase(
-    "local-storage",
-    loaders,
-) {
+): AssetSource {
 
     companion object {
         const val CONTEXT_DIR_FIELD = "dir"

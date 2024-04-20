@@ -16,12 +16,7 @@ class SoundManagerTest : Application() {
         val resourceDir = Paths.get("src", "test", "resources")
 
         it.registerSource(
-            LocalStorageAssetSource(
-                resourceDir.toString(),
-                listOf(
-                    YamlLocalStorageAssetLoader()
-                )
-            )
+            LocalStorageAssetSource(resourceDir.toString())
         )
     }
 

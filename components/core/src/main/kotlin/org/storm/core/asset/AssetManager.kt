@@ -3,8 +3,8 @@ package org.storm.core.asset
 import com.fasterxml.jackson.core.type.TypeReference
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
-import org.storm.core.asset.source.AssetSourceBase
 import org.storm.core.asset.source.loaders.AssetLoader
+import org.storm.core.asset.source.loaders.AssetSource
 import org.storm.core.exception.AssetException
 import java.time.Duration
 
@@ -18,7 +18,7 @@ class AssetManager(
 ) {
 
     // A map of asset loaders for each storage source
-    private val assetSources: MutableMap<String, AssetSourceBase> = mutableMapOf()
+    private val assetSources: MutableMap<String, AssetSource> = mutableMapOf()
 
     // A cache which links asset paths to their loaded objects
     private val assetCache: Cache<String, Any> = Caffeine.newBuilder()
@@ -31,7 +31,7 @@ class AssetManager(
      *
      * @param source The AssetSource to register
      */
-    fun registerSource(source: AssetSourceBase) {
+    fun registerSource(source: AssetSource) {
         assetSources[source.id] = source
     }
 
