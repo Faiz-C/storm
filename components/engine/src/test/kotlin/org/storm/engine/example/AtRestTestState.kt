@@ -11,7 +11,7 @@ import org.storm.physics.entity.Entity
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
-import org.storm.sound.types.MediaSound
+import org.storm.sound.types.JfxSound
 
 class AtRestTestState : SwitchableState() {
 
@@ -82,7 +82,7 @@ class AtRestTestState : SwitchableState() {
 
     override fun preload() {
         this.mutableEntities.addAll(listOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4))
-        this.soundManager.add("bgm", MediaSound("music/bgm.mp3", resource = true))
+        this.soundManager.add("bgm", JfxSound("music/bgm.mp3", resource = true))
         this.soundManager.adjustAllVolume(0.1)
     }
 

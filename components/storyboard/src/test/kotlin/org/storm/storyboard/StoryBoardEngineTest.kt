@@ -6,13 +6,11 @@ import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
 import kotlinx.coroutines.runBlocking
 import org.storm.core.asset.AssetManager
-import org.storm.core.asset.source.AssetSource
-import org.storm.core.asset.source.context.LocalStorageAssetContextBuilder
 import org.storm.core.asset.source.loaders.localstorage.YamlLocalStorageAssetLoader
-import org.storm.core.input.ActionTranslator
+import org.storm.core.asset.source.types.LocalStorageAssetSource
 import org.storm.core.input.ActionEvent
 import org.storm.core.input.ActionManager
-import org.storm.core.ui.Resolution
+import org.storm.core.input.ActionTranslator
 import org.storm.core.ui.Window
 import org.storm.storyboard.helpers.StoryBoardSimulator
 import java.nio.file.Paths
@@ -20,15 +18,12 @@ import java.nio.file.Paths
 class StoryBoardEngineTest : Application() {
 
     override fun start(stage: Stage) {
-        val resourceDir = Paths.get("src", "test", "resources", "scenes")
-
+        val resourceDir = Paths.get("src", "test", "resources")
         val assetManager = AssetManager()
-        val assetContextBuilder = LocalStorageAssetContextBuilder(resourceDir.toString(), "yml")
 
         assetManager.registerSource(
-            AssetSource(
-                "local-storage",
-                assetContextBuilder,
+            LocalStorageAssetSource(
+                resourceDir.toString(),
                 listOf(
                     YamlLocalStorageAssetLoader()
                 )

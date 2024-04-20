@@ -1,37 +1,45 @@
 package org.storm.core.asset.source.loaders.localstorage
 
+import com.fasterxml.jackson.core.type.TypeReference
 import org.storm.core.asset.source.loaders.AssetLoader
-import org.storm.core.asset.source.context.LocalStorageAssetContextBuilder
+import org.storm.core.asset.source.types.LocalStorageAssetSource
 import org.storm.core.exception.AssetException
+import java.io.File
 
 /**
  * A LocalStorageAssetLoader is responsible for loading assets from a local storage source.
  */
 abstract class LocalStorageAssetLoader(
-    private val extensions: Set<String>
+    protected val extensions: Set<String>
 ) : AssetLoader {
 
-    override fun supports(assetId: String, context: Map<String, Any>): Boolean {
-        // TODO: Consider if not passing an extension should result in an exception
-        val extension = context[LocalStorageAssetContextBuilder.EXT] ?: return false
-        return extensions.contains(extension)
+    override fun <T> load(
+        assetType: String,
+        assetId: String,
+        context: Map<String, String>,
+        typeRef: TypeReference<T>
+    ): T? {
+        val assetDir = getAssetDir(context)
+
+        this.extensions.forEach { ext ->
+            val file = File(createFilePath(assetDir, assetType, assetId, ext))
+
+            if (!file.exists()) return@forEach
+
+            return load(file, typeRef)
+        }
+
+        return null
     }
 
-    /**
-     * Creates a file path for the asset using the provided context and the assetId.
-     *
-     * @param assetId The id of the asset to load.
-     * @param context The context to use when loading the asset.
-     *
-     * @return The file path of the asset
-     */
-    protected fun createFilePath(assetId: String, context: Map<String, Any>): String {
-        val directory = context[LocalStorageAssetContextBuilder.DIR]
-            ?: throw AssetException("No directory path provided in context. Failed to load asset with id $assetId")
+    abstract fun <T> load(file: File, typeRef: TypeReference<T>): T?
 
-        val ext = context[LocalStorageAssetContextBuilder.EXT]
-            ?: throw AssetException("No file ext provided in context. Failed to load asset with id $assetId")
+    private fun createFilePath(assetDir: String, assetType: String, assetId: String, fileExt: String): String {
+        return "$assetDir/$assetType/$assetId.$fileExt"
+    }
 
-        return "$directory/$assetId.$ext"
+    private fun getAssetDir(context: Map<String, String>): String {
+        return context[LocalStorageAssetSource.CONTEXT_DIR_FIELD]
+            ?: throw AssetException("No base asset directory supplied in context. Context: $context")
     }
 }

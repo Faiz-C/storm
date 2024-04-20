@@ -9,7 +9,7 @@ import org.storm.engine.request.types.TogglePhysicsRequest
 import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.Circle
-import org.storm.sound.types.MediaSound
+import org.storm.sound.types.JfxSound
 
 class BouncingBallTestState : SwitchableState() {
     init {
@@ -60,7 +60,7 @@ class BouncingBallTestState : SwitchableState() {
             }
         )
 
-        this.soundManager.add("bgm", MediaSound("music/bgm.mp3", resource = true))
+        this.soundManager.add("bgm", JfxSound("music/bgm.mp3", resource = true))
         this.soundManager.adjustAllVolume(0.1)
     }
 

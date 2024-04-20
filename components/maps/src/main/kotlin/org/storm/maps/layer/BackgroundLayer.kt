@@ -4,7 +4,6 @@ import javafx.scene.canvas.GraphicsContext
 import javafx.scene.image.Image
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION
-import org.storm.core.ui.Resolution
 import org.storm.core.utils.ImageUtils.crop
 import org.storm.maps.exception.MapLayerException
 import org.storm.physics.entity.Entity

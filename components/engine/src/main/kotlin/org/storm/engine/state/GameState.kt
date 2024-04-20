@@ -1,12 +1,9 @@
 package org.storm.engine.state
 
 import javafx.scene.canvas.GraphicsContext
-import org.storm.core.context.Context
 import org.storm.core.input.ActionStateProcessor
 import org.storm.core.render.Renderable
 import org.storm.core.update.Updatable
-import org.storm.engine.StormEngine
-import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.entity.Entity
 import org.storm.sound.manager.SoundManager
 

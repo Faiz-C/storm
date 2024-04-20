@@ -2,27 +2,35 @@ package org.storm.sound
 
 import javafx.application.Application
 import javafx.stage.Stage
+import org.storm.core.asset.AssetManager
+import org.storm.core.asset.source.loaders.localstorage.YamlLocalStorageAssetLoader
+import org.storm.core.asset.source.types.LocalStorageAssetSource
 import org.storm.core.context.Context
-import org.storm.sound.context.setBgmVolume
 import org.storm.sound.context.setMasterVolume
 import org.storm.sound.manager.SoundManager
-import org.storm.sound.types.MediaSound
+import java.nio.file.Paths
 
 class SoundManagerTest : Application() {
 
-    companion object {
-        // Add your own sound files to test. Not adding my own for obvious reasons.
-        private const val BGM_FILE = "bgm.mp3"
-        private const val BGM2_FILE = "bgm2.mp3"
-        private const val SOUND_EFFECT_FILE = "effect.mp3"
+    private val assetManager = AssetManager().also {
+        val resourceDir = Paths.get("src", "test", "resources")
+
+        it.registerSource(
+            LocalStorageAssetSource(
+                resourceDir.toString(),
+                listOf(
+                    YamlLocalStorageAssetLoader()
+                )
+            )
+        )
     }
 
-    private val soundManager = SoundManager()
+    private val soundManager = SoundManager(assetManager = assetManager)
 
     override fun start(stage: Stage) {
-        soundManager.add("effect", MediaSound(SOUND_EFFECT_FILE, type = Sound.Type.EFFECT.value, resource = true))
-        soundManager.add("bgm1", MediaSound(BGM_FILE, loops = Sound.LOOP_INDEFINITELY, resource = true))
-        soundManager.add("bgm2", MediaSound(BGM2_FILE, resource = true))
+        soundManager.loadSound("effect")
+        soundManager.loadSound("bgm1")
+        soundManager.loadSound("bgm2")
 
         Context.setMasterVolume(0.8)
 

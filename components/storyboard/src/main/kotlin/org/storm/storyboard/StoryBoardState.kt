@@ -28,7 +28,7 @@ interface StoryBoardState : Renderable, Updatable, ActionStateProcessor {
     val id: String
 
     /**
-     * The type of state, used to help serialize and deserialize the state using Asset loading.
+     * The type of asset, used to help serialize and deserialize the state using Asset loading.
      */
     val type: String
         get() {

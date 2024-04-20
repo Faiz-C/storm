@@ -7,7 +7,6 @@ import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION
-import org.storm.core.ui.Resolution
 import org.storm.core.ui.Window
 import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.entity.Entity

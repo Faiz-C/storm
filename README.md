@@ -33,12 +33,10 @@ and [UI](components/core/src/main/java/org/storm/core/ui).
 
 ### _[Sound](components/sound)_
 A small component which defines how the engine manages sound. It encompasses both BGM (Background Music) and sound
-effects. It provides a [SoundManager](components/sound/src/main/java/org/storm/sound/manager/SoundManager.java) to help
-track and use a collection of sounds as well.
+effects. It provides a [SoundManager](components/sound/src/main/java/org/storm/sound/manager/SoundManager.java) to help track and use a collection of sounds as well.
 
-Note that I chose to **exclude** the testing sounds referenced by *bgm.mp3*, *bgm2.mp3* and *effect.mp3*
-found under *components/sound/src/test/resources* as I tested with songs on hand. If you want to test the Gradle execution
-tasks for this component please add in whichever songs you like as those files first.
+If you'd like to run the tests for any reason you will have to add in your own songs/sounds to the test resources.
+The files used in existing tests are *bgm.mp3*, *bgm2.mp3* and *effect.mp3*.
 
 ### _[Physics](components/physics)_
 The largest, most complex, and my favourite component of the engine. It encompasses the Storm Engine's math and physics 

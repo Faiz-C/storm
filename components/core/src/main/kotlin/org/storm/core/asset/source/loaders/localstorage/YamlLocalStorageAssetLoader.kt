@@ -7,8 +7,10 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.storm.core.asset.source.context.LocalStorageAssetContextBuilder
+import org.storm.core.asset.Asset
+import org.storm.core.asset.source.types.LocalStorageAssetSource
 import org.storm.core.exception.AssetException
+import java.io.File
 import java.io.FileInputStream
 
 /**
@@ -32,7 +34,8 @@ class YamlLocalStorageAssetLoader : LocalStorageAssetLoader(extensions = setOf("
             ).findAndRegisterModules()!!
     }
 
-    override fun <T> load(assetId: String, context: Map<String, Any>, typeRef: TypeReference<T>): T {
-        return yamlMapper.readValue(FileInputStream(createFilePath(assetId, context)), typeRef)
+    override fun <T> load(file: File, typeRef: TypeReference<T>): T? {
+        return yamlMapper.readValue(FileInputStream(file), typeRef)
     }
+
 }

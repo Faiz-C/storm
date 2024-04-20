@@ -9,7 +9,7 @@ import org.storm.physics.constants.Vectors
 import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.entity.Entity
 import org.storm.physics.math.geometry.shapes.Circle
-import org.storm.sound.types.MediaSound
+import org.storm.sound.types.JfxSound
 
 class CircleCornerTestState : SwitchableState() {
 
@@ -42,7 +42,7 @@ class CircleCornerTestState : SwitchableState() {
         )
         this.mutableEntities.add(player)
 
-        soundManager.add("bgm", MediaSound("music/bgm.mp3", resource = true))
+        soundManager.add("bgm", JfxSound("music/bgm.mp3", resource = true))
         soundManager.adjustAllVolume(0.1)
     }
 

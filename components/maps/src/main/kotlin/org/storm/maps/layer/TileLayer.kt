@@ -3,7 +3,6 @@ package org.storm.maps.layer
 import javafx.scene.canvas.GraphicsContext
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION
-import org.storm.core.ui.Resolution
 import org.storm.maps.tile.Tile
 import org.storm.maps.tile.TileSet
 import org.storm.physics.math.geometry.shapes.AABB

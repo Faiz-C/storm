@@ -2,12 +2,10 @@ package org.storm.physics.structures
 
 import javafx.scene.canvas.GraphicsContext
 import org.storm.core.context.Context
-import org.storm.core.render.Renderable
 import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.entity.Entity
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Shape
-import org.storm.physics.transforms.UnitConvertor
 
 /**
  * A QuadrantTree is a type of SpatialDataStructure which uses a Quad Tree as its underlying data structure.

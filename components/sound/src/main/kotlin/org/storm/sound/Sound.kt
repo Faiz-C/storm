@@ -1,8 +1,22 @@
 package org.storm.sound
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
+import org.storm.core.asset.Asset
+import org.storm.core.asset.serialization.AssetResolver
+
 /**
  * Represents a Sound within the game. Sounds can be played, paused, stopped and have its volume adjusted
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "type",
+    visible = true
+)
+@JsonTypeIdResolver(AssetResolver::class)
 interface Sound {
 
     companion object {
@@ -16,6 +30,14 @@ interface Sound {
     }
 
     /**
+     * The type of asset, used to help serialize and deserialize the state using Asset loading.
+     */
+    val type: String
+        get() {
+            val assetAnnotation = this::class.java.getAnnotation(Asset::class.java)
+            return "${assetAnnotation.type}-${assetAnnotation.impl}"
+        }
+    /**
      * The amount of cycles to delay before starting the sound.
      */
     val delay: Int
@@ -25,11 +47,10 @@ interface Sound {
      */
     val loops: Int
 
-
     /**
      * The type of sound this is. Ex: BGM, EFFECT, VOICE
      */
-    val type: String
+    val soundType: String
 
     /**
      * Plays the sound

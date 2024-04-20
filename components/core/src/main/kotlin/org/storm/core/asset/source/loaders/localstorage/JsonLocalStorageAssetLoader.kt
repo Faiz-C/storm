@@ -2,8 +2,7 @@ package org.storm.core.asset.source.loaders.localstorage
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.storm.core.asset.source.context.LocalStorageAssetContextBuilder
-import org.storm.core.exception.AssetException
+import java.io.File
 import java.io.FileInputStream
 
 /**
@@ -15,7 +14,8 @@ class JsonLocalStorageAssetLoader : LocalStorageAssetLoader(extensions = setOf("
         private val objectMapper = jacksonObjectMapper()
     }
 
-    override fun <T> load(assetId: String, context: Map<String, Any>, typeRef: TypeReference<T>): T {
-        return objectMapper.readValue(FileInputStream(createFilePath(assetId, context)), typeRef)
+    override fun <T> load(file: File, typeRef: TypeReference<T>): T? {
+        return objectMapper.readValue(FileInputStream(file), typeRef)
     }
+
 }
