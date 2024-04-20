@@ -4,7 +4,7 @@ import javafx.application.Application
 import javafx.stage.Stage
 import org.storm.sound.Sound
 
-class MediaSoundTest : Application() {
+class JfxSoundTest : Application() {
 
     companion object {
         private const val BGM_FILE = "src/test/resources/music/bgm.mp3"
