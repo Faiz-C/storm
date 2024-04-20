@@ -4,8 +4,8 @@ import javafx.scene.media.Media
 import javafx.scene.media.MediaPlayer
 import org.slf4j.LoggerFactory
 import org.storm.core.asset.Asset
-import org.storm.core.exception.AssetException
 import org.storm.sound.Sound
+import org.storm.sound.exception.SoundException
 import java.net.URI
 import java.nio.file.Paths
 
@@ -31,7 +31,7 @@ class JfxSound(
         val uri = when {
             file.isNotBlank() -> Paths.get(file).toUri()
             url.isNotBlank() -> URI(url)
-            else -> throw AssetException("Must provide file path or url to load sound")
+            else -> throw SoundException("Must provide file path or url to load sound")
         }
 
         MediaPlayer(Media(uri.toString())).also {
