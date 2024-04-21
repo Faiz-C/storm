@@ -12,7 +12,7 @@ import org.storm.sound.manager.SoundManager
  * This could be a menu, a level, etc...
  */
 abstract class GameState protected constructor(
-    protected val soundManager: SoundManager = SoundManager()
+    protected val soundManager: SoundManager
 ) : Renderable, Updatable, ActionStateProcessor {
 
     // Expose as immutable

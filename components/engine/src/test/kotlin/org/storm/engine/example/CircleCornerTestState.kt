@@ -1,5 +1,6 @@
 package org.storm.engine.example
 
+import org.storm.core.asset.AssetManager
 import org.storm.core.context.Context
 import org.storm.core.input.ActionState
 import org.storm.engine.KeyActionConstants
@@ -9,9 +10,8 @@ import org.storm.physics.constants.Vectors
 import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.entity.Entity
 import org.storm.physics.math.geometry.shapes.Circle
-import org.storm.sound.types.JfxSound
 
-class CircleCornerTestState : SwitchableState() {
+class CircleCornerTestState(assetManager: AssetManager) : SwitchableState(assetManager) {
 
     private val player: Entity = EntityImpl(
         Circle(
@@ -42,17 +42,17 @@ class CircleCornerTestState : SwitchableState() {
         )
         this.mutableEntities.add(player)
 
-        soundManager.add("bgm", JfxSound("music/bgm.mp3", resource = true))
-        soundManager.adjustAllVolume(0.1)
+        this.soundManager.loadSound("bgm")
+        this.soundManager.adjustAllVolume(0.1)
     }
 
     override fun load() {
-        soundManager.play("bgm")
+        this.soundManager.play("bgm")
         Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
     }
 
     override fun unload() {
-        soundManager.pause("bgm")
+        this.soundManager.pause("bgm")
     }
 
     override suspend fun process(actionState: ActionState) {

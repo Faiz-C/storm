@@ -1,5 +1,6 @@
 package org.storm.engine.example
 
+import org.storm.core.asset.AssetManager
 import org.storm.core.context.Context
 import org.storm.core.input.ActionState
 import org.storm.core.ui.Resolution
@@ -11,9 +12,8 @@ import org.storm.physics.entity.Entity
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
-import org.storm.sound.types.JfxSound
 
-class AtRestTestState : SwitchableState() {
+class AtRestTestState(assetManager: AssetManager) : SwitchableState(assetManager) {
 
     private val unitConvertor = Context.UNIT_CONVERTOR
     private val gravity = Direction.SOUTH.vector.scale(unitConvertor.toUnits(25.0))
@@ -82,7 +82,7 @@ class AtRestTestState : SwitchableState() {
 
     override fun preload() {
         this.mutableEntities.addAll(listOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4))
-        this.soundManager.add("bgm", JfxSound("music/bgm.mp3", resource = true))
+        this.soundManager.loadSound("bgm")
         this.soundManager.adjustAllVolume(0.1)
     }
 

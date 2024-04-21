@@ -2,8 +2,12 @@ package org.storm.engine
 
 import javafx.application.Application
 import javafx.stage.Stage
+import org.storm.core.asset.AssetManager
+import org.storm.core.asset.source.types.LocalStorageAssetSource
 import org.storm.engine.example.*
 import org.storm.physics.ImpulseResolutionPhysicsEngine
+import org.storm.sound.manager.SoundManager
+import java.nio.file.Paths
 
 class StormEngineTest : Application() {
 
@@ -14,10 +18,18 @@ class StormEngineTest : Application() {
             logicFps = 240,
         )
 
-        stormEngine.addState(KeyActionConstants.ONE, AtRestTestState())
-        stormEngine.addState(KeyActionConstants.TWO, BouncingBallTestState())
-        stormEngine.addState(KeyActionConstants.THREE, ParticleTestState())
-        stormEngine.addState(KeyActionConstants.FOUR, CircleCornerTestState())
+        val assetManager = AssetManager().also {
+            val resourceDir = Paths.get("src", "test", "resources")
+
+            it.registerSource(
+                LocalStorageAssetSource(resourceDir.toString())
+            )
+        }
+
+        stormEngine.addState(KeyActionConstants.ONE, AtRestTestState(assetManager))
+        stormEngine.addState(KeyActionConstants.TWO, BouncingBallTestState(assetManager))
+        stormEngine.addState(KeyActionConstants.THREE, ParticleTestState(assetManager))
+        stormEngine.addState(KeyActionConstants.FOUR, CircleCornerTestState(assetManager))
 
         stormEngine.addKeyTranslator(ActionTranslatorImpl())
         stormEngine.fpsChangeAllow = false
