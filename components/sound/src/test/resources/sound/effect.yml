@@ -1,0 +1,7 @@
+---
+type: "sound-jfx"
+file: "src/test/resources/music/effect.mp3"
+delay: 0
+loops: 1
+soundType: "EFFECT"
+...

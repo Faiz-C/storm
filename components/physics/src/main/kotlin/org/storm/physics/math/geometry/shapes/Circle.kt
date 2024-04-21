@@ -2,13 +2,11 @@ package org.storm.physics.math.geometry.shapes
 
 import javafx.scene.canvas.GraphicsContext
 import org.storm.core.context.Context
-import org.storm.core.render.Renderable
 import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.math.Interval
 import org.storm.physics.math.Vector
 import org.storm.physics.math.geometry.LineSegment
 import org.storm.physics.math.geometry.Point
-import org.storm.physics.transforms.UnitConvertor
 
 open class Circle(
     override val center: Point,

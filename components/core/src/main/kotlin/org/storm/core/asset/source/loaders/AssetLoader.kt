@@ -8,20 +8,13 @@ import com.fasterxml.jackson.core.type.TypeReference
 interface AssetLoader {
 
     /**
-     * @param assetId The id of the asset to check.
-     * @param context The context to use when checking if the asset is supported.
-     *
-     * @return True if the asset is supported, false otherwise.
-     */
-    fun supports(assetId: String, context: Map<String, Any>): Boolean
-
-    /**
+     * @param assetType the type of the asset
      * @param assetId The id of the asset to load.
-     * @param context The context to use when loading the asset.
      * @param typeRef The type reference to use when loading the asset, used for deserialization.
+     * @param context The context to use when loading the asset.
      *
-     * @return The loaded asset
+     * @return The loaded asset, or null if not found or unable to be loaded
      */
-    fun <T> load(assetId: String, context: Map<String, Any>, typeRef: TypeReference<T>): T
+    fun <T> load(assetType: String, assetId: String, context: Map<String, String>, typeRef: TypeReference<T>): T?
 
 }

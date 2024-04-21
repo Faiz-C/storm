@@ -1,5 +1,6 @@
 package org.storm.engine.example
 
+import org.storm.core.asset.AssetManager
 import org.storm.core.context.Context
 import org.storm.core.input.ActionState
 import org.storm.core.ui.Resolution
@@ -15,7 +16,7 @@ import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
 import java.util.concurrent.ThreadLocalRandom
 
-class ParticleTestState : SwitchableState() {
+class ParticleTestState(assetManager: AssetManager) : SwitchableState(assetManager) {
 
     init {
         val boundingBox = ImmovableEntity(

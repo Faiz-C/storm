@@ -3,14 +3,12 @@ package org.storm.physics
 import org.apache.commons.math3.util.FastMath
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION
-import org.storm.core.ui.Resolution
 import org.storm.physics.collision.CollisionDetector.checkMtv
 import org.storm.physics.constants.Vectors
 import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.entity.Entity
 import org.storm.physics.math.Vector
 import org.storm.physics.structures.QuadrantTree
-import org.storm.physics.transforms.UnitConvertor
 
 /**
  * A ImpulseResolutionPhysicsEngine is straight forward and basic implementation of a PhysicsEngines.

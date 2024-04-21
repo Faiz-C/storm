@@ -1,5 +1,6 @@
 package org.storm.engine.example
 
+import org.storm.core.asset.AssetManager
 import org.storm.core.context.Context
 import org.storm.core.input.ActionState
 import org.storm.core.ui.Resolution
@@ -9,9 +10,8 @@ import org.storm.engine.request.types.TogglePhysicsRequest
 import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.Circle
-import org.storm.sound.types.MediaSound
 
-class BouncingBallTestState : SwitchableState() {
+class BouncingBallTestState(assetManager: AssetManager) : SwitchableState(assetManager) {
     init {
         this.mutableEntities.add(
             ImmovableRectEntity(
@@ -60,7 +60,7 @@ class BouncingBallTestState : SwitchableState() {
             }
         )
 
-        this.soundManager.add("bgm", MediaSound("music/bgm.mp3", resource = true))
+        this.soundManager.loadSound("bgm")
         this.soundManager.adjustAllVolume(0.1)
     }
 

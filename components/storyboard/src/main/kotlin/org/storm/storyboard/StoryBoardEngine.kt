@@ -15,7 +15,8 @@ import java.util.concurrent.ConcurrentHashMap
  */
 open class StoryBoardEngine(
     protected val assetSourceId: String,
-    protected val assetManager: AssetManager = AssetManager(),
+    protected val assetManager: AssetManager,
+    protected val assetType: String = "scene"
 ) : Renderable, Updatable, ActionStateProcessor {
 
     protected val states: MutableMap<String, StoryBoardState> = ConcurrentHashMap()
@@ -27,7 +28,7 @@ open class StoryBoardEngine(
      * @param sceneId the asset id of the scene to load
      */
     open fun loadScene(sceneId: String) {
-        val scene = assetManager.getAsset<List<StoryBoardState>>(sceneId, assetSourceId = assetSourceId)
+        val scene = assetManager.getAsset<List<StoryBoardState>>(assetType, sceneId, assetSourceId = assetSourceId)
         setStates(scene.associateBy { it.id })
     }
 

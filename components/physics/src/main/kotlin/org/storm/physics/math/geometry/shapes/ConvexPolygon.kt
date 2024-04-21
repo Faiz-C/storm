@@ -3,13 +3,11 @@ package org.storm.physics.math.geometry.shapes
 import javafx.scene.canvas.GraphicsContext
 import org.apache.commons.math3.util.FastMath
 import org.storm.core.context.Context
-import org.storm.core.render.Renderable
 import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.math.Interval
 import org.storm.physics.math.Vector
 import org.storm.physics.math.geometry.LineSegment
 import org.storm.physics.math.geometry.Point
-import org.storm.physics.transforms.UnitConvertor
 
 /**
  * A ConvexPolygon represents a mathematical convex polygon with N vertices in 2D space. Vertices are supplied in clockwise

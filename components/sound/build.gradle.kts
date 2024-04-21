@@ -10,13 +10,13 @@ dependencies {
 }
 
 tasks {
-    task<JavaExec>("mediaSoundTest") {
+    task<JavaExec>("jfxSoundTest") {
         dependsOn(compileKotlin, compileTestKotlin)
         setupJavaFx(this)
 
         group = "Execution"
-        description = "Test to check if the Media type is working correctly"
-        mainClass.set("org.storm.sound.types.MediaSoundTest")
+        description = "Test to check if the Jfx type is working correctly"
+        mainClass.set("org.storm.sound.types.JfxSoundTest")
     }
 
     task<JavaExec>("soundManagerTest") {
