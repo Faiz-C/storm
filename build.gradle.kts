@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     kotlin("jvm") version("2.1.0")
     id("org.openjfx.javafxplugin") version ("0.1.0")
@@ -11,12 +9,11 @@ javafx {
 }
 
 tasks.wrapper {
-    gradleVersion = "8.6"
+    gradleVersion = "8.9"
     distributionType = Wrapper.DistributionType.ALL
 }
 
 allprojects {
-    apply(plugin = "java")
     apply(plugin = "java-library")
     apply(plugin = "maven-publish")
     apply(plugin = "org.openjfx.javafxplugin")
@@ -27,11 +24,6 @@ allprojects {
 
     repositories {
         mavenCentral()
-    }
-
-    java {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
     }
 
     dependencies {
@@ -50,7 +42,7 @@ allprojects {
         implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
-        implementation("org.apache.commons:commons-lang3:3.12.0")
+        implementation("org.apache.commons:commons-lang3:3.17.0")
         implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
     }
 
