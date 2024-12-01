@@ -6,15 +6,15 @@ import kotlinx.coroutines.runBlocking
 import org.storm.core.context.Context
 import org.storm.core.context.setResolution
 import org.storm.core.ui.Resolution
-import org.storm.core.ui.Window
+import org.storm.core.ui.JfxWindow
 
 class BackgroundLayerTest : Application() {
     override fun start(primaryStage: Stage) {
         Context.setResolution(Resolution.HD)
-        val window = Window()
+        val window = JfxWindow()
         val backgroundLayer = BackgroundLayer("src/test/resources/background/testBackground.png")
 
-        runBlocking { backgroundLayer.render(window.graphicsContext, 300.0, 200.0) }
+        runBlocking { backgroundLayer.render(window.canvas, 300.0, 200.0) }
 
         primaryStage.scene = window
         primaryStage.show()

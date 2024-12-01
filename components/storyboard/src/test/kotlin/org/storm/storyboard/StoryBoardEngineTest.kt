@@ -10,7 +10,7 @@ import org.storm.core.asset.source.types.LocalStorageAssetSource
 import org.storm.core.input.ActionEvent
 import org.storm.core.input.ActionManager
 import org.storm.core.input.ActionTranslator
-import org.storm.core.ui.Window
+import org.storm.core.ui.JfxWindow
 import org.storm.storyboard.helpers.StoryBoardSimulator
 import java.nio.file.Paths
 
@@ -26,7 +26,7 @@ class StoryBoardEngineTest : Application() {
         engine.loadScene("bats")
         engine.switchState("top-left")
 
-        val window = Window()
+        val window = JfxWindow()
 
         val actionManager = ActionManager()
 
@@ -49,8 +49,8 @@ class StoryBoardEngineTest : Application() {
         }
 
         val simulator = StoryBoardSimulator(144.0, {
-            window.clear()
-            engine.render(window.graphicsContext, 0.0, 0.0)
+            window.canvas.clear()
+            engine.render(window.canvas, 0.0, 0.0)
         }) { time, elapsedTime ->
             engine.process(actionManager.getStateSnapshot())
             engine.update(time, elapsedTime)

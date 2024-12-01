@@ -1,11 +1,11 @@
 package org.storm.maps
 
-import javafx.scene.canvas.GraphicsContext
+import org.storm.core.render.canvas.Canvas
 import org.storm.core.render.Renderable
+import org.storm.core.render.geometry.Point
 import org.storm.core.update.Updatable
 import org.storm.maps.layer.Layer
 import org.storm.physics.entity.Entity
-import org.storm.physics.math.geometry.Point
 
 class Map : Renderable, Updatable {
 
@@ -36,8 +36,8 @@ class Map : Renderable, Updatable {
         renderPoint.translate(dx, dy)
     }
 
-    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
-        layers.forEach { layer -> layer.render(gc, renderPoint.x, renderPoint.y) }
+    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+        layers.forEach { layer -> layer.render(canvas, renderPoint.x, renderPoint.y) }
     }
 
     override suspend fun update(time: Double, elapsedTime: Double) {

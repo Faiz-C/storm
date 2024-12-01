@@ -9,8 +9,9 @@ import org.storm.animations.sprite.SpriteAnimation
 import org.storm.animations.sprite.SpriteSheet
 import org.storm.core.context.Context
 import org.storm.core.context.setResolution
+import org.storm.core.render.impl.JfxImage
 import org.storm.core.ui.Resolution
-import org.storm.core.ui.Window
+import org.storm.core.ui.JfxWindow
 
 class AnimationTest : Application() {
 
@@ -31,8 +32,8 @@ class AnimationTest : Application() {
 
     override fun start(primaryStage: Stage) {
         Context.setResolution(Resolution(320.0, 240.0))
-        val window = Window()
-        val spriteSheet = SpriteSheet("src/test/resources/spriteSheet.png", 32, 32)
+        val window = JfxWindow()
+        val spriteSheet = SpriteSheet(JfxImage("src/test/resources/spriteSheet.png"), 32.0, 32.0)
         downSpriteAnimation = SpriteAnimation(sprites = spriteSheet.row(0), delay = 8, loops = Animation.LOOP_INDEFINITELY)
         rightSpriteAnimation = SpriteAnimation(sprites = spriteSheet.row(1), delay = 8, loops = 6)
         upSpriteAnimation = SpriteAnimation(sprites = spriteSheet.row(2), delay = 8, loops = 10)
@@ -72,12 +73,12 @@ class AnimationTest : Application() {
         primaryStage.show()
     }
 
-    private suspend fun render(window: Window) {
-        window.clear()
-        downSpriteAnimation.render(window.graphicsContext, 100.0, 100.0)
-        rightSpriteAnimation.render(window.graphicsContext, 100.0, 150.0)
-        upSpriteAnimation.render(window.graphicsContext, 150.0, 100.0)
-        leftSpriteAnimation.render(window.graphicsContext, 150.0, 150.0)
+    private suspend fun render(window: JfxWindow) {
+        window.canvas.clear()
+        downSpriteAnimation.render(window.canvas, 100.0, 100.0)
+        rightSpriteAnimation.render(window.canvas, 100.0, 150.0)
+        upSpriteAnimation.render(window.canvas, 150.0, 100.0)
+        leftSpriteAnimation.render(window.canvas, 150.0, 150.0)
     }
 
     private suspend fun updateAnimations() {

@@ -10,7 +10,7 @@ import org.storm.core.context.Context
 import org.storm.core.input.ActionEvent
 import org.storm.core.input.ActionManager
 import org.storm.core.input.ActionTranslator
-import org.storm.core.ui.Window
+import org.storm.core.ui.JfxWindow
 import org.storm.core.utils.TimeUtils.toSeconds
 import org.storm.core.extensions.scheduleOnInterval
 import org.storm.engine.context.REQUEST_QUEUE
@@ -38,7 +38,7 @@ class StormEngine(
     }
 
     // Window the game will be run on
-    val window: Window = Window()
+    val window: JfxWindow = JfxWindow()
 
     // Game Loop Vars
     private var accumulator: Long = 0L
@@ -259,10 +259,8 @@ class StormEngine(
 
         if (++this.renderDelay >= this.renderFpsRatio) {
             withContext(Dispatchers.JavaFx) {
-                this@StormEngine.window.clear()
-                this@StormEngine.window.graphicsContext.save()
-                this@StormEngine.currentState!!.render(this@StormEngine.window.graphicsContext, 0.0, 0.0)
-                this@StormEngine.window.graphicsContext.restore()
+                this@StormEngine.window.canvas.clear()
+                this@StormEngine.currentState!!.render(this@StormEngine.window.canvas, 0.0, 0.0)
                 this@StormEngine.renderDelay = 0
             }
         }

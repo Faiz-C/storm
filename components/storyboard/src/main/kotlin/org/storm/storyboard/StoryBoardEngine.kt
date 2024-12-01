@@ -1,9 +1,9 @@
 package org.storm.storyboard
 
-import javafx.scene.canvas.GraphicsContext
 import org.storm.core.asset.AssetManager
 import org.storm.core.input.ActionStateProcessor
 import org.storm.core.input.ActionState
+import org.storm.core.render.canvas.Canvas
 import org.storm.core.render.Renderable
 import org.storm.core.update.Updatable
 import org.storm.storyboard.exception.StoryBoardEngineException
@@ -73,8 +73,8 @@ open class StoryBoardEngine(
         currentState?.process(actionState)
     }
 
-    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
-        currentState?.render(gc, x, y)
+    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+        currentState?.render(canvas, x, y)
     }
 
     override suspend fun update(time: Double, elapsedTime: Double) {

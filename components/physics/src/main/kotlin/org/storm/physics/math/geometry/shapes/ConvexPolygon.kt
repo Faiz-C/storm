@@ -1,13 +1,17 @@
 package org.storm.physics.math.geometry.shapes
 
-import javafx.scene.canvas.GraphicsContext
 import org.apache.commons.math3.util.FastMath
-import org.storm.core.context.Context
-import org.storm.physics.context.UNIT_CONVERTOR
+import org.storm.core.render.canvas.Canvas
+import org.storm.core.render.canvas.Settings
+import org.storm.core.render.geometry.Point
 import org.storm.physics.math.Interval
 import org.storm.physics.math.Vector
+import org.storm.physics.math.extensions.getSquaredDistance
+import org.storm.physics.math.extensions.rotate
+import org.storm.physics.math.extensions.toVector
 import org.storm.physics.math.geometry.LineSegment
-import org.storm.physics.math.geometry.Point
+
+// TODO: None of these should be open, they should all be data classes and used via composition instead of inheritance
 
 /**
  * A ConvexPolygon represents a mathematical convex polygon with N vertices in 2D space. Vertices are supplied in clockwise
@@ -106,24 +110,13 @@ open class ConvexPolygon(
         return totalIntersections and 1 != 0 // Check if odd
     }
 
-    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
-        val unitConvertor = Context.UNIT_CONVERTOR
-
-        val vertexCount = vertices.size
-        val xCoordinates = DoubleArray(vertexCount)
-        val yCoordinates = DoubleArray(vertexCount)
-
-        for (i in 0 until vertexCount) {
-            val (x1, y1) = vertices[i]
-            xCoordinates[i] = unitConvertor.toPixels(x + x1)
-            yCoordinates[i] = unitConvertor.toPixels(y + y1)
+    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+        canvas.withSettings(Settings(fill = true)) {
+            it.drawPolygon(this.vertices)
         }
-
-        gc.fillPolygon(xCoordinates, yCoordinates, vertexCount)
     }
 
     override fun toString(): String = "ConvexPolygon(vertices: $vertices)"
-
 
     /**
      * Returns the edges of the polygon as vectors. The edges are defined as such:

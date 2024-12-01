@@ -1,8 +1,8 @@
 package org.storm.physics.collision
 
 import org.apache.commons.math3.util.FastMath
-import org.storm.physics.constants.Vectors
 import org.storm.physics.math.Vector
+import org.storm.physics.math.extensions.getDistance
 import org.storm.physics.math.geometry.shapes.Circle
 import org.storm.physics.math.geometry.shapes.ConvexPolygon
 import org.storm.physics.math.geometry.shapes.Shape
@@ -24,7 +24,7 @@ object CollisionDetector {
      */
     @JvmStatic
     fun check(s1: Shape, s2: Shape): Boolean {
-        return checkMtv(s1, s2) !== Vectors.ZERO_VECTOR
+        return checkMtv(s1, s2) !== Vector.ZERO_VECTOR
     }
 
     /**
@@ -50,7 +50,7 @@ object CollisionDetector {
      * @return a Vector representing the MTV if the two polygons have collided, ZERO_VECTOR otherwise
      */
     private fun calcMtv(s1: Shape, s2: Shape): Vector {
-        var dv = Vectors.ZERO_VECTOR
+        var dv = Vector.ZERO_VECTOR
         var mag = Double.POSITIVE_INFINITY
 
         axes(s1, s2).forEach {
@@ -58,7 +58,7 @@ object CollisionDetector {
             val projection2 = s2.project(it)
             val overlap = projection1.getOverlap(projection2)
             if (overlap <= 0) {
-                return Vectors.ZERO_VECTOR
+                return Vector.ZERO_VECTOR
             } else if (overlap < mag) {
                 mag = overlap
                 dv = it
@@ -87,7 +87,7 @@ object CollisionDetector {
     private fun calcCircleMtv(c1: Circle, c2: Circle): Vector {
         val distanceBetweenCenters = c2.center.getDistance(c1.center)
         val radiusSum = c1.radius + c2.radius
-        if (distanceBetweenCenters >= radiusSum) return Vectors.ZERO_VECTOR
+        if (distanceBetweenCenters >= radiusSum) return Vector.ZERO_VECTOR
         val mtvAngle = FastMath.atan2(
             c2.center.y - c1.center.y,
             c2.center.x - c1.center.x

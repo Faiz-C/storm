@@ -1,7 +1,10 @@
 package org.storm.physics.math.geometry
 
 import org.apache.commons.math3.util.FastMath
+import org.storm.core.render.geometry.Geometric
+import org.storm.core.render.geometry.Point
 import org.storm.physics.math.Vector
+import org.storm.physics.math.extensions.getDistance
 
 /**
  * Represents a mathematical line segment in 2D space.

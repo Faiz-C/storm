@@ -1,7 +1,7 @@
 package org.storm.engine.state
 
-import javafx.scene.canvas.GraphicsContext
 import org.storm.core.input.ActionStateProcessor
+import org.storm.core.render.canvas.Canvas
 import org.storm.core.render.Renderable
 import org.storm.core.update.Updatable
 import org.storm.physics.entity.Entity
@@ -25,9 +25,9 @@ abstract class GameState protected constructor(
     protected val mutableUpdatables: MutableSet<Updatable> = mutableSetOf()
     protected val mutableRenderables: MutableSet<Renderable> = mutableSetOf()
 
-    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
-        this.entities.forEach { entity -> entity.render(gc, x, y) }
-        this.renderables.forEach { renderable -> renderable.render(gc, x, y) }
+    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+        this.entities.forEach { entity -> entity.render(canvas, x, y) }
+        this.renderables.forEach { renderable -> renderable.render(canvas, x, y) }
     }
 
     override suspend fun update(time: Double, elapsedTime: Double) {

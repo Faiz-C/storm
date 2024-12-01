@@ -3,8 +3,8 @@ package org.storm.maps
 import javafx.application.Application
 import javafx.stage.Stage
 import kotlinx.coroutines.runBlocking
-import org.storm.core.ui.Resolution
-import org.storm.core.ui.Window
+import org.storm.core.render.impl.JfxImage
+import org.storm.core.ui.JfxWindow
 import org.storm.maps.layer.BackgroundLayer
 import org.storm.maps.layer.Layer
 import org.storm.maps.layer.TileLayer
@@ -13,8 +13,8 @@ import org.storm.maps.tile.TileSet
 class MapTest : Application() {
 
     override fun start(primaryStage: Stage) {
-        val window = Window()
-        val tileSet = TileSet("src/test/resources/tiles/testTileSet.png", 32, 32)
+        val window = JfxWindow()
+        val tileSet = TileSet(JfxImage("src/test/resources/tiles/testTileSet.png"), 32.0, 32.0)
         val background: Layer = BackgroundLayer("src/test/resources/background/testBackground.png")
 
         val backingTiles: Layer = TileLayer(
@@ -63,7 +63,7 @@ class MapTest : Application() {
         map.addLayer(backingTiles)
         map.addLayer(wallTiles)
 
-        runBlocking { map.render(window.graphicsContext, 0.0, 0.0) }
+        runBlocking { map.render(window.canvas, 0.0, 0.0) }
 
         primaryStage.scene = window
         primaryStage.show()

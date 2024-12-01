@@ -2,12 +2,12 @@ package org.storm.engine.example
 
 import org.storm.core.asset.AssetManager
 import org.storm.core.context.Context
+import org.storm.core.extensions.units
 import org.storm.core.input.ActionState
 import org.storm.core.ui.Resolution
 import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
-import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.entity.Entity
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
@@ -15,24 +15,23 @@ import org.storm.physics.math.geometry.shapes.Circle
 
 class AtRestTestState(assetManager: AssetManager) : SwitchableState(assetManager) {
 
-    private val unitConvertor = Context.UNIT_CONVERTOR
-    private val gravity = Direction.SOUTH.vector.scale(unitConvertor.toUnits(25.0))
+    private val gravity = Direction.SOUTH.vector.scale(25.0.units)
 
     private val platform: Entity = ImmovableRectEntity(
-        this.unitConvertor.toUnits(1.0),
-        this.unitConvertor.toUnits(Resolution.SD.height - 20),
-        this.unitConvertor.toUnits(Resolution.SD.width - 2),
-        this.unitConvertor.toUnits(10.0)
+        1.0.units,
+        Resolution.SD.height - 20.units,
+        Resolution.SD.width - 2.units,
+        10.0.units
     )
 
     private val repellingBall: Entity = EntityImpl(
         AABB(
-            this.unitConvertor.toUnits(75.0),
-            this.unitConvertor.toUnits(400.0),
-            this.unitConvertor.toUnits(20.0),
-            this.unitConvertor.toUnits(20.0)
+            75.0.units,
+            400.0.units,
+            20.0.units,
+            20.0.units
         ),
-        this.unitConvertor.toUnits(2.0),
+        2.0.units,
         10.0,
         0.7
     ).also {
@@ -41,11 +40,11 @@ class AtRestTestState(assetManager: AssetManager) : SwitchableState(assetManager
 
     private val repellingBall2: Entity = EntityImpl(
         Circle(
-            this.unitConvertor.toUnits(150.0),
-            this.unitConvertor.toUnits(50.0),
-            this.unitConvertor.toUnits(20.0)
+            150.0.units,
+            50.0.units,
+            20.0.units
         ),
-        this.unitConvertor.toUnits(2.0),
+        2.0.units,
         10.0,
         0.5
     ).also {
@@ -54,12 +53,12 @@ class AtRestTestState(assetManager: AssetManager) : SwitchableState(assetManager
 
     private val repellingBall3: Entity = EntityImpl(
         AABB(
-            this.unitConvertor.toUnits(225.0),
-            this.unitConvertor.toUnits(200.0),
-            this.unitConvertor.toUnits(20.0),
-            this.unitConvertor.toUnits(20.0)
+            225.0.units,
+            200.0.units,
+            20.0.units,
+            20.0.units
         ),
-        this.unitConvertor.toUnits(2.0),
+        2.0.units,
         10.0,
         1.0
     ).also {
@@ -68,12 +67,12 @@ class AtRestTestState(assetManager: AssetManager) : SwitchableState(assetManager
 
     private val repellingBall4: Entity = EntityImpl(
         AABB(
-            this.unitConvertor.toUnits(300.0),
-            this.unitConvertor.toUnits(100.0),
-            this.unitConvertor.toUnits(20.0),
-            this.unitConvertor.toUnits(20.0)
+            300.0.units,
+            100.0.units,
+            20.0.units,
+            20.0.units
         ),
-        this.unitConvertor.toUnits(2.0),
+        2.0.units,
         10.0,
         0.2
     ).also {

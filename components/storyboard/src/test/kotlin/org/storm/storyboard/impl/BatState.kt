@@ -1,16 +1,16 @@
 package org.storm.storyboard.impl
 
-import javafx.scene.canvas.GraphicsContext
-import javafx.scene.image.Image
 import org.storm.animations.Animation
 import org.storm.animations.sprite.SpriteAnimation
 import org.storm.animations.sprite.SpriteSheet
 import org.storm.core.asset.Asset
 import org.storm.core.input.ActionState
+import org.storm.core.render.canvas.Canvas
+import org.storm.core.render.Image
+import org.storm.core.render.impl.JfxImage
 import org.storm.core.ui.Resolution
 import org.storm.storyboard.StoryBoardState
 import org.storm.storyboard.dialogue.script.Script
-import kotlin.math.abs
 
 @Asset("state", "bat-adventure")
 class BatState(
@@ -56,9 +56,9 @@ class BatState(
         currentFrame = 0
     }
 
-    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
-        animation.render(gc, x + batX, y + batY)
-        scriptPlayer.render(gc, x, y)
+    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+        animation.render(canvas, x + batX, y + batY)
+        scriptPlayer.render(canvas, x, y)
     }
 
     override suspend fun update(time: Double, elapsedTime: Double) {
@@ -76,7 +76,7 @@ class BatState(
     }
 
     private fun getSprites(): Array<Image> {
-        val spriteSheet = SpriteSheet("src/test/resources/animation/bat-sprites.png", 32, 32)
+        val spriteSheet = SpriteSheet(JfxImage("src/test/resources/animation/bat-sprites.png"), 32.0, 32.0)
 
         return when (animationType) {
             "idle", "down" -> spriteSheet.row(0)

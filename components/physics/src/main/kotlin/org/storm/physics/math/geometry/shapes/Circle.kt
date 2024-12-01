@@ -1,12 +1,14 @@
 package org.storm.physics.math.geometry.shapes
 
-import javafx.scene.canvas.GraphicsContext
-import org.storm.core.context.Context
-import org.storm.physics.context.UNIT_CONVERTOR
+import org.storm.core.render.canvas.Canvas
+import org.storm.core.render.canvas.Settings
+import org.storm.core.render.geometry.Point
 import org.storm.physics.math.Interval
 import org.storm.physics.math.Vector
+import org.storm.physics.math.extensions.getSquaredDistance
+import org.storm.physics.math.extensions.rotate
+import org.storm.physics.math.extensions.toVector
 import org.storm.physics.math.geometry.LineSegment
-import org.storm.physics.math.geometry.Point
 
 open class Circle(
     override val center: Point,
@@ -21,15 +23,10 @@ open class Circle(
 
     override fun contains(p: Point): Boolean = this.center.getSquaredDistance(p) <= this.radius * this.radius
 
-    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
-        val unitConvertor = Context.UNIT_CONVERTOR
-
-        gc.fillOval(
-            x + unitConvertor.toPixels(this.center.x - this.radius),
-            y + unitConvertor.toPixels(this.center.y - this.radius),
-            unitConvertor.toPixels(this.diameter),
-            unitConvertor.toPixels(this.diameter)
-        )
+    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+        canvas.withSettings(Settings(fill = true)) {
+            it.drawEllipse(x + center.x - radius, y + center.y - radius, diameter, diameter)
+        }
     }
 
     override fun translate(dx: Double, dy: Double) {

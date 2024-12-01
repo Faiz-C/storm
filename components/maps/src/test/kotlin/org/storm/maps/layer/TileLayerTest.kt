@@ -5,16 +5,17 @@ import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
 import kotlinx.coroutines.runBlocking
+import org.storm.core.render.geometry.Point
+import org.storm.core.render.impl.JfxImage
 import org.storm.core.ui.Resolution
-import org.storm.core.ui.Window
+import org.storm.core.ui.JfxWindow
 import org.storm.maps.tile.TileSet
-import org.storm.physics.math.geometry.Point
 
 class TileLayerTest : Application() {
 
     override fun start(primaryStage: Stage) {
-        val window = Window()
-        val tileSet = TileSet("src/test/resources/tiles/testTileSet.png", 32, 32)
+        val window = JfxWindow()
+        val tileSet = TileSet(JfxImage("src/test/resources/tiles/testTileSet.png"), 32.0, 32.0)
         val skeleton = arrayOf(
             intArrayOf(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2),
             intArrayOf(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2),
@@ -41,7 +42,7 @@ class TileLayerTest : Application() {
         val layer: Layer = TileLayer(false, tileSet, skeleton)
         val renderPoint = Point(0.0, 0.0)
 
-        runBlocking { layer.render(window.graphicsContext, renderPoint.x, renderPoint.y) }
+        runBlocking { layer.render(window.canvas, renderPoint.x, renderPoint.y) }
 
         val shiftAmount = 16.0
         val mapWidth = (tileSet.tileWidth * skeleton[0].size).toDouble()
@@ -61,8 +62,10 @@ class TileLayerTest : Application() {
                 renderPoint.translate(0.0, shiftAmount)
             }
 
-            window.clear()
-            runBlocking { layer.render(window.graphicsContext, renderPoint.x, renderPoint.y) }
+            runBlocking {
+                window.canvas.clear()
+                layer.render(window.canvas, renderPoint.x, renderPoint.y)
+            }
         }
 
         primaryStage.scene = window

@@ -1,6 +1,5 @@
 package org.storm.physics.enums
 
-import org.storm.physics.constants.Vectors
 import org.storm.physics.math.Vector
 import java.util.concurrent.ThreadLocalRandom
 
@@ -14,14 +13,14 @@ enum class Direction(
     val vector: Vector
 ) {
 
-    NORTH(Vectors.UNIT_NORTH),
-    NORTH_EAST(Vectors.UNIT_NORTH_EAST),
-    EAST(Vectors.UNIT_EAST),
-    SOUTH_EAST(Vectors.UNIT_SOUTH_EAST),
-    SOUTH(Vectors.UNIT_SOUTH),
-    SOUTH_WEST(Vectors.UNIT_SOUTH_WEST),
-    WEST(Vectors.UNIT_WEST),
-    NORTH_WEST(Vectors.UNIT_NORTH_WEST);
+    NORTH(Vector.UNIT_NORTH),
+    NORTH_EAST(Vector.UNIT_NORTH_EAST),
+    EAST(Vector.UNIT_EAST),
+    SOUTH_EAST(Vector.UNIT_SOUTH_EAST),
+    SOUTH(Vector.UNIT_SOUTH),
+    SOUTH_WEST(Vector.UNIT_SOUTH_WEST),
+    WEST(Vector.UNIT_WEST),
+    NORTH_WEST(Vector.UNIT_NORTH_WEST);
 
     companion object {
         fun random(): Direction {

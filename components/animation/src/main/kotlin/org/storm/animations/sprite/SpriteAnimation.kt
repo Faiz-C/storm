@@ -1,9 +1,9 @@
 package org.storm.animations.sprite
 
-import javafx.scene.canvas.GraphicsContext
-import javafx.scene.image.Image
 import org.storm.animations.Animation
 import org.storm.core.asset.Asset
+import org.storm.core.render.canvas.Canvas
+import org.storm.core.render.Image
 
 /**
  * A specific type of Animation focusing on the use of 2D Sprites and SpriteSheets.
@@ -49,8 +49,8 @@ class SpriteAnimation(
         return (loops == Animation.LOOP_INDEFINITELY && hasCompletedOnce) || currentLoop == loops
     }
 
-    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
-        gc.drawImage(sprites[currentSprite], x, y)
+    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+        canvas.drawImage(sprites[currentSprite], x, y)
     }
 
     override suspend fun update(time: Double, elapsedTime: Double) {

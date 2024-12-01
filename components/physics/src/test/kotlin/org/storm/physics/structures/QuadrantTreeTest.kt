@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
+import org.storm.core.render.geometry.Point
 import org.storm.physics.entity.Entity
 import org.storm.physics.entity.SimpleEntity
-import org.storm.physics.math.geometry.Point
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
 import org.storm.physics.math.geometry.shapes.Shape

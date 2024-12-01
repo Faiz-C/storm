@@ -1,13 +1,15 @@
 package org.storm.core.ui
 
 import javafx.scene.Scene
-import javafx.scene.canvas.Canvas
+import javafx.scene.canvas.Canvas as SceneCanvas
 import javafx.scene.canvas.GraphicsContext
 import javafx.scene.input.KeyEvent
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION
+import org.storm.core.render.canvas.Canvas
+import org.storm.core.render.impl.JfxCanvas
 import org.storm.core.utils.observation.Observable
 import org.storm.core.utils.observation.Observer
 
@@ -15,11 +17,11 @@ import org.storm.core.utils.observation.Observer
  * A Window represents a common window which has a settable resolution and can be rendered onto. It can also listen
  * for and act on events from a user (i.e. mouse events and keyboard events).
  */
-class Window : Scene(Pane()), Observer {
+class JfxWindow : Scene(Pane()), Observer {
 
-    private val canvas: Canvas = Canvas()
+    private val sceneCanvas: SceneCanvas = SceneCanvas()
     private val pane: Pane = (this.root as Pane).also {
-        it.children.add(this.canvas)
+        it.children.add(this.sceneCanvas)
     }
 
     private var resolution: Resolution = Context.RESOLUTION
@@ -27,8 +29,8 @@ class Window : Scene(Pane()), Observer {
             field = value
             pane.setMaxSize(value.width, value.height)
             pane.setMinSize(value.width, value.height)
-            canvas.width = value.width
-            canvas.height = value.height
+            sceneCanvas.width = value.width
+            sceneCanvas.height = value.height
         }
 
     init {
@@ -36,10 +38,7 @@ class Window : Scene(Pane()), Observer {
         Context.addObserver(this)
     }
 
-    /**
-     * @return GraphicsContext of the inner canvas
-     */
-    val graphicsContext: GraphicsContext get() = canvas.graphicsContext2D
+    val canvas: Canvas = JfxCanvas(sceneCanvas.graphicsContext2D)
 
     /**
      * Resizes the window and it's in canvas to the given resolution
@@ -57,13 +56,6 @@ class Window : Scene(Pane()), Observer {
      */
     fun resize(width: Double, height: Double) {
         resize(Resolution(width, height))
-    }
-
-    /**
-     * Clears the canvas of the Window
-     */
-    fun clear() {
-        graphicsContext.clearRect(0.0, 0.0, resolution.width, resolution.height)
     }
 
     /**
