@@ -4,7 +4,7 @@ import org.storm.animations.Animation
 import org.storm.animations.sprite.SpriteAnimation
 import org.storm.animations.sprite.SpriteSheet
 import org.storm.core.asset.Asset
-import org.storm.core.input.ActionState
+import org.storm.core.input.action.ActionState
 import org.storm.core.render.canvas.Canvas
 import org.storm.core.render.Image
 import org.storm.core.render.impl.JfxImage

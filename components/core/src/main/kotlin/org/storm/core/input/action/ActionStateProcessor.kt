@@ -1,4 +1,4 @@
-package org.storm.core.input
+package org.storm.core.input.action
 
 /**
  * An ActionStateProcessor processes a given ActionState and updates the state of the game accordingly. I.e. if the

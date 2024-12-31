@@ -7,10 +7,10 @@ import javafx.stage.Stage
 import kotlinx.coroutines.runBlocking
 import org.storm.core.asset.AssetManager
 import org.storm.core.asset.source.types.LocalStorageAssetSource
-import org.storm.core.input.ActionEvent
-import org.storm.core.input.ActionManager
-import org.storm.core.input.ActionTranslator
-import org.storm.core.ui.JfxWindow
+import org.storm.core.input.action.ActionEvent
+import org.storm.core.input.action.ActionManager
+import org.storm.core.input.InputBindings
+import org.storm.core.ui.impl.JfxWindow
 import org.storm.storyboard.helpers.StoryBoardSimulator
 import java.nio.file.Paths
 
@@ -30,7 +30,7 @@ class StoryBoardEngineTest : Application() {
 
         val actionManager = ActionManager()
 
-        val inputActionActionTranslator = ActionTranslator<KeyEvent> { t ->
+        val inputActionInputBindings = InputBindings<KeyEvent> { t ->
             when (t.code) {
                 KeyCode.ENTER -> "progress"
                 KeyCode.ESCAPE -> "exit"
@@ -41,11 +41,11 @@ class StoryBoardEngineTest : Application() {
         }
 
         window.addKeyPressedHandler {
-            runBlocking { actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(it), true)) }
+            runBlocking { actionManager.submitActionEvent(ActionEvent(inputActionInputBindings.getAction(it), true)) }
         }
 
         window.addKeyReleasedHandler {
-            runBlocking { actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(it), false)) }
+            runBlocking { actionManager.submitActionEvent(ActionEvent(inputActionInputBindings.getAction(it), false)) }
         }
 
         val simulator = StoryBoardSimulator(144.0, {

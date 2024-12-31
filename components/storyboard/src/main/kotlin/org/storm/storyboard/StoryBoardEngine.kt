@@ -1,8 +1,8 @@
 package org.storm.storyboard
 
 import org.storm.core.asset.AssetManager
-import org.storm.core.input.ActionStateProcessor
-import org.storm.core.input.ActionState
+import org.storm.core.input.action.ActionStateProcessor
+import org.storm.core.input.action.ActionState
 import org.storm.core.render.canvas.Canvas
 import org.storm.core.render.Renderable
 import org.storm.core.update.Updatable

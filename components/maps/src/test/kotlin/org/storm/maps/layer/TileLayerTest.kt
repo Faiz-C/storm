@@ -8,7 +8,7 @@ import kotlinx.coroutines.runBlocking
 import org.storm.core.render.geometry.Point
 import org.storm.core.render.impl.JfxImage
 import org.storm.core.ui.Resolution
-import org.storm.core.ui.JfxWindow
+import org.storm.core.ui.impl.JfxWindow
 import org.storm.maps.tile.TileSet
 
 class TileLayerTest : Application() {

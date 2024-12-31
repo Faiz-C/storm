@@ -6,7 +6,6 @@ import org.storm.core.asset.AssetManager
 import org.storm.core.asset.source.types.LocalStorageAssetSource
 import org.storm.engine.example.*
 import org.storm.physics.ImpulseResolutionPhysicsEngine
-import org.storm.sound.manager.SoundManager
 import java.nio.file.Paths
 
 class StormEngineTest : Application() {
@@ -31,7 +30,7 @@ class StormEngineTest : Application() {
         stormEngine.addState(KeyActionConstants.THREE, ParticleTestState(assetManager))
         stormEngine.addState(KeyActionConstants.FOUR, CircleCornerTestState(assetManager))
 
-        stormEngine.addKeyTranslator(ActionTranslatorImpl())
+        stormEngine.addKeyTranslator(InputBindingsImpl())
         stormEngine.fpsChangeAllow = false
 
         stormEngine.swapState(KeyActionConstants.THREE)

@@ -4,7 +4,7 @@ import org.storm.core.asset.AssetManager
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION_IN_UNITS
 import org.storm.core.extensions.units
-import org.storm.core.input.ActionState
+import org.storm.core.input.action.ActionState
 import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest

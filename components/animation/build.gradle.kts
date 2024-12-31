@@ -6,13 +6,7 @@ javafx {
 }
 
 dependencies {
-    val junitVersion = "5.9.0"
-
     api(project(":components:core"))
-
-    testImplementation("org.mockito:mockito-core:4.10.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }
 
 publishing {

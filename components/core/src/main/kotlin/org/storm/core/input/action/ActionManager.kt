@@ -1,29 +1,29 @@
-package org.storm.core.input
+package org.storm.core.input.action
 
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.time.Duration
+import java.util.LinkedList
 import java.util.concurrent.ConcurrentHashMap
 
 /**
  * A manager which maintains the state of actions within a game through a map of "switches". Each action can be
  * either active (true) or inactive (false).
  */
-open class ActionManager(
-    protected val debounceTime: Duration = Duration.ofMillis(150),
-    protected val maxEventHistory: Int = 10,
-    protected val maxActionHistory: Int = 10
+class ActionManager(
+    private val debounceTime: Duration = Duration.ofMillis(150),
+    private val maxEventHistory: Int = 5,
+    private val maxActionHistory: Int = 5
 ) {
 
-    protected val actionMutex: Mutex = Mutex()
+    private val actionMutex: Mutex = Mutex()
 
-    protected val activeActions: MutableMap<String, ActionInputInfo> = ConcurrentHashMap()
-    protected val activeActionHistory: MutableList<String> = mutableListOf()
-    protected val eventHistory: MutableList<ActionEvent> = mutableListOf()
+    private val activeActions: MutableMap<String, Action> = ConcurrentHashMap()
+    private val activeActionHistory: MutableList<String> = LinkedList<String>() // want fast removal from head
+    private val eventHistory: MutableList<ActionEvent> = LinkedList<ActionEvent>() // want fast removal from head
 
-    protected var eventCountSinceLastSnapshot: Int = 0
-    protected var actionCountSinceLastSnapshot: Int = 0
+    private var eventCountSinceLastSnapshot: Int = 0
+    private var actionCountSinceLastSnapshot: Int = 0
 
     /**
      * Submits an action event to the manager. This will update the state of active actions, event history and action history.
@@ -51,7 +51,7 @@ open class ActionManager(
         return actionMutex.withLock {
             activeActions.forEach { (action, info) ->
                 activeActions[action] = info.copy(
-                    activeSnapshots = info.activeSnapshots + 1
+                    activeFrames = info.activeFrames + 1
                 )
             }
 
@@ -102,16 +102,16 @@ open class ActionManager(
             val elapsedTime = currentTime - info.lastUpdateTime
             val inDebounce = elapsedTime < debounceTime.toMillis()
             info.copy(
-                triggers = if (inDebounce) info.triggers + 1 else 1,
+                activations = if (inDebounce) info.activations + 1 else 1,
                 inDebounce = inDebounce,
-                timeHeldInMillis = info.timeHeldInMillis + elapsedTime,
+                timeHeld = info.timeHeld + elapsedTime,
                 lastUpdateTime = currentTime
             )
         }
 
         activeActions.putIfAbsent(
             actionEvent.action,
-            ActionInputInfo(inDebounce = false, timeHeldInMillis = 0L, lastUpdateTime = currentTime)
+            Action(inDebounce = false, timeHeld = 0L, lastUpdateTime = currentTime)
         )
     }
 

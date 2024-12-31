@@ -7,10 +7,10 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.javafx.JavaFx
 import org.apache.commons.math3.util.FastMath
 import org.storm.core.context.Context
-import org.storm.core.input.ActionEvent
-import org.storm.core.input.ActionManager
-import org.storm.core.input.ActionTranslator
-import org.storm.core.ui.JfxWindow
+import org.storm.core.input.action.ActionEvent
+import org.storm.core.input.action.ActionManager
+import org.storm.core.input.InputBindings
+import org.storm.core.ui.impl.JfxWindow
 import org.storm.core.utils.TimeUtils.toSeconds
 import org.storm.core.extensions.scheduleOnInterval
 import org.storm.engine.context.REQUEST_QUEUE
@@ -156,17 +156,17 @@ class StormEngine(
      * Registers the given translator to translate KeyEvents to String actions for the following events:
      * key pressed, key released
      *
-     * @param inputActionActionTranslator Translator to use
+     * @param inputActionInputBindings Translator to use
      */
-    fun addKeyTranslator(inputActionActionTranslator: ActionTranslator<KeyEvent>) {
+    fun addKeyTranslator(inputActionInputBindings: InputBindings<KeyEvent>) {
         window.onKeyPressed = EventHandler { keyEvent ->
             runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(keyEvent), true))
+                actionManager.submitActionEvent(ActionEvent(inputActionInputBindings.getAction(keyEvent), true))
             }
         }
         window.onKeyReleased = EventHandler { keyEvent ->
             runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(keyEvent), false))
+                actionManager.submitActionEvent(ActionEvent(inputActionInputBindings.getAction(keyEvent), false))
             }
         }
     }
@@ -175,27 +175,27 @@ class StormEngine(
      * Registers the given translator to translate MouseEvents to String actions for the following events:
      * mouse pressed, mouse released, mouse entered, mouse exited
      *
-     * @param inputActionActionTranslator Translator to use
+     * @param inputActionInputBindings Translator to use
      */
-    fun addMouseTranslator(inputActionActionTranslator: ActionTranslator<MouseEvent>) {
+    fun addMouseTranslator(inputActionInputBindings: InputBindings<MouseEvent>) {
         window.onMousePressed = EventHandler { mouseEvent ->
             runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), true))
+                actionManager.submitActionEvent(ActionEvent(inputActionInputBindings.getAction(mouseEvent), true))
             }
         }
         window.onMouseReleased = EventHandler { mouseEvent ->
             runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), false))
+                actionManager.submitActionEvent(ActionEvent(inputActionInputBindings.getAction(mouseEvent), false))
             }
         }
         window.onMouseEntered = EventHandler { mouseEvent ->
             runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), true))
+                actionManager.submitActionEvent(ActionEvent(inputActionInputBindings.getAction(mouseEvent), true))
             }
         }
         window.onMouseExited = EventHandler { mouseEvent ->
             runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), false))
+                actionManager.submitActionEvent(ActionEvent(inputActionInputBindings.getAction(mouseEvent), false))
             }
         }
     }

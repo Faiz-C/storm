@@ -1,6 +1,6 @@
 package org.storm.engine.state
 
-import org.storm.core.input.ActionStateProcessor
+import org.storm.core.input.action.ActionStateProcessor
 import org.storm.core.render.canvas.Canvas
 import org.storm.core.render.Renderable
 import org.storm.core.update.Updatable

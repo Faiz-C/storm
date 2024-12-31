@@ -12,7 +12,7 @@ import org.storm.core.render.canvas.Canvas
 import org.storm.core.render.canvas.Color
 import org.storm.core.render.canvas.Settings
 import org.storm.core.render.geometry.Point
-import org.storm.core.ui.JfxWindow
+import org.storm.core.ui.impl.JfxWindow
 import org.storm.physics.entity.Entity
 import org.storm.physics.entity.ImmovableEntity
 import org.storm.physics.entity.SimpleEntity

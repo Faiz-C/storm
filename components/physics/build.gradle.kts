@@ -1,15 +1,9 @@
 version = "1.1.0"
 
 dependencies {
-    val junitVersion = "5.9.0"
-
     api(project(":components:core"))
     api("org.apache.commons:commons-math3:3.6.1")
     api("com.google.guava:guava:33.0.0-jre")
-
-    testImplementation("org.mockito:mockito-core:4.10.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }
 
 javafx {

@@ -12,7 +12,7 @@ abstract class Canvas(
         private set
 
     init {
-        this.settings = defaultSettings // Trigger the onBrushUpdate
+        this.settings = defaultSettings // Trigger the onSettingsChange
     }
 
     /**

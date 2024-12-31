@@ -4,7 +4,7 @@ import javafx.application.Application
 import javafx.stage.Stage
 import kotlinx.coroutines.runBlocking
 import org.storm.core.render.impl.JfxImage
-import org.storm.core.ui.JfxWindow
+import org.storm.core.ui.impl.JfxWindow
 import org.storm.maps.layer.BackgroundLayer
 import org.storm.maps.layer.Layer
 import org.storm.maps.layer.TileLayer

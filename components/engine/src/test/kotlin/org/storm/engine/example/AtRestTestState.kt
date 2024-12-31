@@ -3,7 +3,7 @@ package org.storm.engine.example
 import org.storm.core.asset.AssetManager
 import org.storm.core.context.Context
 import org.storm.core.extensions.units
-import org.storm.core.input.ActionState
+import org.storm.core.input.action.ActionState
 import org.storm.core.ui.Resolution
 import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE

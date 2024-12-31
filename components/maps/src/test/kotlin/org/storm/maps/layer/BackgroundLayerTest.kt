@@ -6,7 +6,7 @@ import kotlinx.coroutines.runBlocking
 import org.storm.core.context.Context
 import org.storm.core.context.setResolution
 import org.storm.core.ui.Resolution
-import org.storm.core.ui.JfxWindow
+import org.storm.core.ui.impl.JfxWindow
 
 class BackgroundLayerTest : Application() {
     override fun start(primaryStage: Stage) {
