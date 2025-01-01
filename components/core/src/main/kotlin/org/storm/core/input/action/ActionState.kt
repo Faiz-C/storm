@@ -29,7 +29,7 @@ data class ActionState(
      * @param action The action to check
      * @return true if the action is active, only been triggered once and has only been active for one snapshot
      */
-    fun isFirstTrigger(action: String): Boolean {
+    fun isFirstActivation(action: String): Boolean {
         return activeActions[action]?.let { it.activations == 1 && it.activeFrames == 1 } ?: false
     }
 

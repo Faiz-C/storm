@@ -12,15 +12,15 @@ import org.storm.sound.manager.SoundManager
 abstract class SwitchableState(assetManager: AssetManager) : GameState(SoundManager(assetManager = assetManager)) {
 
     override suspend fun process(actionState: ActionState) {
-        if (actionState.isFirstTrigger(KeyActionConstants.ONE)) {
+        if (actionState.isFirstActivation(KeyActionConstants.ONE)) {
             Context.REQUEST_QUEUE.submit(StateChangeRequest(KeyActionConstants.ONE))
-        } else if (actionState.isFirstTrigger(KeyActionConstants.TWO)) {
+        } else if (actionState.isFirstActivation(KeyActionConstants.TWO)) {
             Context.REQUEST_QUEUE.submit(StateChangeRequest(KeyActionConstants.TWO))
-        } else if (actionState.isFirstTrigger(KeyActionConstants.THREE)) {
+        } else if (actionState.isFirstActivation(KeyActionConstants.THREE)) {
             Context.REQUEST_QUEUE.submit(StateChangeRequest(KeyActionConstants.THREE))
-        } else if (actionState.isFirstTrigger(KeyActionConstants.FOUR)) {
+        } else if (actionState.isFirstActivation(KeyActionConstants.FOUR)) {
             Context.REQUEST_QUEUE.submit(StateChangeRequest(KeyActionConstants.FOUR))
-        } else if (actionState.isFirstTrigger(KeyActionConstants.FIVE)) {
+        } else if (actionState.isFirstActivation(KeyActionConstants.FIVE)) {
             Context.REQUEST_QUEUE.submit(StateChangeRequest(KeyActionConstants.FIVE))
         }
     }

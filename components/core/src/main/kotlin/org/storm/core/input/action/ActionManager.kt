@@ -44,17 +44,31 @@ class ActionManager(
         }
     }
 
-    /**
-     * @return A snapshot of the current state of the action manager
-     */
-    suspend fun getStateSnapshot(): ActionState {
-        return actionMutex.withLock {
+    suspend fun updateActiveFrames() {
+        actionMutex.withLock {
             activeActions.forEach { (action, info) ->
                 activeActions[action] = info.copy(
                     activeFrames = info.activeFrames + 1
                 )
             }
+        }
+    }
 
+    suspend fun reset() {
+        actionMutex.withLock {
+            activeActions.clear()
+            activeActionHistory.clear()
+            eventHistory.clear()
+            eventCountSinceLastSnapshot = 0
+            actionCountSinceLastSnapshot = 0
+        }
+    }
+
+    /**
+     * @return A snapshot of the current state of the action manager
+     */
+    suspend fun getStateSnapshot(): ActionState {
+        return actionMutex.withLock {
             val actionState = ActionState(
                 activeActions = activeActions,
                 activeActionHistory = activeActionHistory,
@@ -126,7 +140,7 @@ class ActionManager(
         activeActionHistory.add(actionEvent.action)
 
         if (activeActionHistory.size > maxActionHistory) {
-            activeActionHistory.removeLast()
+            activeActionHistory.removeFirst()
         }
     }
 }

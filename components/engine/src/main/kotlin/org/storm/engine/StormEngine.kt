@@ -242,6 +242,7 @@ class StormEngine(
         val frameState = this.currentState!!
 
         // Process Input
+        this.actionManager.updateActiveFrames()
         frameState.process(this.actionManager.getStateSnapshot())
 
         // Then allow the state to do any internal updating

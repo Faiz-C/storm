@@ -79,7 +79,7 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
     }
 
     override suspend fun process(actionState: ActionState) {
-        if (actionState.isFirstTrigger("progress")) {
+        if (actionState.isFirstActivation("progress")) {
             if (currentLength < line.length) {
                 currentLength = line.length - 1
             } else if (!isDialogueComplete()) {
@@ -88,9 +88,9 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
             } else {
                 this.progress()
             }
-        } else if (actionState.isFirstTrigger("up") && scriptState == Script.State.MAKING_CHOICE) {
+        } else if (actionState.isFirstActivation("up") && scriptState == Script.State.MAKING_CHOICE) {
             currentChoice = (currentChoice - 1).coerceAtLeast(0)
-        } else if (actionState.isFirstTrigger("down") && scriptState == Script.State.MAKING_CHOICE) {
+        } else if (actionState.isFirstActivation("down") && scriptState == Script.State.MAKING_CHOICE) {
             currentChoice = (currentChoice + 1).coerceAtMost(script.choices.size - 1)
         }
     }

@@ -80,7 +80,7 @@ class BouncingBallTestState(assetManager: AssetManager) : SwitchableState(assetM
 
     override suspend fun process(actionState: ActionState) {
         super.process(actionState)
-        if (actionState.isFirstTrigger(KeyActionConstants.SPACE)) {
+        if (actionState.isFirstActivation(KeyActionConstants.SPACE)) {
             Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
         }
     }

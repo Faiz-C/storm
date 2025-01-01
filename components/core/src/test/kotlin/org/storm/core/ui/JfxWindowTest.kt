@@ -21,7 +21,7 @@ class JfxWindowTest: Application() {
                 KeyCode.DOWN -> "down"
                 KeyCode.LEFT -> "left"
                 KeyCode.RIGHT -> "right"
-                else -> ""
+                else -> null
             }
         }
 
@@ -29,15 +29,7 @@ class JfxWindowTest: Application() {
 
         runBlocking {
             EventManager.getEventStream<KeyEvent>(JfxWindow.KEY_EVENT_STREAM).addConsumer {
-                val action = inputBindings.getAction(it)
-                when (it.eventType) {
-                    KeyEvent.KEY_PRESSED -> actionManager.submitActionEvent(ActionEvent(action, true))
-                    KeyEvent.KEY_RELEASED -> actionManager.submitActionEvent(ActionEvent(action, false))
-                }
-            }
-
-            EventManager.getEventStream<KeyEvent>(JfxWindow.KEY_EVENT_STREAM).addConsumer {
-                val action = inputBindings.getAction(it)
+                val action = inputBindings.getAction(it) ?: return@addConsumer
                 when (it.eventType) {
                     KeyEvent.KEY_PRESSED -> actionManager.submitActionEvent(ActionEvent(action, true))
                     KeyEvent.KEY_RELEASED -> actionManager.submitActionEvent(ActionEvent(action, false))
