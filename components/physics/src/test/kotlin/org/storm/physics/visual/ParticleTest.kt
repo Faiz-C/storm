@@ -48,19 +48,19 @@ class ParticleTest : Application() {
                     resolution.width,
                     5.0.units
                 ),
-                "platformRight" to AABB(
+                "platformLeft" to AABB(
                     0.0,
                     0.0,
                     5.0.units,
                     resolution.height
                 ),
-                "platformBottom" to AABB(
+                "platformRight" to AABB(
                     resolution.width - 5.units,
                     0.0,
                     5.0.units,
                     resolution.height
                 ),
-                "platformLeft" to AABB(
+                "platformBottom" to AABB(
                     0.0,
                     resolution.height - 5.units,
                     resolution.width,
@@ -77,20 +77,20 @@ class ParticleTest : Application() {
         this.physicsSimulator = PhysicsSimulator(144.0) { render(window) }
         this.entities.add(boundingBox)
 
-        for (i in 0..400) {
+        for (i in 0..999) {
             val (x, y) = Point(
                 ThreadLocalRandom.current().nextInt(10, (resolution.width - 10.units).toInt())
                     .toDouble(),
                 ThreadLocalRandom.current().nextInt(10, (resolution.height - 10.units).toInt())
                     .toDouble()
             )
-            this.entities.add(SimpleEntity(Circle(x, y, 2.0.units), 3.0.units, 0.5, 1.0))
+            this.entities.add(SimpleEntity(Circle(x, y, 2.0.units), 3.0, 0.5, 1.0))
         }
 
         this.physicsSimulator.physicsEngine.entities = this.entities
 
         this.entities.forEach {
-            it.addForce(Direction.random().vector.scale(2.0.units), 0.1.units)
+            it.addForce(Direction.random().vector.scale(2.0.units), 0.1)
         }
 
         this.physicsSimulator.physicsEngine.paused = true
@@ -115,7 +115,9 @@ class ParticleTest : Application() {
             } else {
                 Settings(color = ballColour)
             }
-            e.render(window.canvas, 0.0, 0.0)
+            window.canvas.withSettings(canvasSettings) {
+                e.render(window.canvas, 0.0, 0.0)
+            }
         }
     }
 }

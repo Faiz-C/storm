@@ -35,25 +35,35 @@ data class Vector(
     constructor(start: Point, end: Point) : this(end.x - start.x, end.y - start.y)
 
     // The mathematical squared magnitude of this Vector
-    val squaredMagnitude: Double by lazy { this.dot(this) }
+    val squaredMagnitude: Double get() = this.dot(this)
 
-    // The mathematical magnitude (length) of this Vector
-    val magnitude: Double by lazy { FastMath.sqrt(this.squaredMagnitude) }
-
-    // The normalized version of this Vector
-    val normalized: Vector by lazy {
-        if (this == ZERO_VECTOR) {
-            ZERO_VECTOR
-        } else {
-            this.scale(1 / this.magnitude)
+    // Purposely we don't calculate this unless needed as it is expensive and not always needed
+    var magnitude: Double = Double.POSITIVE_INFINITY
+        get() {
+            // Vectors in our use cases will always have a finite magnitude so this check is safe
+            if (field == Double.POSITIVE_INFINITY) {
+                field = FastMath.sqrt(this.squaredMagnitude)
+            }
+            return field
         }
-    }
+        private set
+
+    // Purposely we don't create this unless needed as it is expensive and not always needed
+    var normalized: Vector = ZERO_VECTOR
+        get() {
+            // Calculate the normalized form of this Vector if it's not the Zero Vector
+            if (field == ZERO_VECTOR && this !== ZERO_VECTOR) {
+                field = this.scale(1 / this.magnitude)
+            }
+            return field
+        }
+        private set
 
     // Clockwise normal (< -y, x >) of this Vector
-    val clockwiseNormal: Vector by lazy { Vector(y, -x) }
+    val clockwiseNormal: Vector get() = Vector(y, -x)
 
     // Counterclockwise normal (< y, -x >) of this Vector
-    val counterClockwiseNormal: Vector by lazy { Vector(-y, x) }
+    val counterClockwiseNormal: Vector get() = Vector(-y, x)
 
     /**
      * @param u Vector to project onto

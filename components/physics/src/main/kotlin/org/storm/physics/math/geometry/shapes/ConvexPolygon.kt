@@ -111,12 +111,12 @@ open class ConvexPolygon(
     }
 
     override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-        canvas.withSettings(Settings(fill = true)) {
+        canvas.withSettings(canvas.settings.copy(fill = true)) {
             it.drawPolygon(this.vertices)
         }
     }
 
-    override fun toString(): String = "ConvexPolygon(vertices: $vertices)"
+    override fun toString(): String = "ConvexPolygon(vertices=$vertices)"
 
     /**
      * Returns the edges of the polygon as vectors. The edges are defined as such:

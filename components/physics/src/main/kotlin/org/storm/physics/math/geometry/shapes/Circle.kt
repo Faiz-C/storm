@@ -24,7 +24,7 @@ open class Circle(
     override fun contains(p: Point): Boolean = this.center.getSquaredDistance(p) <= this.radius * this.radius
 
     override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-        canvas.withSettings(Settings(fill = true)) {
+        canvas.withSettings(canvas.settings.copy(fill = true)) {
             it.drawEllipse(x + center.x - radius, y + center.y - radius, diameter, diameter)
         }
     }

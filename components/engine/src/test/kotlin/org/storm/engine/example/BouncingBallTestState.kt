@@ -59,7 +59,7 @@ class BouncingBallTestState(assetManager: AssetManager) : SwitchableState(assetM
                 11.0,
                 1.0
             ).also {
-                it.addForce(Direction.SOUTH_EAST.vector.scale(100.0.units), 0.1.units)
+                it.addForce(Direction.SOUTH_EAST.vector.scale(100.0.units), 0.1)
             }
         )
 

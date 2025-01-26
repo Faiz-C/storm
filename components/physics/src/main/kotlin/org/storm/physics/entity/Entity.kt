@@ -128,6 +128,6 @@ abstract class Entity protected constructor(
     }
 
     override fun toString(): String =
-        "Entity(boundaries: ${this.boundaries}, speed: ${this.speed}, velocity: ${this.velocity}, mass: ${this.mass}, restitution: ${this.restitution})"
+        "Entity(boundaries=${this.boundaries}, speed=${this.speed}, velocity=${this.velocity}, mass=${this.mass}, restitution=${this.restitution})"
 
 }

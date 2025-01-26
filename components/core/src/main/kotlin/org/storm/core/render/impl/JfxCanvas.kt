@@ -49,7 +49,6 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
     }
 
     override suspend fun drawEllipseWithPixels(x: Double, y: Double, width: Double, height: Double) {
-        println("here")
         if (this.settings.fill) {
             gc.fillOval(x, y, width, height)
         } else {

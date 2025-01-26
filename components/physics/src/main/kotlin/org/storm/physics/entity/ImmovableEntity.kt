@@ -1,6 +1,5 @@
 package org.storm.physics.entity
 
-import org.storm.physics.math.Vector
 import org.storm.physics.math.geometry.shapes.Shape
 
 /**

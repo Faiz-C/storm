@@ -3,12 +3,15 @@ package org.storm.core.render.canvas
 import org.storm.core.extensions.pixels
 import org.storm.core.render.Image
 import org.storm.core.render.geometry.Point
+import java.util.Stack
 
 abstract class Canvas(
-    private val defaultSettings: Settings = Settings()
+    defaultSettings: Settings = Settings()
 ) {
     var settings: Settings = defaultSettings
         private set
+
+    val settingHistory: Stack<Settings> = Stack()
 
     /**
      * Draws the given text onto the screen starting at the given coordinates.
@@ -95,13 +98,12 @@ abstract class Canvas(
      */
     suspend fun withSettings(settings: Settings, block: suspend (Canvas) -> Unit) {
         try {
+            settingHistory.push(this.settings)
             this.settings = settings
             onSettingsChange(this.settings)
             block(this)
-        } catch (e: Exception) {
-            println(e)
         } finally {
-            this.settings = defaultSettings
+            this.settings = this.settingHistory.pop()
             onSettingsChange(this.settings)
         }
     }

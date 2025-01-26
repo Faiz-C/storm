@@ -2,6 +2,7 @@ package org.storm.engine.example
 
 import org.storm.core.asset.AssetManager
 import org.storm.core.context.Context
+import org.storm.core.context.RESOLUTION_IN_UNITS
 import org.storm.core.extensions.units
 import org.storm.core.input.action.ActionState
 import org.storm.core.ui.Resolution
@@ -16,11 +17,12 @@ import org.storm.physics.math.geometry.shapes.Circle
 class AtRestTestState(assetManager: AssetManager) : SwitchableState(assetManager) {
 
     private val gravity = Direction.SOUTH.vector.scale(25.0.units)
+    private val resolution = Context.RESOLUTION_IN_UNITS
 
     private val platform: Entity = ImmovableRectEntity(
         1.0.units,
-        Resolution.SD.height - 20.units,
-        Resolution.SD.width - 2.units,
+        resolution.height - 20.units,
+        resolution.width - 2.units,
         10.0.units
     )
 
