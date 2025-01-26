@@ -69,7 +69,7 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
             val (color, choiceText) = if (i == currentChoice) {
                 Color(255.0, 0.0, 0.0, 1.0) to ">> $choice"
             } else {
-                Color(255.0, 255.0, 255.0, 1.0) to "   $choice"
+                Color.BLACK to "   $choice"
             }
 
             canvas.withSettings(Settings(fill = true, color = color)) {

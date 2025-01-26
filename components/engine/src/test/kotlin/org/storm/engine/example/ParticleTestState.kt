@@ -34,18 +34,18 @@ class ParticleTestState(assetManager: AssetManager) : SwitchableState(assetManag
                     0.0,
                     0.0,
                     5.0.units,
-                    resolution.height.units
+                    resolution.height
                 ),
                 "platformBottom" to AABB(
                     resolution.width - 5.units,
                     0.0,
                     5.0.units,
-                    resolution.height.units
+                    resolution.height
                 ),
                 "platformLeft" to AABB(
                     0.0,
                     resolution.width - 5.units,
-                    resolution.height.units,
+                    resolution.height,
                     5.0.units
                 )
             )
@@ -56,9 +56,9 @@ class ParticleTestState(assetManager: AssetManager) : SwitchableState(assetManag
     override fun preload() {
         val usedPoints: MutableSet<Point> = mutableSetOf()
 
-        for (i in 0..400) {
+        for (i in 0..999) {
             var topLeft = Point(
-                ThreadLocalRandom.current().nextInt(5, (Context.RESOLUTION.width - 5.0).toInt()).units,
+                ThreadLocalRandom.current().nextInt(5, (Context.RESOLUTION.width - 5).toInt()).units,
                 ThreadLocalRandom.current().nextInt(5, (Context.RESOLUTION.height - 5).toInt()).units
             )
 

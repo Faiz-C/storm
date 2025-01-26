@@ -58,7 +58,7 @@ class ParticleTest : Application() {
                     resolution.width - 5.units,
                     0.0,
                     5.0.units,
-                    resolution.height.units
+                    resolution.height
                 ),
                 "platformLeft" to AABB(
                     0.0,
@@ -72,25 +72,25 @@ class ParticleTest : Application() {
 
     override fun start(stage: Stage) {
         // Make a Display
-        val resolution = Context.RESOLUTION
+        val resolution = Context.RESOLUTION_IN_UNITS
         val window = JfxWindow()
         this.physicsSimulator = PhysicsSimulator(144.0) { render(window) }
         this.entities.add(boundingBox)
 
-        for (i in 0..999) {
+        for (i in 0..400) {
             val (x, y) = Point(
                 ThreadLocalRandom.current().nextInt(10, (resolution.width - 10.units).toInt())
                     .toDouble(),
                 ThreadLocalRandom.current().nextInt(10, (resolution.height - 10.units).toInt())
                     .toDouble()
             )
-            this.entities.add(SimpleEntity(Circle(x, y, 2.0.units), 3.0, 0.5, 1.0))
+            this.entities.add(SimpleEntity(Circle(x, y, 2.0.units), 3.0.units, 0.5, 1.0))
         }
 
         this.physicsSimulator.physicsEngine.entities = this.entities
 
         this.entities.forEach {
-            it.addForce(Direction.random().vector.scale(2.0.units), 0.1)
+            it.addForce(Direction.random().vector.scale(2.0.units), 0.1.units)
         }
 
         this.physicsSimulator.physicsEngine.paused = true
@@ -115,10 +115,7 @@ class ParticleTest : Application() {
             } else {
                 Settings(color = ballColour)
             }
-
-            window.canvas.withSettings(canvasSettings) {
-                e.render(it, 0.0, 0.0)
-            }
+            e.render(window.canvas, 0.0, 0.0)
         }
     }
 }

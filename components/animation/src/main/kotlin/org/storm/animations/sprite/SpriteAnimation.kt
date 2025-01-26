@@ -50,7 +50,7 @@ class SpriteAnimation(
     }
 
     override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-        canvas.drawImage(sprites[currentSprite], x, y)
+        canvas.drawImageWithPixels(sprites[currentSprite], x, y)
     }
 
     override suspend fun update(time: Double, elapsedTime: Double) {

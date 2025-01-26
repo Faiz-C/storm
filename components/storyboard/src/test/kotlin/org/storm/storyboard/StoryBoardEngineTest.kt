@@ -7,6 +7,7 @@ import javafx.stage.Stage
 import kotlinx.coroutines.runBlocking
 import org.storm.core.asset.AssetManager
 import org.storm.core.asset.source.types.LocalStorageAssetSource
+import org.storm.core.event.EventManager
 import org.storm.core.input.action.ActionEvent
 import org.storm.core.input.action.ActionManager
 import org.storm.core.input.InputBindings
@@ -40,18 +41,21 @@ class StoryBoardEngineTest : Application() {
             }
         }
 
-        window.addKeyPressedHandler {
-            runBlocking { actionManager.submitActionEvent(ActionEvent(inputActionInputBindings.getAction(it), true)) }
-        }
-
-        window.addKeyReleasedHandler {
-            runBlocking { actionManager.submitActionEvent(ActionEvent(inputActionInputBindings.getAction(it), false)) }
+        runBlocking {
+            EventManager.getEventStream<KeyEvent>(JfxWindow.KEY_EVENT_STREAM).addConsumer {
+                val action = inputActionInputBindings.getAction(it) ?: return@addConsumer
+                when (it.eventType) {
+                    KeyEvent.KEY_PRESSED -> actionManager.submitActionEvent(ActionEvent(action, true))
+                    KeyEvent.KEY_RELEASED -> actionManager.submitActionEvent(ActionEvent(action, false))
+                }
+            }
         }
 
         val simulator = StoryBoardSimulator(144.0, {
             window.canvas.clear()
             engine.render(window.canvas, 0.0, 0.0)
         }) { time, elapsedTime ->
+            actionManager.updateActiveFrames()
             engine.process(actionManager.getStateSnapshot())
             engine.update(time, elapsedTime)
         }

@@ -20,7 +20,7 @@ class BouncingBallTestState(assetManager: AssetManager) : SwitchableState(assetM
             ImmovableRectEntity(
                 0.0,
                 0.0,
-                resolution.width.units,
+                resolution.width,
                 5.0.units
             )
         )
@@ -29,7 +29,7 @@ class BouncingBallTestState(assetManager: AssetManager) : SwitchableState(assetM
                 0.0,
                 0.0,
                 5.0.units,
-                resolution.height.units
+                resolution.height
             )
         )
         this.mutableEntities.add(
@@ -37,14 +37,14 @@ class BouncingBallTestState(assetManager: AssetManager) : SwitchableState(assetM
                 resolution.width - 5.units,
                 0.0,
                 5.0.units,
-                resolution.height.units
+                resolution.height
             )
         )
         this.mutableEntities.add(
             ImmovableRectEntity(
                 0.0,
                 resolution.height - 5.units,
-                resolution.width.units,
+                resolution.width,
                 5.0.units
             )
         )

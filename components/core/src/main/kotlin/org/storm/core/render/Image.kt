@@ -1,7 +1,7 @@
 package org.storm.core.render
 
 interface Image {
-    val uri: String
+    val uri: String?
     val width: Double
     val height: Double
 

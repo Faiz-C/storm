@@ -1,6 +1,12 @@
 package org.storm.physics.math
 
 import org.apache.commons.math3.util.FastMath
+import org.storm.core.context.Context
+import org.storm.core.context.RESOLUTION
+import org.storm.core.context.RESOLUTION_IN_UNITS
+import org.storm.core.extensions.units
+import org.storm.core.render.Renderable
+import org.storm.core.render.canvas.Canvas
 import org.storm.core.render.geometry.Point
 import java.util.Objects
 
@@ -181,5 +187,4 @@ data class Vector(
 
         return true
     }
-
 }

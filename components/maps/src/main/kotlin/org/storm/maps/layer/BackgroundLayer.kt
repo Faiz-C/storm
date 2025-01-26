@@ -25,7 +25,7 @@ class BackgroundLayer(
     override suspend fun render(canvas: Canvas, x: Double, y: Double) {
         val resolution = Context.RESOLUTION
         val croppedBackground = background.crop(x, y, x + resolution.width, y + resolution.height)
-        canvas.drawImage(croppedBackground, 0.0, 0.0)
+        canvas.drawImageWithPixels(croppedBackground, 0.0, 0.0)
     }
 
     override suspend fun update(time: Double, elapsedTime: Double) {

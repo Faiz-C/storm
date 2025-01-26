@@ -2,7 +2,6 @@ package org.storm.core.render.canvas
 
 import org.storm.core.extensions.pixels
 import org.storm.core.render.Image
-import org.storm.core.render.geometry.PixelPoint
 import org.storm.core.render.geometry.Point
 
 abstract class Canvas(
@@ -10,10 +9,6 @@ abstract class Canvas(
 ) {
     var settings: Settings = defaultSettings
         private set
-
-    init {
-        this.settings = defaultSettings // Trigger the onSettingsChange
-    }
 
     /**
      * Draws the given text onto the screen starting at the given coordinates.
@@ -24,6 +19,18 @@ abstract class Canvas(
      */
     suspend fun drawText(text: String, x: Double, y: Double) {
         drawTextWithPixels(text, x.pixels, y.pixels)
+    }
+
+    /**
+     * Draws a line from (x1, y1) to (x2, y2)
+     *
+     * @param x1 x coordinate of the starting point in game engine units
+     * @param y1 y coordinate of the starting point in game engine units
+     * @param x2 x coordinate of the ending point in game engine units
+     * @param y2 y coordinate of the ending point in game engine units
+     */
+    suspend fun drawLine(x1: Double, y1: Double, x2: Double, y2: Double) {
+        drawLineWithPixels(x1.pixels, y1.pixels, x2.pixels, y2.pixels)
     }
 
     /**
@@ -66,7 +73,7 @@ abstract class Canvas(
      * @param points the points of the polygon in *clockwise* order and in game engine units
      */
     suspend fun drawPolygon(points: List<Point>) {
-        drawPolygonWithPixels(points.map { PixelPoint(it.x.pixels, it.y.pixels) })
+        drawPolygonWithPixels(points.map { it.toPixels() })
     }
 
     /**
@@ -91,6 +98,8 @@ abstract class Canvas(
             this.settings = settings
             onSettingsChange(this.settings)
             block(this)
+        } catch (e: Exception) {
+            println(e)
         } finally {
             this.settings = defaultSettings
             onSettingsChange(this.settings)
@@ -109,6 +118,16 @@ abstract class Canvas(
      * @param settings The brush to use
      */
     abstract suspend fun onSettingsChange(settings: Settings)
+
+    /**
+     * Draws a line from (x1, y1) to (x2, y2)
+     *
+     * @param x1 x coordinate of the starting point in pixels
+     * @param y1 y coordinate of the starting point in pixels
+     * @param x2 x coordinate of the ending point in pixels
+     * @param y2 y coordinate of the ending point in pixels
+     */
+    abstract suspend fun drawLineWithPixels(x1: Double, y1: Double, x2: Double, y2: Double)
 
     /**
      * Draws the given text onto the screen starting at the given coordinates.
@@ -144,7 +163,7 @@ abstract class Canvas(
      *
      * @param points the points of the polygon in *clockwise* order and in pixels
      */
-    abstract suspend fun drawPolygonWithPixels(points: List<PixelPoint>)
+    abstract suspend fun drawPolygonWithPixels(points: List<Point>)
 
     /**
      * Draws the given Image at the given coordinates. The coordinates represent the top left corner of the Image.

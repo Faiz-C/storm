@@ -8,7 +8,7 @@ class JfxImage(val image: javafx.scene.image.Image): Image {
 
     constructor(path: String): this(javafx.scene.image.Image(FileInputStream(path)))
 
-    override val uri: String = image.url
+    override val uri: String? = image.url
 
     override val width: Double = image.width
 

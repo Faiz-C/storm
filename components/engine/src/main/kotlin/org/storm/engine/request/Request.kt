@@ -1,6 +1,7 @@
 package org.storm.engine.request
 
 import org.storm.engine.StormEngine
+import org.storm.physics.PhysicsEngine
 
 /**
  * Represents a request which can be sent to the StormEngine to handle. Requests are carried out before
@@ -13,6 +14,6 @@ fun interface Request {
      *
      * @param stormEngine instance of the StormEngine which will be used to handle this request
      */
-    fun execute(stormEngine: StormEngine)
+    fun execute(stormEngine: StormEngine, physicsEngine: PhysicsEngine)
 
 }

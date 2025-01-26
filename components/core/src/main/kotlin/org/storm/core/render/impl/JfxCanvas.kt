@@ -8,7 +8,7 @@ import org.storm.core.context.RESOLUTION
 import org.storm.core.render.canvas.Canvas
 import org.storm.core.render.canvas.Settings
 import org.storm.core.render.Image
-import org.storm.core.render.geometry.PixelPoint
+import org.storm.core.render.geometry.Point
 
 class JfxCanvas(private val gc: GraphicsContext): Canvas() {
 
@@ -17,7 +17,7 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
     }
 
     override suspend fun onSettingsChange(settings: Settings) {
-        val color = Color(settings.color.red, settings.color.green, settings.color.blue, settings.color.alpha)
+        val color = settings.color.toJfxColor()
         gc.fill = color
         gc.stroke = color
         gc.lineWidth = settings.thickness
@@ -26,6 +26,10 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
             FontWeight.findByWeight(settings.font.weight),
             settings.font.size
         )
+    }
+
+    override suspend fun drawLineWithPixels(x1: Double, y1: Double, x2: Double, y2: Double) {
+        gc.strokeLine(x1, y1, x2, y2)
     }
 
     override suspend fun drawTextWithPixels(text: String, x: Double, y: Double) {
@@ -45,6 +49,7 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
     }
 
     override suspend fun drawEllipseWithPixels(x: Double, y: Double, width: Double, height: Double) {
+        println("here")
         if (this.settings.fill) {
             gc.fillOval(x, y, width, height)
         } else {
@@ -52,7 +57,7 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
         }
     }
 
-    override suspend fun drawPolygonWithPixels(points: List<PixelPoint>) {
+    override suspend fun drawPolygonWithPixels(points: List<Point>) {
         val size = points.size
         val xCoordinates = DoubleArray(size)
         val yCoordinates = DoubleArray(size)
@@ -76,5 +81,14 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
         }
 
         gc.drawImage(image.image, x, y)
+    }
+
+    private fun org.storm.core.render.canvas.Color.toJfxColor(): Color {
+        return Color(
+            this.red / 255.0,
+            this.blue / 255.0,
+            this.green / 255.0,
+            this.alpha
+        )
     }
 }

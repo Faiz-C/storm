@@ -12,6 +12,7 @@ import org.storm.core.context.setResolution
 import org.storm.core.render.impl.JfxImage
 import org.storm.core.ui.Resolution
 import org.storm.core.ui.impl.JfxWindow
+import java.io.FileInputStream
 
 class AnimationTest : Application() {
 

@@ -1,15 +1,10 @@
 package org.storm.engine
 
-import javafx.event.EventHandler
-import javafx.scene.input.KeyEvent
-import javafx.scene.input.MouseEvent
 import kotlinx.coroutines.*
 import kotlinx.coroutines.javafx.JavaFx
 import org.apache.commons.math3.util.FastMath
 import org.storm.core.context.Context
-import org.storm.core.input.action.ActionEvent
 import org.storm.core.input.action.ActionManager
-import org.storm.core.input.InputBindings
 import org.storm.core.ui.impl.JfxWindow
 import org.storm.core.utils.TimeUtils.toSeconds
 import org.storm.core.extensions.scheduleOnInterval
@@ -26,9 +21,9 @@ import java.util.concurrent.Executors
  */
 class StormEngine(
     renderFps: Int = 60,
-    val physicsEngine: PhysicsEngine,
-    val logicFps: Int = renderFps,
-    private val actionManager: ActionManager = ActionManager(),
+    val physicsFps: Int = renderFps,
+    private val physicsEngine: PhysicsEngine,
+    private val actionManager: ActionManager
 ) {
 
     companion object {
@@ -78,16 +73,16 @@ class StormEngine(
             this.gameLoop?.cancel() // Stop the current loop if its running
 
             // Figure out which of the two is the greater fps, that will be the rate the loop will run at
-            val higher = FastMath.max(value, this.logicFps)
+            val higher = FastMath.max(value, this.physicsFps)
 
             // We capture both ratios as we do not enforce that any one fps amount must be smaller than the other
             // This allows us to separate the physics and the rendering rates during the game loop
             this.renderFpsRatio = FastMath.ceil(higher.toDouble() / value).toInt()
-            this.physicsFpsRatio = FastMath.ceil(higher.toDouble() / this.logicFps).toInt()
+            this.physicsFpsRatio = FastMath.ceil(higher.toDouble() / this.physicsFps).toInt()
 
             // 1 / fps == fixed number of calls per second, but we want it in terms of nanoseconds as that is our tracking
             // metric, therefore we multiply by 1000000000 to go from seconds to nanoseconds -> 1000000000 / fps
-            this.fixedTimeStepInterval = 1000000000L / this.logicFps
+            this.fixedTimeStepInterval = 1000000000L / this.physicsFps
 
             // Restart the loop with the new interval rate
             this.gameLoop = this.engineCoroutineScope.scheduleOnInterval(1000L / higher) {
@@ -153,54 +148,6 @@ class StormEngine(
     }
 
     /**
-     * Registers the given translator to translate KeyEvents to String actions for the following events:
-     * key pressed, key released
-     *
-     * @param inputActionInputBindings Translator to use
-     */
-    fun addKeyTranslator(inputActionInputBindings: InputBindings<KeyEvent>) {
-        window.onKeyPressed = EventHandler { keyEvent ->
-            runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionInputBindings.getAction(keyEvent), true))
-            }
-        }
-        window.onKeyReleased = EventHandler { keyEvent ->
-            runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionInputBindings.getAction(keyEvent), false))
-            }
-        }
-    }
-
-    /**
-     * Registers the given translator to translate MouseEvents to String actions for the following events:
-     * mouse pressed, mouse released, mouse entered, mouse exited
-     *
-     * @param inputActionInputBindings Translator to use
-     */
-    fun addMouseTranslator(inputActionInputBindings: InputBindings<MouseEvent>) {
-        window.onMousePressed = EventHandler { mouseEvent ->
-            runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionInputBindings.getAction(mouseEvent), true))
-            }
-        }
-        window.onMouseReleased = EventHandler { mouseEvent ->
-            runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionInputBindings.getAction(mouseEvent), false))
-            }
-        }
-        window.onMouseEntered = EventHandler { mouseEvent ->
-            runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionInputBindings.getAction(mouseEvent), true))
-            }
-        }
-        window.onMouseExited = EventHandler { mouseEvent ->
-            runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionInputBindings.getAction(mouseEvent), false))
-            }
-        }
-    }
-
-    /**
      * Runs the StormEngine
      */
     fun run() {
@@ -231,7 +178,7 @@ class StormEngine(
 
         // First handle the next set of requests
         Context.REQUEST_QUEUE.next()?.let { requests: List<Request> ->
-            requests.forEach { request -> request.execute(this) }
+            requests.forEach { request -> request.execute(this, this.physicsEngine) }
         }
 
         // Run all scheduled context updates

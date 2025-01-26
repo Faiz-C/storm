@@ -42,7 +42,7 @@ class MultiPartBoundaryTest : Application() {
                 resolution.width - 5.units,
                 0.0,
                 5.0.units,
-                resolution.height.units
+                resolution.height
             ),
             "platformLeft" to AABB(
                 0.0,

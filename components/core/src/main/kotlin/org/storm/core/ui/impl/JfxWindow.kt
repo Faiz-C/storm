@@ -8,6 +8,9 @@ import kotlinx.coroutines.runBlocking
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION
 import org.storm.core.event.EventManager
+import org.storm.core.input.InputBindings
+import org.storm.core.input.action.ActionEvent
+import org.storm.core.input.action.ActionManager
 import org.storm.core.render.canvas.Canvas
 import org.storm.core.render.impl.JfxCanvas
 import org.storm.core.ui.Resolution
@@ -43,12 +46,6 @@ class JfxWindow : Scene(Pane()), Window, Observer {
 
     override val canvas: Canvas = JfxCanvas(sceneCanvas.graphicsContext2D)
 
-    override fun update(o: Observable) {
-        if (o !is Context) return
-
-        this.resolution = o.RESOLUTION
-    }
-
     init {
         this.resolution = resolution
         Context.addObserver(this)
@@ -64,5 +61,11 @@ class JfxWindow : Scene(Pane()), Window, Observer {
                 runBlocking { stream.produce(it) }
             }
         }
+    }
+
+    override fun update(o: Observable) {
+        if (o !is Context) return
+
+        this.resolution = o.RESOLUTION
     }
 }

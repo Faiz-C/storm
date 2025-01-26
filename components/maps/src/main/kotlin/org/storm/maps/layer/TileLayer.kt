@@ -45,7 +45,7 @@ class TileLayer(
 
             // Only draw if its visible on the screen
             if (tileRect.intersects(screenRect)) {
-                canvas.drawImage(tileImage, tx - x, ty - y)
+                canvas.drawImageWithPixels(tileImage, tx - x, ty - y)
             }
         }
     }

@@ -24,7 +24,6 @@ class JfxWindowTest: Application() {
                 else -> null
             }
         }
-
         val window = JfxWindow()
 
         runBlocking {
