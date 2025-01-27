@@ -2,8 +2,8 @@ package org.storm.physics.math
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import org.storm.physics.constants.Vectors
-import org.storm.physics.math.geometry.Point
+import org.storm.core.render.geometry.Point
+import org.storm.physics.math.Vector
 
 class VectorTest {
 
@@ -76,8 +76,8 @@ class VectorTest {
 
     @Test
     fun testFlip() {
-        assertEquals(Vectors.UNIT_WEST, Vectors.UNIT_EAST.flip())
-        assertEquals(Vectors.UNIT_NORTH_WEST, Vectors.UNIT_SOUTH_EAST.flip())
+        assertEquals(Vector.UNIT_WEST, Vector.UNIT_EAST.flip())
+        assertEquals(Vector.UNIT_NORTH_WEST, Vector.UNIT_SOUTH_EAST.flip())
     }
 
     @Test
@@ -112,8 +112,8 @@ class VectorTest {
         val v1 = Vector(2.0, 1.0)
         val v2 = Vector(1.0, 2.0)
         val v3 = Vector(2.0, 1.0)
-        val v4 = Vectors.UNIT_NORTH.scale(12.0)
-        val v5 = Vectors.UNIT_NORTH.scale(12.0)
+        val v4 = Vector.UNIT_NORTH.scale(12.0)
+        val v5 = Vector.UNIT_NORTH.scale(12.0)
 
         assertNotEquals(v1, v2)
         assertEquals(v1, v3)

@@ -1,8 +1,9 @@
 package org.storm.maps.layer
 
-import javafx.scene.canvas.GraphicsContext
+import kotlinx.coroutines.runBlocking
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION
+import org.storm.core.render.canvas.Canvas
 import org.storm.maps.tile.Tile
 import org.storm.maps.tile.TileSet
 import org.storm.physics.math.geometry.shapes.AABB
@@ -14,7 +15,7 @@ class TileLayer(
 ) : Layer(active) {
 
     companion object {
-        private fun Array<IntArray>.iterateMatrix(block: (Int, Int) -> Unit) {
+        private suspend fun Array<IntArray>.iterateMatrix(block: suspend (Int, Int) -> Unit) {
             for (r in this.indices) {
                 for (c in this[0].indices) {
                     block(r, c)
@@ -25,11 +26,11 @@ class TileLayer(
 
     init {
         if (active) {
-            loadTiles()
+            runBlocking { loadTiles() }
         }
     }
 
-    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
+    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
         val resolution = Context.RESOLUTION
         val screenRect = AABB(x, y, resolution.width, resolution.height)
 
@@ -44,7 +45,7 @@ class TileLayer(
 
             // Only draw if its visible on the screen
             if (tileRect.intersects(screenRect)) {
-                gc.drawImage(tileImage, tx - x, ty - y)
+                canvas.drawImageWithPixels(tileImage, tx - x, ty - y)
             }
         }
     }
@@ -53,7 +54,7 @@ class TileLayer(
         // Tile Layers do not update by default
     }
 
-    private fun loadTiles() {
+    private suspend fun loadTiles() {
         skeleton.iterateMatrix { r, c ->
             if (skeleton[r][c] < 0) return@iterateMatrix
 

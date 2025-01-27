@@ -2,10 +2,9 @@ package org.storm.physics
 
 import org.apache.commons.math3.util.FastMath
 import org.storm.core.context.Context
-import org.storm.core.context.RESOLUTION
+import org.storm.core.context.RESOLUTION_IN_UNITS
+import org.storm.core.extensions.units
 import org.storm.physics.collision.CollisionDetector.checkMtv
-import org.storm.physics.constants.Vectors
-import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.entity.Entity
 import org.storm.physics.math.Vector
 import org.storm.physics.structures.QuadrantTree
@@ -15,18 +14,12 @@ import org.storm.physics.structures.QuadrantTree
  * It uses a Quad Tree (QuadrantTree) to check likely collisions and then uses impulse resolution to deal with collisions.
  */
 class ImpulseResolutionPhysicsEngine : PhysicsEngine(
-    QuadrantTree(
-        0,
-        Context.UNIT_CONVERTOR.toUnits(Context.RESOLUTION.width),
-        Context.UNIT_CONVERTOR.toUnits(Context.RESOLUTION.height)
-    )
+    QuadrantTree(0, Context.RESOLUTION_IN_UNITS.width, Context.RESOLUTION_IN_UNITS.height)
 ) {
 
     companion object {
-        private const val POSITIONAL_CORRECTION_ADJUSTMENT =
-            0.2 // This is in pixels as the unit conversion is up to the user
-        private const val POSITIONAL_CORRECTION_THRESHOLD =
-            0.01 // This is in pixels as the unit conversion is up to the user
+        private const val POSITIONAL_CORRECTION_ADJUSTMENT = 0.2 // This is in pixels as the unit conversion is up to the user
+        private const val POSITIONAL_CORRECTION_THRESHOLD = 0.01 // This is in pixels as the unit conversion is up to the user
     }
 
     override fun processCollisions(entity: Entity) {
@@ -46,7 +39,7 @@ class ImpulseResolutionPhysicsEngine : PhysicsEngine(
                     // Check collision and get back the minimum translation vector
                     val mtv = checkMtv(section, neighbourSection)
 
-                    if (mtv === Vectors.ZERO_VECTOR) return@neighbourCollisionCheck
+                    if (mtv === Vector.ZERO_VECTOR) return@neighbourCollisionCheck
 
                     // resolve collision via impulse resolution
                     impulsiveResolution(entity, neighbour, mtv)
@@ -86,12 +79,15 @@ class ImpulseResolutionPhysicsEngine : PhysicsEngine(
         e2.velocity = e2.velocity.subtract(impulseVector.scale(e2.inverseMass))
 
         // Positional correction do to eventual floating point arithmetic error
-        val mag = FastMath.max(mtv.magnitude - Context.UNIT_CONVERTOR.toUnits(POSITIONAL_CORRECTION_THRESHOLD), 0.0)
+        val mag = FastMath.max(mtv.magnitude - POSITIONAL_CORRECTION_THRESHOLD.units, 0.0)
         val correction =
-            mag / (e1.inverseMass + e2.inverseMass) * Context.UNIT_CONVERTOR.toUnits(POSITIONAL_CORRECTION_ADJUSTMENT)
+            mag / (e1.inverseMass + e2.inverseMass) * POSITIONAL_CORRECTION_ADJUSTMENT.units
 
-        e1.translate(collisionNormal.scale(correction * e1.inverseMass))
-        e2.translate(collisionNormal.scale(-correction * e2.inverseMass))
+        val requiredE1Translation = collisionNormal.scale(correction * e1.inverseMass)
+        val requiredE2Translation = collisionNormal.scale(-correction * e2.inverseMass)
+
+        e1.translate(requiredE1Translation.x, requiredE1Translation.y)
+        e2.translate(requiredE2Translation.x, requiredE2Translation.y)
     }
 
 }

@@ -1,8 +1,7 @@
 package org.storm.physics.structures
 
-import javafx.scene.canvas.GraphicsContext
 import org.storm.core.context.Context
-import org.storm.physics.context.UNIT_CONVERTOR
+import org.storm.core.render.canvas.Canvas
 import org.storm.physics.entity.Entity
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Shape
@@ -26,16 +25,8 @@ class QuadrantTree(
             private val height: Double
         ) : AABB(x, y, width, height) {
 
-            override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
-                val unitConvertor = Context.UNIT_CONVERTOR
-                val (x1, y1) = this.vertices[TOP_LEFT_POINT]
-
-                gc.strokeRect(
-                    x + unitConvertor.toPixels(x1),
-                    y + unitConvertor.toPixels(y1),
-                    unitConvertor.toPixels(width),
-                    unitConvertor.toPixels(height)
-                )
+            override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+                canvas.drawPolygon(this.vertices)
             }
 
             fun subdivide(): Array<Quadrant> {
@@ -149,10 +140,10 @@ class QuadrantTree(
         }
     }
 
-    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
-        this.boundary.render(gc, 0.0, 0.0)
+    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+        this.boundary.render(canvas, 0.0, 0.0)
         this.quadrants.forEach {
-            it?.render(gc, x, y)
+            it?.render(canvas, x, y)
         }
     }
 

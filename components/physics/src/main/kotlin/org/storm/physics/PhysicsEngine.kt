@@ -1,10 +1,10 @@
 package org.storm.physics
 
-import javafx.scene.canvas.GraphicsContext
 import org.storm.core.context.Context
+import org.storm.core.extensions.units
+import org.storm.core.render.canvas.Canvas
 import org.storm.core.render.Renderable
 import org.storm.core.update.Updatable
-import org.storm.physics.context.UNIT_CONVERTOR
 import org.storm.physics.entity.Entity
 import org.storm.physics.math.Vector
 import org.storm.physics.structures.SpatialDataStructure
@@ -54,8 +54,8 @@ abstract class PhysicsEngine protected constructor(
         }
     }
 
-    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
-        this.collisionStructure.render(gc, 0.0, 0.0)
+    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+        this.collisionStructure.render(canvas, 0.0, 0.0)
     }
 
     /**
@@ -91,7 +91,7 @@ abstract class PhysicsEngine protected constructor(
         applyForces(entity, elapsedTime)
 
         // If the entity has zero or extremely little velocity then consider it at rest. This means we DON'T check collision
-        val minimumRestVelocity = Context.UNIT_CONVERTOR.toUnits(MINIMUM_REST_VELOCITY)
+        val minimumRestVelocity = MINIMUM_REST_VELOCITY.units
         if (entity.velocity.squaredMagnitude < minimumRestVelocity * minimumRestVelocity) return
 
         // Check and process any collisions

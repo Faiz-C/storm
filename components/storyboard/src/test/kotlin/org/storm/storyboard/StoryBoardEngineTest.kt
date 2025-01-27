@@ -7,10 +7,11 @@ import javafx.stage.Stage
 import kotlinx.coroutines.runBlocking
 import org.storm.core.asset.AssetManager
 import org.storm.core.asset.source.types.LocalStorageAssetSource
-import org.storm.core.input.ActionEvent
-import org.storm.core.input.ActionManager
-import org.storm.core.input.ActionTranslator
-import org.storm.core.ui.Window
+import org.storm.core.event.EventManager
+import org.storm.core.input.action.ActionEvent
+import org.storm.core.input.action.ActionManager
+import org.storm.core.input.InputBindings
+import org.storm.core.ui.impl.JfxWindow
 import org.storm.storyboard.helpers.StoryBoardSimulator
 import java.nio.file.Paths
 
@@ -26,11 +27,11 @@ class StoryBoardEngineTest : Application() {
         engine.loadScene("bats")
         engine.switchState("top-left")
 
-        val window = Window()
+        val window = JfxWindow()
 
         val actionManager = ActionManager()
 
-        val inputActionActionTranslator = ActionTranslator<KeyEvent> { t ->
+        val inputActionInputBindings = InputBindings<KeyEvent> { t ->
             when (t.code) {
                 KeyCode.ENTER -> "progress"
                 KeyCode.ESCAPE -> "exit"
@@ -40,18 +41,21 @@ class StoryBoardEngineTest : Application() {
             }
         }
 
-        window.addKeyPressedHandler {
-            runBlocking { actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(it), true)) }
-        }
-
-        window.addKeyReleasedHandler {
-            runBlocking { actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(it), false)) }
+        runBlocking {
+            EventManager.getEventStream<KeyEvent>(JfxWindow.KEY_EVENT_STREAM).addConsumer {
+                val action = inputActionInputBindings.getAction(it) ?: return@addConsumer
+                when (it.eventType) {
+                    KeyEvent.KEY_PRESSED -> actionManager.submitActionEvent(ActionEvent(action, true))
+                    KeyEvent.KEY_RELEASED -> actionManager.submitActionEvent(ActionEvent(action, false))
+                }
+            }
         }
 
         val simulator = StoryBoardSimulator(144.0, {
-            window.clear()
-            engine.render(window.graphicsContext, 0.0, 0.0)
+            window.canvas.clear()
+            engine.render(window.canvas, 0.0, 0.0)
         }) { time, elapsedTime ->
+            actionManager.updateActiveFrames()
             engine.process(actionManager.getStateSnapshot())
             engine.update(time, elapsedTime)
         }

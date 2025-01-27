@@ -2,10 +2,10 @@ package org.storm.physics.collision
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.storm.core.render.geometry.Point
 import org.storm.physics.collision.CollisionDetector.check
 import org.storm.physics.collision.CollisionDetector.checkMtv
-import org.storm.physics.constants.Vectors
-import org.storm.physics.math.geometry.Point
+import org.storm.physics.math.Vector
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
 import org.storm.physics.math.geometry.shapes.Triangle
@@ -47,7 +47,7 @@ class CollisionDetectorTest {
         val aabb = AABB(0.0, 0.0, 5.0, 5.0)
         val aabb2 = AABB(2.0, 3.0, 4.0, 2.0)
         val aabb3 = AABB(6.0, 0.0, 5.0, 5.0)
-        Assertions.assertEquals(Vectors.ZERO_VECTOR, checkMtv(aabb, aabb3))
+        Assertions.assertEquals(Vector.ZERO_VECTOR, checkMtv(aabb, aabb3))
         val mtv = checkMtv(aabb, aabb2)
 
         // The math:
@@ -93,7 +93,7 @@ class CollisionDetectorTest {
 
         val mtv = checkMtv(c1, c3)
         val (x, y) = mtv.flip()
-        Assertions.assertNotEquals(Vectors.ZERO_VECTOR, mtv)
+        Assertions.assertNotEquals(Vector.ZERO_VECTOR, mtv)
 
         c1.translate(mtv.x, mtv.y)
         c3.translate(x, y)
@@ -105,7 +105,7 @@ class CollisionDetectorTest {
         val r = AABB(25.0, 200.0, 300.0, 10.0)
         val c = Circle(50.0, 195.0, 10.0)
         val mtv = checkMtv(r, c)
-        Assertions.assertNotEquals(Vectors.ZERO_VECTOR, mtv)
+        Assertions.assertNotEquals(Vector.ZERO_VECTOR, mtv)
 
         val (x, y) = mtv.flip()
         r.translate(mtv.x, mtv.y)

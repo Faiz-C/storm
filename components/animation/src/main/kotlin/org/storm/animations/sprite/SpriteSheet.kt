@@ -1,8 +1,6 @@
 package org.storm.animations.sprite
 
-import javafx.scene.image.Image
-import org.storm.core.utils.ImageUtils
-import java.io.FileInputStream
+import org.storm.core.render.Image
 
 /**
  * A SpriteSheet holds a collection of sprites derived from a sprite sheet image. The individual cropped sprites are
@@ -13,17 +11,10 @@ import java.io.FileInputStream
  */
 class SpriteSheet(
     spriteSheet: Image,
-    spriteWidth: Int,
-    spriteHeight: Int
+    spriteWidth: Double,
+    spriteHeight: Double
 ) {
-
-    private val sprites: Array<Array<Image>> = ImageUtils.toGrid(spriteSheet, spriteWidth, spriteHeight)
-
-    constructor(spriteSheetLocation: String, spriteWidth: Int, spriteHeight: Int) : this(
-        Image(FileInputStream(spriteSheetLocation)),
-        spriteWidth,
-        spriteHeight
-    )
+    private val sprites: Array<Array<Image>> = spriteSheet.chop(spriteWidth, spriteHeight)
 
     /**
      * @param row row number of the sprite

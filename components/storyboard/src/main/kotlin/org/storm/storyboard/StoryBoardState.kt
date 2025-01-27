@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
 import org.storm.core.asset.Asset
-import org.storm.core.input.ActionStateProcessor
+import org.storm.core.input.action.ActionStateProcessor
 import org.storm.core.render.Renderable
 import org.storm.core.update.Updatable
 import org.storm.core.asset.serialization.AssetResolver

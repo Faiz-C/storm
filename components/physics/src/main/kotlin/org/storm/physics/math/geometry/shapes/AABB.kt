@@ -1,6 +1,7 @@
 package org.storm.physics.math.geometry.shapes
 
-import org.storm.physics.math.geometry.Point
+import org.storm.core.render.geometry.Point
+import org.storm.physics.math.extensions.getSquaredDistance
 
 /**
  * An Axis Aligned Bounding Box (Rectangle) is a Polygon with four sides that is aligned with the x-axis and y-axis
@@ -74,6 +75,4 @@ open class AABB(
         }
         return true
     }
-
-
 }

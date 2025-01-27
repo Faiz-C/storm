@@ -31,6 +31,7 @@ allprojects {
         val slf4jVersion = "2.0.16"
         val jacksonVersion = "2.18.1"
         val coroutinesVersion = "1.9.0"
+        val junitVersion = "5.9.0"
 
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$coroutinesVersion")
@@ -44,9 +45,18 @@ allprojects {
 
         implementation("org.apache.commons:commons-lang3:3.17.0")
         implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
+
+        testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+        testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     }
 
     kotlin {
         jvmToolchain(21)
+    }
+
+    tasks {
+        test {
+            useJUnitPlatform()
+        }
     }
 }

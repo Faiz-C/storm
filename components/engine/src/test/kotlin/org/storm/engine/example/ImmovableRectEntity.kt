@@ -1,11 +1,9 @@
 package org.storm.engine.example
 
-import javafx.scene.canvas.GraphicsContext
-import javafx.scene.paint.Color
-import org.storm.core.render.Renderable
+import org.storm.core.render.canvas.Canvas
+import org.storm.core.render.canvas.Color
 import org.storm.physics.entity.ImmovableEntity
 import org.storm.physics.math.geometry.shapes.AABB
-import org.storm.physics.transforms.UnitConvertor
 
 class ImmovableRectEntity(
     x: Double,
@@ -14,9 +12,10 @@ class ImmovableRectEntity(
     height: Double
 ) : ImmovableEntity(AABB(x, y, width, height)) {
 
-    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
-        gc.fill = Color.RED
-        super.render(gc, x, y)
+    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+        canvas.withSettings(canvas.settings.copy(color = Color(255.0, 0.0, 0.0, 1.0))) {
+            super.render(canvas, x, y)
+        }
     }
 
 }

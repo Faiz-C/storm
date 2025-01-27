@@ -1,12 +1,11 @@
 package org.storm.physics.entity
 
-import javafx.scene.canvas.GraphicsContext
+import org.storm.core.render.canvas.Canvas
 import org.storm.core.render.Renderable
 import org.storm.physics.collision.Impulsive
-import org.storm.physics.constants.Vectors
 import org.storm.physics.math.Vector
-import org.storm.physics.math.geometry.Geometric
-import org.storm.physics.math.geometry.Point
+import org.storm.core.render.geometry.Geometric
+import org.storm.core.render.geometry.Point
 import org.storm.physics.math.geometry.shapes.Shape
 
 /**
@@ -27,7 +26,7 @@ abstract class Entity protected constructor(
 
     val actingForces: MutableMap<Vector, Double> = mutableMapOf()
     val collisionState: MutableMap<Entity, Set<Shape>> = mutableMapOf()
-    var velocity: Vector = Vectors.ZERO_VECTOR
+    var velocity: Vector = Vector.ZERO_VECTOR
 
     var mass: Double = 1.0
         set(value) {
@@ -58,7 +57,7 @@ abstract class Entity protected constructor(
      * Translates the Entity's position by its current velocity
      */
     fun translateByVelocity() {
-        this.translate(velocity)
+        this.translate(velocity.x, velocity.y)
     }
 
     /**
@@ -112,9 +111,9 @@ abstract class Entity protected constructor(
         }
     }
 
-    override suspend fun render(gc: GraphicsContext, x: Double, y: Double) {
+    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
         this.boundaries.forEach { (_, boundary) ->
-            boundary.render(gc, x, y)
+            boundary.render(canvas, x, y)
         }
     }
 
@@ -129,6 +128,6 @@ abstract class Entity protected constructor(
     }
 
     override fun toString(): String =
-        "Entity(boundaries: ${this.boundaries}, speed: ${this.speed}, velocity: ${this.velocity}, mass: ${this.mass}, restitution: ${this.restitution})"
+        "Entity(boundaries=${this.boundaries}, speed=${this.speed}, velocity=${this.velocity}, mass=${this.mass}, restitution=${this.restitution})"
 
 }

@@ -1,23 +1,19 @@
 package org.storm.engine
 
-import javafx.event.EventHandler
-import javafx.scene.input.KeyEvent
-import javafx.scene.input.MouseEvent
 import kotlinx.coroutines.*
 import kotlinx.coroutines.javafx.JavaFx
 import org.apache.commons.math3.util.FastMath
 import org.storm.core.context.Context
-import org.storm.core.input.ActionEvent
-import org.storm.core.input.ActionManager
-import org.storm.core.input.ActionTranslator
-import org.storm.core.ui.Window
-import org.storm.core.utils.TimeUtils.toSeconds
 import org.storm.core.extensions.scheduleOnInterval
+import org.storm.core.input.action.ActionManager
+import org.storm.core.ui.impl.JfxWindow
+import org.storm.core.utils.TimeUtils.toSeconds
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.exception.StormEngineException
 import org.storm.engine.request.Request
 import org.storm.engine.state.GameState
 import org.storm.physics.PhysicsEngine
+import org.storm.sound.manager.SoundManager
 import java.util.concurrent.Executors
 
 /**
@@ -26,9 +22,10 @@ import java.util.concurrent.Executors
  */
 class StormEngine(
     renderFps: Int = 60,
-    val physicsEngine: PhysicsEngine,
-    val logicFps: Int = renderFps,
-    private val actionManager: ActionManager = ActionManager(),
+    val physicsFps: Int = renderFps,
+    private val physicsEngine: PhysicsEngine,
+    private val actionManager: ActionManager,
+    private val soundManager: SoundManager
 ) {
 
     companion object {
@@ -38,7 +35,7 @@ class StormEngine(
     }
 
     // Window the game will be run on
-    val window: Window = Window()
+    val window: JfxWindow = JfxWindow()
 
     // Game Loop Vars
     private var accumulator: Long = 0L
@@ -78,16 +75,16 @@ class StormEngine(
             this.gameLoop?.cancel() // Stop the current loop if its running
 
             // Figure out which of the two is the greater fps, that will be the rate the loop will run at
-            val higher = FastMath.max(value, this.logicFps)
+            val higher = FastMath.max(value, this.physicsFps)
 
             // We capture both ratios as we do not enforce that any one fps amount must be smaller than the other
             // This allows us to separate the physics and the rendering rates during the game loop
             this.renderFpsRatio = FastMath.ceil(higher.toDouble() / value).toInt()
-            this.physicsFpsRatio = FastMath.ceil(higher.toDouble() / this.logicFps).toInt()
+            this.physicsFpsRatio = FastMath.ceil(higher.toDouble() / this.physicsFps).toInt()
 
             // 1 / fps == fixed number of calls per second, but we want it in terms of nanoseconds as that is our tracking
             // metric, therefore we multiply by 1000000000 to go from seconds to nanoseconds -> 1000000000 / fps
-            this.fixedTimeStepInterval = 1000000000L / this.logicFps
+            this.fixedTimeStepInterval = 1000000000L / this.physicsFps
 
             // Restart the loop with the new interval rate
             this.gameLoop = this.engineCoroutineScope.scheduleOnInterval(1000L / higher) {
@@ -108,8 +105,8 @@ class StormEngine(
      * @param stateId unique id to identify the state by
      * @param state   State to add
      */
-    fun addState(stateId: String, state: GameState) {
-        state.preload()
+    suspend fun registerState(stateId: String, state: GameState) {
+        state.onRegister(this.physicsEngine, this.soundManager)
         this.states[stateId] = state
     }
 
@@ -118,7 +115,8 @@ class StormEngine(
      *
      * @param stateId unique id of the State to remove
      */
-    fun removeState(stateId: String) {
+    suspend fun unregisterState(stateId: String) {
+        this.states[stateId]?.onUnregister(this.physicsEngine, this.soundManager)
         this.states.remove(stateId)
     }
 
@@ -128,7 +126,7 @@ class StormEngine(
      * @param stateId unique id of the state to switch to
      * @param reset   true if resetting the state is wanted, false otherwise (default false)
      */
-    fun swapState(stateId: String, reset: Boolean = false) {
+    suspend fun swapState(stateId: String) {
         val newState = this.states[stateId] ?: throw StormEngineException("could not find state for id $stateId")
 
         if (newState === this.currentState) return
@@ -136,9 +134,7 @@ class StormEngine(
         // Stop the engine temporarily during the swap
         this.paused = true
 
-        this.currentState?.unload()
-
-        if (reset) newState.reset()
+        this.currentState?.onSwapOff(this.physicsEngine, this.soundManager)
 
         this.currentState = newState
 
@@ -146,58 +142,10 @@ class StormEngine(
 
         this.physicsEngine.entities = this.currentState!!.entities
 
-        this.currentState!!.load()
+        this.currentState!!.onSwapOn(this.physicsEngine, this.soundManager)
 
         // Resume the engine
         this.paused = false
-    }
-
-    /**
-     * Registers the given translator to translate KeyEvents to String actions for the following events:
-     * key pressed, key released
-     *
-     * @param inputActionActionTranslator Translator to use
-     */
-    fun addKeyTranslator(inputActionActionTranslator: ActionTranslator<KeyEvent>) {
-        window.onKeyPressed = EventHandler { keyEvent ->
-            runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(keyEvent), true))
-            }
-        }
-        window.onKeyReleased = EventHandler { keyEvent ->
-            runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(keyEvent), false))
-            }
-        }
-    }
-
-    /**
-     * Registers the given translator to translate MouseEvents to String actions for the following events:
-     * mouse pressed, mouse released, mouse entered, mouse exited
-     *
-     * @param inputActionActionTranslator Translator to use
-     */
-    fun addMouseTranslator(inputActionActionTranslator: ActionTranslator<MouseEvent>) {
-        window.onMousePressed = EventHandler { mouseEvent ->
-            runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), true))
-            }
-        }
-        window.onMouseReleased = EventHandler { mouseEvent ->
-            runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), false))
-            }
-        }
-        window.onMouseEntered = EventHandler { mouseEvent ->
-            runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), true))
-            }
-        }
-        window.onMouseExited = EventHandler { mouseEvent ->
-            runBlocking {
-                actionManager.submitActionEvent(ActionEvent(inputActionActionTranslator.translate(mouseEvent), false))
-            }
-        }
     }
 
     /**
@@ -231,17 +179,18 @@ class StormEngine(
 
         // First handle the next set of requests
         Context.REQUEST_QUEUE.next()?.let { requests: List<Request> ->
-            requests.forEach { request -> request.execute(this) }
+            requests.forEach { request -> request.execute(this, this.physicsEngine, this.soundManager) }
         }
 
         // Run all scheduled context updates
         Context.runScheduledUpdates()
 
-        // Capture the current state of the game here so the next steps of the game loop don't
+        // Capture the current state of the game here so the next steps of the game loop doesn't
         // get disrupted by potential changes to the current state
         val frameState = this.currentState!!
 
         // Process Input
+        this.actionManager.updateActiveFrames()
         frameState.process(this.actionManager.getStateSnapshot())
 
         // Then allow the state to do any internal updating
@@ -259,10 +208,8 @@ class StormEngine(
 
         if (++this.renderDelay >= this.renderFpsRatio) {
             withContext(Dispatchers.JavaFx) {
-                this@StormEngine.window.clear()
-                this@StormEngine.window.graphicsContext.save()
-                this@StormEngine.currentState!!.render(this@StormEngine.window.graphicsContext, 0.0, 0.0)
-                this@StormEngine.window.graphicsContext.restore()
+                this@StormEngine.window.canvas.clear()
+                this@StormEngine.currentState!!.render(this@StormEngine.window.canvas, 0.0, 0.0)
                 this@StormEngine.renderDelay = 0
             }
         }

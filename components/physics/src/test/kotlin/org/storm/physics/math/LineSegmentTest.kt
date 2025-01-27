@@ -2,8 +2,8 @@ package org.storm.physics.math
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.storm.core.render.geometry.Point
 import org.storm.physics.math.geometry.LineSegment
-import org.storm.physics.math.geometry.Point
 
 class LineSegmentTest {
 
