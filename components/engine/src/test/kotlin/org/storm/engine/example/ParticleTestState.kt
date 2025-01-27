@@ -1,6 +1,5 @@
 package org.storm.engine.example
 
-import org.storm.core.asset.AssetManager
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION
 import org.storm.core.context.RESOLUTION_IN_UNITS
@@ -10,50 +9,51 @@ import org.storm.core.render.geometry.Point
 import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
+import org.storm.physics.PhysicsEngine
 import org.storm.physics.entity.Entity
 import org.storm.physics.entity.ImmovableEntity
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
+import org.storm.sound.manager.SoundManager
 import java.util.concurrent.ThreadLocalRandom
 
-class ParticleTestState(assetManager: AssetManager) : SwitchableState(assetManager) {
+class ParticleTestState : SwitchableState() {
 
     private val resolution = Context.RESOLUTION_IN_UNITS
 
-    init {
-        val boundingBox = ImmovableEntity(
-            mutableMapOf(
-                "platformTop" to AABB(
-                    0.0,
-                    0.0,
-                    resolution.width,
-                    5.0.units
-                ),
-                "platformLeft" to AABB(
-                    0.0,
-                    0.0,
-                    5.0.units,
-                    resolution.height
-                ),
-                "platformRight" to AABB(
-                    resolution.width - 5.units,
-                    0.0,
-                    5.0.units,
-                    resolution.height
-                ),
-                "platformBottom" to AABB(
-                    0.0,
-                    resolution.height - 5.units,
-                    resolution.width,
-                    5.0.units
+    override val entities: Set<Entity> = run {
+        val entities = mutableSetOf<Entity>(
+            ImmovableEntity(
+                mutableMapOf(
+                    "platformTop" to AABB(
+                        0.0,
+                        0.0,
+                        resolution.width,
+                        5.0.units
+                    ),
+                    "platformLeft" to AABB(
+                        0.0,
+                        0.0,
+                        5.0.units,
+                        resolution.height
+                    ),
+                    "platformRight" to AABB(
+                        resolution.width - 5.units,
+                        0.0,
+                        5.0.units,
+                        resolution.height
+                    ),
+                    "platformBottom" to AABB(
+                        0.0,
+                        resolution.height - 5.units,
+                        resolution.width,
+                        5.0.units
+                    )
                 )
             )
         )
-        this.mutableEntities.add(boundingBox)
-    }
 
-    override fun preload() {
         val usedPoints: MutableSet<Point> = mutableSetOf()
 
         for (i in 0..400) {
@@ -64,7 +64,7 @@ class ParticleTestState(assetManager: AssetManager) : SwitchableState(assetManag
 
             while (usedPoints.contains(topLeft)) {
                 topLeft = Point(
-                    ThreadLocalRandom.current().nextInt(5, (Context.RESOLUTION.width  - 5).toInt()).units,
+                    ThreadLocalRandom.current().nextInt(5, (Context.RESOLUTION.width - 5).toInt()).units,
                     ThreadLocalRandom.current().nextInt(5, (Context.RESOLUTION.height - 5).toInt()).units
                 )
             }
@@ -80,12 +80,14 @@ class ParticleTestState(assetManager: AssetManager) : SwitchableState(assetManag
                 it.addForce(Direction.random().vector.scale(2.0.units), 0.1)
             }
 
-            mutableEntities.add(e)
+            entities.add(e)
         }
+
+        entities
     }
 
-    override fun load() {
-        Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
+    override suspend fun onSwapOn(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
+        //Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
     }
 
     override suspend fun process(actionState: ActionState) {

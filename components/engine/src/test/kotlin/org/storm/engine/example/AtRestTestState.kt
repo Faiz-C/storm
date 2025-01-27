@@ -1,20 +1,21 @@
 package org.storm.engine.example
 
-import org.storm.core.asset.AssetManager
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION_IN_UNITS
 import org.storm.core.extensions.units
 import org.storm.core.input.action.ActionState
-import org.storm.core.ui.Resolution
+import org.storm.core.render.canvas.Canvas
 import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
+import org.storm.physics.PhysicsEngine
 import org.storm.physics.entity.Entity
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
+import org.storm.sound.manager.SoundManager
 
-class AtRestTestState(assetManager: AssetManager) : SwitchableState(assetManager) {
+class AtRestTestState : SwitchableState() {
 
     private val gravity = Direction.SOUTH.vector.scale(25.0.units)
     private val resolution = Context.RESOLUTION_IN_UNITS
@@ -81,17 +82,18 @@ class AtRestTestState(assetManager: AssetManager) : SwitchableState(assetManager
         it.addForce(gravity)
     }
 
-    override fun preload() {
-        this.mutableEntities.addAll(listOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4))
-        this.soundManager.loadSound("bgm")
-        this.soundManager.adjustAllVolume(0.1)
+    override val entities: Set<Entity> = setOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4)
+
+    override suspend fun onRegister(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
+        soundManager.loadSound("bgm")
+        soundManager.adjustAllVolume(0.1)
     }
 
-    override fun unload() {
+    override suspend fun onSwapOff(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         soundManager.stop("bgm")
     }
 
-    override fun load() {
+    override suspend fun onSwapOn(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         soundManager.play("bgm")
     }
 
@@ -101,5 +103,4 @@ class AtRestTestState(assetManager: AssetManager) : SwitchableState(assetManager
             Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
         }
     }
-
 }

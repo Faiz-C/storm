@@ -1,15 +1,13 @@
 package org.storm.engine.example
 
-import org.storm.core.asset.AssetManager
 import org.storm.core.context.Context
 import org.storm.core.input.action.ActionState
 import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.StateChangeRequest
 import org.storm.engine.state.GameState
-import org.storm.sound.manager.SoundManager
 
-abstract class SwitchableState(assetManager: AssetManager) : GameState(SoundManager(assetManager = assetManager)) {
+abstract class SwitchableState : GameState {
 
     override suspend fun process(actionState: ActionState) {
         if (actionState.isFirstActivation(KeyActionConstants.ONE)) {

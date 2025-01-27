@@ -4,15 +4,16 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.javafx.JavaFx
 import org.apache.commons.math3.util.FastMath
 import org.storm.core.context.Context
+import org.storm.core.extensions.scheduleOnInterval
 import org.storm.core.input.action.ActionManager
 import org.storm.core.ui.impl.JfxWindow
 import org.storm.core.utils.TimeUtils.toSeconds
-import org.storm.core.extensions.scheduleOnInterval
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.exception.StormEngineException
 import org.storm.engine.request.Request
 import org.storm.engine.state.GameState
 import org.storm.physics.PhysicsEngine
+import org.storm.sound.manager.SoundManager
 import java.util.concurrent.Executors
 
 /**
@@ -23,7 +24,8 @@ class StormEngine(
     renderFps: Int = 60,
     val physicsFps: Int = renderFps,
     private val physicsEngine: PhysicsEngine,
-    private val actionManager: ActionManager
+    private val actionManager: ActionManager,
+    private val soundManager: SoundManager
 ) {
 
     companion object {
@@ -103,8 +105,8 @@ class StormEngine(
      * @param stateId unique id to identify the state by
      * @param state   State to add
      */
-    fun addState(stateId: String, state: GameState) {
-        state.preload()
+    suspend fun registerState(stateId: String, state: GameState) {
+        state.onRegister(this.physicsEngine, this.soundManager)
         this.states[stateId] = state
     }
 
@@ -113,7 +115,8 @@ class StormEngine(
      *
      * @param stateId unique id of the State to remove
      */
-    fun removeState(stateId: String) {
+    suspend fun unregisterState(stateId: String) {
+        this.states[stateId]?.onUnregister(this.physicsEngine, this.soundManager)
         this.states.remove(stateId)
     }
 
@@ -123,7 +126,7 @@ class StormEngine(
      * @param stateId unique id of the state to switch to
      * @param reset   true if resetting the state is wanted, false otherwise (default false)
      */
-    fun swapState(stateId: String, reset: Boolean = false) {
+    suspend fun swapState(stateId: String) {
         val newState = this.states[stateId] ?: throw StormEngineException("could not find state for id $stateId")
 
         if (newState === this.currentState) return
@@ -131,9 +134,7 @@ class StormEngine(
         // Stop the engine temporarily during the swap
         this.paused = true
 
-        this.currentState?.unload()
-
-        if (reset) newState.reset()
+        this.currentState?.onSwapOff(this.physicsEngine, this.soundManager)
 
         this.currentState = newState
 
@@ -141,7 +142,7 @@ class StormEngine(
 
         this.physicsEngine.entities = this.currentState!!.entities
 
-        this.currentState!!.load()
+        this.currentState!!.onSwapOn(this.physicsEngine, this.soundManager)
 
         // Resume the engine
         this.paused = false
@@ -178,13 +179,13 @@ class StormEngine(
 
         // First handle the next set of requests
         Context.REQUEST_QUEUE.next()?.let { requests: List<Request> ->
-            requests.forEach { request -> request.execute(this, this.physicsEngine) }
+            requests.forEach { request -> request.execute(this, this.physicsEngine, this.soundManager) }
         }
 
         // Run all scheduled context updates
         Context.runScheduledUpdates()
 
-        // Capture the current state of the game here so the next steps of the game loop don't
+        // Capture the current state of the game here so the next steps of the game loop doesn't
         // get disrupted by potential changes to the current state
         val frameState = this.currentState!!
 
