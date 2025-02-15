@@ -1,5 +1,15 @@
 package org.storm.core.context
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import org.storm.core.serialization.PolymorphismResolver
 import org.storm.core.extensions.units
 import org.storm.core.render.UnitConvertor
 import org.storm.core.ui.Resolution
@@ -7,13 +17,47 @@ import org.storm.core.ui.Resolution
 object CoreContext {
     const val RESOLUTION = "resolution"
     const val UNIT_CONVERTOR = "unitConvertor"
+    const val JSON_MAPPER = "jsonMapper"
+    const val YAML_MAPPER = "yamlMapper"
+    const val XML_MAPPER = "xmlMapper"
+
+    /**
+     * Loads default mappers for JSON, YAML and XML to help with serialization and deserialization of data
+     */
+    fun loadMappers() {
+        Context.update { settings ->
+            settings + mapOf(
+                JSON_MAPPER to jacksonObjectMapper(),
+                YAML_MAPPER to YAMLMapper()
+                    .configure(JsonParser.Feature.ALLOW_YAML_COMMENTS, true)
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                    .registerKotlinModule(),
+                XML_MAPPER to XmlMapper()
+                    .registerKotlinModule()
+            )
+        }
+    }
 }
+
+/**
+ * @return A data mapper which can read, convert and write JSON
+ */
+val Context.JSON_MAPPER get() = SETTINGS[CoreContext.JSON_MAPPER] as ObjectMapper
+
+/**
+ * @return A data mapper which can read, convert and write YAML
+ */
+val Context.YAML_MAPPER get() = SETTINGS[CoreContext.YAML_MAPPER] as ObjectMapper
+
+/**
+ * @return A data mapper which can read, convert and write XML
+ */
+val Context.XML_MAPPER get() = SETTINGS[CoreContext.YAML_MAPPER] as ObjectMapper
 
 /**
  * @return The current unit convertor used for converting between pixels and game engine units.
  */
 val Context.UNIT_CONVERTOR get() = SETTINGS[CoreContext.UNIT_CONVERTOR] as? UnitConvertor ?: UnitConvertor.DEFAULT
-
 
 /**
  * @return The current resolution of the game window.
@@ -24,7 +68,6 @@ val Context.RESOLUTION: Resolution get() = SETTINGS[CoreContext.RESOLUTION] as? 
  * @return The current resolution of the game window in game units
  */
 val Context.RESOLUTION_IN_UNITS: Resolution get() = Resolution(RESOLUTION.width.units, RESOLUTION.height.units)
-
 
 /**
  * Set the resolution of the game window.

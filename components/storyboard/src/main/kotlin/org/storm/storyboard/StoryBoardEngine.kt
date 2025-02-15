@@ -1,6 +1,5 @@
 package org.storm.storyboard
 
-import org.storm.core.asset.AssetManager
 import org.storm.core.input.action.ActionStateProcessor
 import org.storm.core.input.action.ActionState
 import org.storm.core.render.canvas.Canvas
@@ -13,11 +12,7 @@ import java.util.concurrent.ConcurrentHashMap
  * A StoryBoardEngine is a state machine which can be used to navigate between different storyboard states. States are
  * loaded as assets from a single source.
  */
-open class StoryBoardEngine(
-    protected val assetSourceId: String,
-    protected val assetManager: AssetManager,
-    protected val assetType: String = "scene"
-) : Renderable, Updatable, ActionStateProcessor {
+open class StoryBoardEngine : Renderable, Updatable, ActionStateProcessor {
 
     protected val states: MutableMap<String, StoryBoardState> = ConcurrentHashMap()
     protected var currentState: StoryBoardState? = null
@@ -25,10 +20,9 @@ open class StoryBoardEngine(
     /**
      * Load a "Scene", a collection of states, and ready the states for use.
      *
-     * @param sceneId the asset id of the scene to load
+     * @param scene List of StoryBoardState implementations to load
      */
-    open fun loadScene(sceneId: String) {
-        val scene = assetManager.getAsset<List<StoryBoardState>>(assetType, sceneId, assetSourceId = assetSourceId)
+    open fun loadScene(scene: List<StoryBoardState>) {
         setStates(scene.associateBy { it.id })
     }
 

@@ -86,10 +86,6 @@ class ParticleTestState : SwitchableState() {
         entities
     }
 
-    override suspend fun onSwapOn(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
-        //Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
-    }
-
     override suspend fun process(actionState: ActionState) {
         super.process(actionState)
 
