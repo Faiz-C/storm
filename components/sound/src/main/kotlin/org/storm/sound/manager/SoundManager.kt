@@ -1,7 +1,6 @@
 package org.storm.sound.manager
 
 import com.fasterxml.jackson.core.type.TypeReference
-import org.storm.core.asset.AssetManager
 import org.storm.core.context.Context
 import org.storm.core.utils.observation.Observable
 import org.storm.core.utils.observation.Observer
@@ -16,15 +15,8 @@ import org.storm.sound.exception.SoundException
  * A SoundManager is a helpful way of tracking and using sounds within a game
  */
 class SoundManager(
-    private val assetSourceId: String = "local-storage",
-    private val assetManager: AssetManager,
     private val sounds: MutableMap<String, Sound> = mutableMapOf(),
 ): Observer {
-
-    fun loadSound(id: String) {
-        val sound = assetManager.getAsset("sound", id, assetSourceId, object: TypeReference<Sound>() {})
-        add(id, sound)
-    }
 
     /**
      * Adds the given sound to the SoundManager under the given id

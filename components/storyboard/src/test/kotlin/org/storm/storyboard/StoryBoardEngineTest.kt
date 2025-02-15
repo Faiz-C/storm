@@ -1,30 +1,29 @@
 package org.storm.storyboard
 
+import com.fasterxml.jackson.core.type.TypeReference
 import javafx.application.Application
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
 import kotlinx.coroutines.runBlocking
-import org.storm.core.asset.AssetManager
-import org.storm.core.asset.source.types.LocalStorageAssetSource
+import org.storm.core.context.Context
+import org.storm.core.context.CoreContext
+import org.storm.core.context.YAML_MAPPER
 import org.storm.core.event.EventManager
+import org.storm.core.input.InputBindings
 import org.storm.core.input.action.ActionEvent
 import org.storm.core.input.action.ActionManager
-import org.storm.core.input.InputBindings
 import org.storm.core.ui.impl.JfxWindow
 import org.storm.storyboard.helpers.StoryBoardSimulator
-import java.nio.file.Paths
 
 class StoryBoardEngineTest : Application() {
 
     override fun start(stage: Stage) {
-        val resourceDir = Paths.get("src", "test", "resources")
-        val assetManager = AssetManager()
+        CoreContext.loadMappers()
 
-        assetManager.registerSource(LocalStorageAssetSource(resourceDir.toString()))
-
-        val engine = StoryBoardEngine(assetManager = assetManager, assetSourceId = "local-storage")
-        engine.loadScene("bats")
+        val engine = StoryBoardEngine()
+        val batsScene = Context.YAML_MAPPER.readValue(this::class.java.getResourceAsStream("/scene/bats.yml"), object: TypeReference<List<StoryBoardState>>() {})
+        engine.loadScene(batsScene)
         engine.switchState("top-left")
 
         val window = JfxWindow()

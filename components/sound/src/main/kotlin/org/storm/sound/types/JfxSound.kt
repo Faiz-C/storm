@@ -3,7 +3,7 @@ package org.storm.sound.types
 import javafx.scene.media.Media
 import javafx.scene.media.MediaPlayer
 import org.slf4j.LoggerFactory
-import org.storm.core.asset.Asset
+import org.storm.core.serialization.Polymorphic
 import org.storm.sound.Sound
 import org.storm.sound.exception.SoundException
 import java.net.URI
@@ -12,7 +12,7 @@ import java.nio.file.Paths
 /**
  * A Sound implementation which uses a JavaFx MediaPlayer
  */
-@Asset("sound", "jfx")
+@Polymorphic("jfx-sound")
 class JfxSound(
     file: String = "",
     url: String = "",
@@ -60,4 +60,5 @@ class JfxSound(
     override fun isComplete(): Boolean {
         return sound.status == MediaPlayer.Status.STOPPED || (loops == Sound.LOOP_INDEFINITELY && hasCompletedOnce)
     }
+
 }

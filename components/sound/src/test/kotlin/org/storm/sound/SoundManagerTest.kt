@@ -2,30 +2,26 @@ package org.storm.sound
 
 import javafx.application.Application
 import javafx.stage.Stage
-import org.storm.core.asset.AssetManager
-import org.storm.core.asset.source.loaders.localstorage.YamlLocalStorageAssetLoader
-import org.storm.core.asset.source.types.LocalStorageAssetSource
 import org.storm.core.context.Context
+import org.storm.core.context.CoreContext
+import org.storm.core.context.YAML_MAPPER
 import org.storm.sound.context.setMasterVolume
 import org.storm.sound.manager.SoundManager
-import java.nio.file.Paths
 
 class SoundManagerTest : Application() {
 
-    private val assetManager = AssetManager().also {
-        val resourceDir = Paths.get("src", "test", "resources")
-
-        it.registerSource(
-            LocalStorageAssetSource(resourceDir.toString())
-        )
-    }
-
-    private val soundManager = SoundManager(assetManager = assetManager)
+    private val soundManager = SoundManager()
 
     override fun start(stage: Stage) {
-        soundManager.loadSound("effect")
-        soundManager.loadSound("bgm1")
-        soundManager.loadSound("bgm2")
+        CoreContext.loadMappers()
+
+        val effect = Context.YAML_MAPPER.readValue(this::class.java.getResourceAsStream("/sound/effect.yml"), Sound::class.java)
+        val bgm1 = Context.YAML_MAPPER.readValue(this::class.java.getResourceAsStream("/sound/bgm1.yml"), Sound::class.java)
+        val bgm2 = Context.YAML_MAPPER.readValue(this::class.java.getResourceAsStream("/sound/bgm2.yml"), Sound::class.java)
+
+        soundManager.add("effect", effect)
+        soundManager.add("bgm1", bgm1)
+        soundManager.add("bgm2", bgm2)
 
         Context.setMasterVolume(0.8)
 

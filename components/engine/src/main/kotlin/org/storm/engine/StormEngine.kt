@@ -4,6 +4,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.javafx.JavaFx
 import org.apache.commons.math3.util.FastMath
 import org.storm.core.context.Context
+import org.storm.core.context.CoreContext
 import org.storm.core.extensions.scheduleOnInterval
 import org.storm.core.input.action.ActionManager
 import org.storm.core.ui.impl.JfxWindow
@@ -97,6 +98,8 @@ class StormEngine(
     init {
         this.renderFps = renderFps
         this.physicsEngine.paused = true
+
+        CoreContext.loadMappers()
     }
 
     /**

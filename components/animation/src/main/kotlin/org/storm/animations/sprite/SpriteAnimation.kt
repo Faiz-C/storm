@@ -1,14 +1,14 @@
 package org.storm.animations.sprite
 
 import org.storm.animations.Animation
-import org.storm.core.asset.Asset
+import org.storm.core.serialization.Polymorphic
 import org.storm.core.render.canvas.Canvas
 import org.storm.core.render.Image
 
 /**
  * A specific type of Animation focusing on the use of 2D Sprites and SpriteSheets.
  */
-@Asset("animation", "sprite")
+@Polymorphic("sprite-animation")
 class SpriteAnimation(
     override val delay: Int,
     override val loops: Int,
@@ -67,4 +67,5 @@ class SpriteAnimation(
             hasCompletedOnce = true
         }
     }
+
 }

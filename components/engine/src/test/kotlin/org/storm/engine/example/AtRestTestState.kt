@@ -2,6 +2,7 @@ package org.storm.engine.example
 
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION_IN_UNITS
+import org.storm.core.context.YAML_MAPPER
 import org.storm.core.extensions.units
 import org.storm.core.input.action.ActionState
 import org.storm.core.render.canvas.Canvas
@@ -13,6 +14,7 @@ import org.storm.physics.entity.Entity
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
+import org.storm.sound.Sound
 import org.storm.sound.manager.SoundManager
 
 class AtRestTestState : SwitchableState() {
@@ -85,7 +87,8 @@ class AtRestTestState : SwitchableState() {
     override val entities: Set<Entity> = setOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4)
 
     override suspend fun onRegister(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
-        soundManager.loadSound("bgm")
+        val bgm = Context.YAML_MAPPER.readValue(this::class.java.getResourceAsStream("/sound/bgm.yml"), Sound::class.java)
+        soundManager.add("bgm", bgm)
         soundManager.adjustAllVolume(0.1)
     }
 
