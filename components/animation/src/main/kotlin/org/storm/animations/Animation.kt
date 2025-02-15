@@ -13,7 +13,7 @@ import org.storm.core.update.Updatable
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    include = JsonTypeInfo.As.PROPERTY,
     property = "type",
     visible = true
 )

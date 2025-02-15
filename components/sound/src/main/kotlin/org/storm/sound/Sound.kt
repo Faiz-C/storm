@@ -10,7 +10,7 @@ import org.storm.core.serialization.PolymorphismResolver
  */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    include = JsonTypeInfo.As.PROPERTY,
     property = "type",
     visible = true
 )
