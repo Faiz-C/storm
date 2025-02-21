@@ -8,6 +8,7 @@ import org.storm.core.context.CoreContext
 import org.storm.core.context.loadMappers
 import org.storm.core.extensions.scheduleOnInterval
 import org.storm.core.input.action.ActionManager
+import org.storm.core.ui.Window
 import org.storm.core.ui.impl.JfxWindow
 import org.storm.core.utils.TimeUtils.toSeconds
 import org.storm.engine.context.REQUEST_QUEUE
@@ -25,6 +26,7 @@ import java.util.concurrent.Executors
 class StormEngine(
     renderFps: Int = 60,
     val physicsFps: Int = renderFps,
+    val window: Window,
     private val physicsEngine: PhysicsEngine,
     private val actionManager: ActionManager,
     private val soundManager: SoundManager
@@ -35,9 +37,6 @@ class StormEngine(
         // 1000000000 -> 1000000000/4 = 250000000
         private const val ELAPSED_TIME_UPPER_BOUND: Long = 250000000L
     }
-
-    // Window the game will be run on
-    val window: JfxWindow = JfxWindow()
 
     // Game Loop Vars
     private var accumulator: Long = 0L

@@ -21,7 +21,8 @@ class StormEngineTest : Application() {
             renderFps = 144,
             physicsFps = 240,
             actionManager = actionManager,
-            soundManager = SoundManager()
+            soundManager = SoundManager(),
+            window = JfxWindow()
         )
 
         val inputBindings = InputBindingsImpl()
@@ -46,7 +47,7 @@ class StormEngineTest : Application() {
         }
 
 
-        primaryStage.scene = stormEngine.window
+        primaryStage.scene = stormEngine.window as JfxWindow
         primaryStage.show()
     }
 
