@@ -1,15 +1,15 @@
 package org.storm.core.context
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import org.storm.core.serialization.PolymorphismResolver
+import org.storm.core.context.CoreContext.JSON_MAPPER
+import org.storm.core.context.CoreContext.XML_MAPPER
+import org.storm.core.context.CoreContext.YAML_MAPPER
 import org.storm.core.extensions.units
 import org.storm.core.render.UnitConvertor
 import org.storm.core.ui.Resolution
@@ -20,22 +20,22 @@ object CoreContext {
     const val JSON_MAPPER = "jsonMapper"
     const val YAML_MAPPER = "yamlMapper"
     const val XML_MAPPER = "xmlMapper"
+}
 
-    /**
-     * Loads default mappers for JSON, YAML and XML to help with serialization and deserialization of data
-     */
-    fun loadMappers() {
-        Context.update { settings ->
-            settings + mapOf(
-                JSON_MAPPER to jacksonObjectMapper(),
-                YAML_MAPPER to YAMLMapper()
-                    .configure(JsonParser.Feature.ALLOW_YAML_COMMENTS, true)
-                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                    .registerKotlinModule(),
-                XML_MAPPER to XmlMapper()
-                    .registerKotlinModule()
-            )
-        }
+/**
+ * Loads default mappers for JSON, YAML and XML to help with serialization and deserialization of data
+ */
+fun Context.loadMappers() {
+    this.update { settings ->
+        settings + mapOf(
+            CoreContext.JSON_MAPPER to jacksonObjectMapper(),
+            CoreContext.YAML_MAPPER to YAMLMapper()
+                .configure(JsonParser.Feature.ALLOW_YAML_COMMENTS, true)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .registerKotlinModule(),
+            CoreContext.XML_MAPPER to XmlMapper()
+                .registerKotlinModule()
+        )
     }
 }
 

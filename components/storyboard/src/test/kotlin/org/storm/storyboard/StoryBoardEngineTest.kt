@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import org.storm.core.context.Context
 import org.storm.core.context.CoreContext
 import org.storm.core.context.YAML_MAPPER
+import org.storm.core.context.loadMappers
 import org.storm.core.event.EventManager
 import org.storm.core.input.InputBindings
 import org.storm.core.input.action.ActionEvent
@@ -19,7 +20,7 @@ import org.storm.storyboard.helpers.StoryBoardSimulator
 class StoryBoardEngineTest : Application() {
 
     override fun start(stage: Stage) {
-        CoreContext.loadMappers()
+        Context.loadMappers()
 
         val engine = StoryBoardEngine()
         val batsScene = Context.YAML_MAPPER.readValue(this::class.java.getResourceAsStream("/scene/bats.yml"), object: TypeReference<List<StoryBoardState>>() {})

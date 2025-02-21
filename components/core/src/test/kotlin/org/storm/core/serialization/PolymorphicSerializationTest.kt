@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.storm.core.context.Context
-import org.storm.core.context.CoreContext
 import org.storm.core.context.JSON_MAPPER
+import org.storm.core.context.loadMappers
 
 class PolymorphicSerializationTest {
 
@@ -15,7 +15,7 @@ class PolymorphicSerializationTest {
         @BeforeAll
         @JvmStatic
         fun beforeAll() {
-            CoreContext.loadMappers()
+            Context.loadMappers()
         }
     }
 

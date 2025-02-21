@@ -5,6 +5,7 @@ import javafx.stage.Stage
 import org.storm.core.context.Context
 import org.storm.core.context.CoreContext
 import org.storm.core.context.YAML_MAPPER
+import org.storm.core.context.loadMappers
 import org.storm.sound.context.setMasterVolume
 import org.storm.sound.manager.SoundManager
 
@@ -13,7 +14,7 @@ class SoundManagerTest : Application() {
     private val soundManager = SoundManager()
 
     override fun start(stage: Stage) {
-        CoreContext.loadMappers()
+        Context.loadMappers()
 
         val effect = Context.YAML_MAPPER.readValue(this::class.java.getResourceAsStream("/sound/effect.yml"), Sound::class.java)
         val bgm1 = Context.YAML_MAPPER.readValue(this::class.java.getResourceAsStream("/sound/bgm1.yml"), Sound::class.java)
