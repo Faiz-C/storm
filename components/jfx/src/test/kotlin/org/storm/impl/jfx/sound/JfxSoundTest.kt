@@ -8,7 +8,7 @@ import org.storm.impl.jfx.sound.JfxSound
 class JfxSoundTest : Application() {
 
     companion object {
-        private const val BGM_FILE = "src/test/resources/music/bgm.mp3"
+        private const val BGM_FILE = "src/test/resources/music/bgm1.mp3"
     }
 
     private lateinit var bgm: Sound
