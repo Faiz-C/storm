@@ -5,7 +5,8 @@ import org.storm.core.context.RESOLUTION_IN_UNITS
 import org.storm.core.context.YAML_MAPPER
 import org.storm.core.extensions.units
 import org.storm.core.input.action.ActionState
-import org.storm.core.render.canvas.Canvas
+import org.storm.core.sound.Sound
+import org.storm.core.sound.SoundManager
 import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
@@ -13,8 +14,6 @@ import org.storm.physics.PhysicsEngine
 import org.storm.physics.entity.Entity
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.Circle
-import org.storm.sound.Sound
-import org.storm.sound.manager.SoundManager
 
 class BouncingBallTestState : SwitchableState() {
 

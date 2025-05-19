@@ -5,7 +5,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.slf4j.LoggerFactory
 
-class EventStream<T>: AutoCloseable {
+class EventStream<T> internal constructor(val id: String): AutoCloseable {
     companion object {
         private val logger = LoggerFactory.getLogger(EventStream::class.java)
     }

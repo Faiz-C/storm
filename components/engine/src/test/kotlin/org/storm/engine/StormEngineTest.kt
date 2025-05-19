@@ -7,10 +7,11 @@ import kotlinx.coroutines.runBlocking
 import org.storm.core.event.EventManager
 import org.storm.core.input.action.ActionEvent
 import org.storm.core.input.action.ActionManager
-import org.storm.core.ui.impl.JfxWindow
+import org.storm.core.sound.SoundManager
 import org.storm.engine.example.*
+import org.storm.impl.jfx.graphics.JfxWindow
+import org.storm.impl.jfx.graphics.getJfxKeyEventStream
 import org.storm.physics.ImpulseResolutionPhysicsEngine
-import org.storm.sound.manager.SoundManager
 
 class StormEngineTest : Application() {
 
@@ -34,7 +35,7 @@ class StormEngineTest : Application() {
             stormEngine.registerState(KeyActionConstants.THREE, ParticleTestState())
             stormEngine.registerState(KeyActionConstants.FOUR, CircleCornerTestState())
 
-            EventManager.getEventStream<KeyEvent>(JfxWindow.KEY_EVENT_STREAM).addConsumer {
+            EventManager.getJfxKeyEventStream().addConsumer {
                 val action = inputBindings.getAction(it) ?: return@addConsumer
                 when (it.eventType) {
                     KeyEvent.KEY_PRESSED -> actionManager.submitActionEvent(ActionEvent(action, true))

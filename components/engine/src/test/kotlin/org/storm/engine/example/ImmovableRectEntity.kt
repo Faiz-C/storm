@@ -1,7 +1,7 @@
 package org.storm.engine.example
 
-import org.storm.core.render.canvas.Canvas
-import org.storm.core.render.canvas.Color
+import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.canvas.Color
 import org.storm.physics.entity.ImmovableEntity
 import org.storm.physics.math.geometry.shapes.AABB
 

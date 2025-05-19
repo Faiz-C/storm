@@ -1,8 +1,7 @@
 package org.storm.physics.math.geometry.shapes
 
-import org.storm.core.render.canvas.Canvas
-import org.storm.core.render.canvas.Settings
-import org.storm.core.render.geometry.Point
+import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.geometry.Point
 import org.storm.physics.math.Interval
 import org.storm.physics.math.Vector
 import org.storm.physics.math.extensions.getSquaredDistance

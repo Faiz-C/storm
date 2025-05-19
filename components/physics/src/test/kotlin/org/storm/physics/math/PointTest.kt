@@ -2,7 +2,7 @@ package org.storm.physics.math
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.storm.core.render.geometry.Point
+import org.storm.core.graphics.geometry.Point
 import org.storm.physics.math.extensions.getDistance
 
 class PointTest {

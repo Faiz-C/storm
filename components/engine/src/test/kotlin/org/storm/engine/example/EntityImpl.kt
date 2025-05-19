@@ -1,6 +1,6 @@
 package org.storm.engine.example
 
-import org.storm.core.render.canvas.Canvas
+import org.storm.core.graphics.canvas.Canvas
 import org.storm.physics.entity.Entity
 import org.storm.physics.math.geometry.shapes.Shape
 

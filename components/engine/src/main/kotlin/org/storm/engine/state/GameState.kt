@@ -1,12 +1,12 @@
 package org.storm.engine.state
 
 import org.storm.core.input.action.ActionStateProcessor
-import org.storm.core.render.Renderable
-import org.storm.core.render.canvas.Canvas
+import org.storm.core.graphics.Renderable
+import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.sound.SoundManager
 import org.storm.core.update.Updatable
 import org.storm.physics.PhysicsEngine
 import org.storm.physics.entity.Entity
-import org.storm.sound.manager.SoundManager
 
 interface GameState: Updatable, Renderable, ActionStateProcessor {
 

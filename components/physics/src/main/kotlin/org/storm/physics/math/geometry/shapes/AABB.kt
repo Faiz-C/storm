@@ -1,6 +1,6 @@
 package org.storm.physics.math.geometry.shapes
 
-import org.storm.core.render.geometry.Point
+import org.storm.core.graphics.geometry.Point
 import org.storm.physics.math.extensions.getSquaredDistance
 
 /**

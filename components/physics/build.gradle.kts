@@ -6,6 +6,10 @@ dependencies {
     api("com.google.guava:guava:33.0.0-jre")
 }
 
+dependencies {
+    testImplementation(project(":components:jfx"))
+}
+
 javafx {
     version = "21.0.2"
     modules("javafx.graphics")

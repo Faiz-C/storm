@@ -3,7 +3,7 @@ version = "1.1.0"
 dependencies {
     api(project(":components:core"))
     api(project(":components:physics"))
-    api(project(":components:sound"))
+    testImplementation(project(":components:jfx"))
 }
 
 javafx {

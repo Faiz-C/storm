@@ -2,8 +2,8 @@ package org.storm.storyboard
 
 import org.storm.core.input.action.ActionStateProcessor
 import org.storm.core.input.action.ActionState
-import org.storm.core.render.canvas.Canvas
-import org.storm.core.render.Renderable
+import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.Renderable
 import org.storm.core.update.Updatable
 import org.storm.storyboard.exception.StoryBoardEngineException
 import java.util.concurrent.ConcurrentHashMap

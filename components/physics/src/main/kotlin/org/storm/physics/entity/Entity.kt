@@ -1,11 +1,11 @@
 package org.storm.physics.entity
 
-import org.storm.core.render.canvas.Canvas
-import org.storm.core.render.Renderable
+import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.Renderable
 import org.storm.physics.collision.Impulsive
 import org.storm.physics.math.Vector
-import org.storm.core.render.geometry.Geometric
-import org.storm.core.render.geometry.Point
+import org.storm.core.graphics.geometry.Geometric
+import org.storm.core.graphics.geometry.Point
 import org.storm.physics.math.geometry.shapes.Shape
 
 /**

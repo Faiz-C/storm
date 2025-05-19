@@ -1,7 +1,7 @@
 package org.storm.physics.math.extensions
 
 import org.apache.commons.math3.util.FastMath
-import org.storm.core.render.geometry.Point
+import org.storm.core.graphics.geometry.Point
 import org.storm.physics.math.Vector
 import org.storm.physics.math.geometry.LineSegment
 

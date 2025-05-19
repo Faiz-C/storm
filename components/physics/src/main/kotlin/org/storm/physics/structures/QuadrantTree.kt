@@ -1,7 +1,6 @@
 package org.storm.physics.structures
 
-import org.storm.core.context.Context
-import org.storm.core.render.canvas.Canvas
+import org.storm.core.graphics.canvas.Canvas
 import org.storm.physics.entity.Entity
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Shape

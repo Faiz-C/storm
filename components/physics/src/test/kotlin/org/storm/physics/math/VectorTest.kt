@@ -2,8 +2,7 @@ package org.storm.physics.math
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import org.storm.core.render.geometry.Point
-import org.storm.physics.math.Vector
+import org.storm.core.graphics.geometry.Point
 
 class VectorTest {
 

@@ -1,9 +1,8 @@
 package org.storm.physics
 
-import org.storm.core.context.Context
 import org.storm.core.extensions.units
-import org.storm.core.render.canvas.Canvas
-import org.storm.core.render.Renderable
+import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.Renderable
 import org.storm.core.update.Updatable
 import org.storm.physics.entity.Entity
 import org.storm.physics.math.Vector

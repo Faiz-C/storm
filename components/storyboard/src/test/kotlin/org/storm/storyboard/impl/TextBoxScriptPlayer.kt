@@ -3,10 +3,10 @@ package org.storm.storyboard.impl
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION
 import org.storm.core.input.action.ActionState
-import org.storm.core.render.canvas.Canvas
-import org.storm.core.render.canvas.Color
-import org.storm.core.render.canvas.Font
-import org.storm.core.render.canvas.Settings
+import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.canvas.Color
+import org.storm.core.graphics.canvas.Font
+import org.storm.core.graphics.canvas.Settings
 import org.storm.storyboard.dialogue.script.Script
 import org.storm.storyboard.dialogue.script.player.ScriptPlayer
 

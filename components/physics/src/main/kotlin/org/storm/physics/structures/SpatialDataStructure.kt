@@ -1,6 +1,6 @@
 package org.storm.physics.structures
 
-import org.storm.core.render.Renderable
+import org.storm.core.graphics.Renderable
 import org.storm.physics.entity.Entity
 import org.storm.physics.math.geometry.shapes.Shape
 

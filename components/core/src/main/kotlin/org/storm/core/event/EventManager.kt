@@ -2,6 +2,7 @@ package org.storm.core.event
 
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -22,16 +23,16 @@ object EventManager: AutoCloseable {
     /**
      * Creates, stores and returns an EventStream for the specified generic type T.
      *
-     * @param eventStreamId Unique id of this event stream
+     * @param eventStreamId Unique id for the event stream
      * @throws IllegalArgumentException When an EventStream already exists for the given id
      * @return An EventStream for the wanted generic type T
      */
-    fun <T> createEventStream(eventStreamId: String, autoStart: Boolean = true): EventStream<T> {
+    fun <T> createEventStream(eventStreamId: String = UUID.randomUUID().toString(), autoStart: Boolean = true): EventStream<T> {
         require(!eventStreams.containsKey(eventStreamId)) {
             "Event id $eventStreamId is already in use"
         }
 
-        return EventStream<T>().also {
+        return EventStream<T>(eventStreamId).also {
             eventStreams[eventStreamId] = it
 
             if (!autoStart) return@also
@@ -40,6 +41,15 @@ object EventManager: AutoCloseable {
                 it.start()
             }
         }
+    }
+
+    /**
+     * Removes the EventStream associated with the given id if it exists
+     *
+     * @param eventStreamId Unique id of the event stream
+     */
+    fun removeEventStream(eventStreamId: String) {
+        eventStreams.remove(eventStreamId)
     }
 
     /**

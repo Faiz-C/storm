@@ -1,8 +1,8 @@
 package org.storm.engine.request
 
+import org.storm.core.sound.SoundManager
 import org.storm.engine.StormEngine
 import org.storm.physics.PhysicsEngine
-import org.storm.sound.manager.SoundManager
 
 /**
  * Represents a request which can be sent to the StormEngine to handle. Requests are carried out before

@@ -8,11 +8,10 @@ import javafx.stage.Stage
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION_IN_UNITS
 import org.storm.core.extensions.units
-import org.storm.core.render.canvas.Canvas
-import org.storm.core.render.canvas.Color
-import org.storm.core.render.canvas.Settings
-import org.storm.core.render.geometry.Point
-import org.storm.core.ui.impl.JfxWindow
+import org.storm.core.graphics.canvas.Color
+import org.storm.core.graphics.canvas.Settings
+import org.storm.core.graphics.geometry.Point
+import org.storm.impl.jfx.graphics.JfxWindow
 import org.storm.physics.entity.Entity
 import org.storm.physics.entity.ImmovableEntity
 import org.storm.physics.entity.SimpleEntity

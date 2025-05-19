@@ -1,9 +1,9 @@
 package org.storm.engine.request.types
 
+import org.storm.core.sound.SoundManager
 import org.storm.engine.StormEngine
 import org.storm.engine.request.Request
 import org.storm.physics.PhysicsEngine
-import org.storm.sound.manager.SoundManager
 
 /**
  * A Request which toggles the pause state of the PhysicsEngine.

@@ -5,17 +5,15 @@ import org.storm.core.context.RESOLUTION
 import org.storm.core.context.RESOLUTION_IN_UNITS
 import org.storm.core.extensions.units
 import org.storm.core.input.action.ActionState
-import org.storm.core.render.geometry.Point
+import org.storm.core.graphics.geometry.Point
 import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
-import org.storm.physics.PhysicsEngine
 import org.storm.physics.entity.Entity
 import org.storm.physics.entity.ImmovableEntity
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
-import org.storm.sound.manager.SoundManager
 import java.util.concurrent.ThreadLocalRandom
 
 class ParticleTestState : SwitchableState() {
