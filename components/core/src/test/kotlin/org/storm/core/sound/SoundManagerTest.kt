@@ -1,4 +1,4 @@
-package org.storm.impl.jfx.sound
+package org.storm.core.sound
 
 import javafx.application.Application
 import javafx.stage.Stage
@@ -6,8 +6,6 @@ import org.storm.core.context.Context
 import org.storm.core.context.YAML_MAPPER
 import org.storm.core.context.loadMappers
 import org.storm.core.context.setMasterVolume
-import org.storm.core.sound.Sound
-import org.storm.core.sound.SoundManager
 
 class SoundManagerTest : Application() {
 

@@ -1,18 +1,16 @@
 version = "1.1.0"
 
+javafx {
+    version = "21.0.2"
+    modules("javafx.graphics", "javafx.media")
+    configuration = "testImplementation"
+}
+
 dependencies {
     api(project(":components:core"))
     api("org.apache.commons:commons-math3:3.6.1")
-    api("com.google.guava:guava:33.0.0-jre")
-}
-
-dependencies {
+    //api("com.google.guava:guava:33.0.0-jre")
     testImplementation(project(":components:jfx"))
-}
-
-javafx {
-    version = "21.0.2"
-    modules("javafx.graphics")
 }
 
 tasks {

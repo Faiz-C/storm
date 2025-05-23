@@ -2,7 +2,7 @@ version = "1.1.0"
 
 javafx {
     version = "21.0.2"
-    modules("javafx.controls", "javafx.graphics", "javafx.media")
+    modules("javafx.graphics", "javafx.media")
 }
 
 dependencies {
@@ -28,7 +28,7 @@ tasks {
         setupJavaFx(this)
 
         group = "Execution"
-        description = "Simple test for sprite animations and animation looping"
+        description = "Simple test for window creations"
         mainClass.set("org.storm.impl.jfx.graphics.JfxWindowTest")
     }
 
@@ -39,25 +39,6 @@ tasks {
         group = "Execution"
         description = "Test to check if the Jfx type is working correctly"
         mainClass.set("org.storm.impl.jfx.sound.JfxSoundTest")
-    }
-
-    task<JavaExec>("soundManagerTest") {
-        dependsOn(compileKotlin, compileTestKotlin)
-        setupJavaFx(this)
-
-        group = "Execution"
-        description = "Test for SoundManager"
-        mainClass.set("org.storm.impl.jfx.sound.SoundManagerTest")
-    }
-
-    task<JavaExec>("animationTest") {
-        dependsOn(compileKotlin, compileTestKotlin)
-
-        setupJavaFx(this)
-
-        group = "Execution"
-        description = "Simple test for sprite animations and animation looping"
-        mainClass.set("org.storm.impl.jfx.graphics.animation.AnimationTest")
     }
 }
 
@@ -70,7 +51,7 @@ fun setupJavaFx(exec: JavaExec) {
         // do what the plugin does ourselves
         exec.jvmArgs = listOf(
             "--module-path", exec.classpath.asPath,
-            "--add-modules", "javafx.graphics,javafx.media,javafx.controls",
+            "--add-modules", "javafx.graphics,javafx.media",
             "-Djavafx.animation.fullspeed=true"
         )
     }

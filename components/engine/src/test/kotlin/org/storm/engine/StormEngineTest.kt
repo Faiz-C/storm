@@ -9,8 +9,8 @@ import org.storm.core.input.action.ActionEvent
 import org.storm.core.input.action.ActionManager
 import org.storm.core.sound.SoundManager
 import org.storm.engine.example.*
+import org.storm.impl.jfx.extensions.getJfxKeyEventStream
 import org.storm.impl.jfx.graphics.JfxWindow
-import org.storm.impl.jfx.graphics.getJfxKeyEventStream
 import org.storm.physics.ImpulseResolutionPhysicsEngine
 
 class StormEngineTest : Application() {
@@ -29,7 +29,6 @@ class StormEngineTest : Application() {
         val inputBindings = InputBindingsImpl()
 
         runBlocking {
-
             stormEngine.registerState(KeyActionConstants.ONE, AtRestTestState())
             stormEngine.registerState(KeyActionConstants.TWO, BouncingBallTestState())
             stormEngine.registerState(KeyActionConstants.THREE, ParticleTestState())

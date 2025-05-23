@@ -1,4 +1,4 @@
-package org.storm.impl.jfx.graphics.animation
+package org.storm.core.graphics.animation
 
 import javafx.application.Application
 import javafx.stage.Stage
@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory
 import org.storm.core.context.Context
 import org.storm.core.context.setResolution
 import org.storm.core.graphics.Resolution
-import org.storm.core.graphics.animation.Animation
 import org.storm.core.graphics.animation.sprite.SpriteAnimation
 import org.storm.core.graphics.animation.sprite.SpriteSheet
 import org.storm.impl.jfx.graphics.JfxImage

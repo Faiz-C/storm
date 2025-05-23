@@ -13,8 +13,8 @@ import org.storm.core.event.EventManager
 import org.storm.core.input.InputBindings
 import org.storm.core.input.action.ActionEvent
 import org.storm.core.input.action.ActionManager
+import org.storm.impl.jfx.extensions.getJfxKeyEventStream
 import org.storm.impl.jfx.graphics.JfxWindow
-import org.storm.impl.jfx.graphics.getJfxKeyEventStream
 import org.storm.storyboard.helpers.StoryBoardSimulator
 
 class StoryBoardEngineTest : Application() {

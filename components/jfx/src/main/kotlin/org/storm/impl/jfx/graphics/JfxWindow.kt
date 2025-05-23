@@ -14,6 +14,7 @@ import org.storm.core.graphics.Resolution
 import org.storm.core.graphics.Window
 import org.storm.core.utils.observation.Observable
 import org.storm.core.utils.observation.Observer
+import org.storm.impl.jfx.extensions.registerJfxInputEvents
 import javafx.scene.canvas.Canvas as SceneCanvas
 
 /**
@@ -23,9 +24,7 @@ import javafx.scene.canvas.Canvas as SceneCanvas
 class JfxWindow : Scene(Pane()), Window, Observer {
 
     companion object {
-        private const val KEY_EVENT_STREAM = "key-events"
-        private const val MOUSE_EVENT_STREAM = "mouse-events"
-    }
+   }
 
     private val sceneCanvas: SceneCanvas = SceneCanvas()
     private val pane: Pane = (this.root as Pane).also {
@@ -46,18 +45,7 @@ class JfxWindow : Scene(Pane()), Window, Observer {
     init {
         this.resolution = resolution
         Context.addObserver(this)
-
-        EventManager.createEventStream<KeyEvent>(KEY_EVENT_STREAM).also { stream ->
-            addEventHandler(KeyEvent.ANY) {
-                runBlocking { stream.produce(it) }
-            }
-        }
-
-        EventManager.createEventStream<MouseEvent>(MOUSE_EVENT_STREAM).also { stream ->
-            addEventHandler(MouseEvent.ANY) {
-                runBlocking { stream.produce(it) }
-            }
-        }
+        EventManager.registerJfxInputEvents(this)
     }
 
     override fun update(o: Observable) {
@@ -65,15 +53,4 @@ class JfxWindow : Scene(Pane()), Window, Observer {
 
         this.resolution = o.RESOLUTION
     }
-
-}
-
-// easy access
-fun EventManager.getJfxKeyEventStream(): EventStream<KeyEvent> {
-    return getEventStream("key-events")
-}
-
-// easy access
-fun EventManager.getJfxMouseEventStream(): EventStream<MouseEvent> {
-    return getEventStream("mouse-events")
 }

@@ -5,9 +5,12 @@ import javafx.event.EventHandler
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
+import kotlinx.coroutines.runBlocking
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION_IN_UNITS
+import org.storm.core.event.EventManager
 import org.storm.core.extensions.units
+import org.storm.impl.jfx.extensions.getJfxKeyEventStream
 import org.storm.impl.jfx.graphics.JfxWindow
 import org.storm.physics.entity.Entity
 import org.storm.physics.entity.ImmovableEntity
@@ -86,9 +89,12 @@ class VisualAtRestTest : Application() {
         repellingBall4.addForce(Direction.SOUTH.vector.scale(25.0.units))
 
         physicsSimulator.physicsEngine.paused = true
-        window.onKeyPressed = EventHandler { keyEvent: KeyEvent ->
-            if (keyEvent.code == KeyCode.SPACE) {
-                physicsSimulator.physicsEngine.paused = !physicsSimulator.physicsEngine.paused
+
+        runBlocking {
+            EventManager.getJfxKeyEventStream().addConsumer {
+                if (it.code == KeyCode.SPACE && it.eventType == KeyEvent.KEY_PRESSED) {
+                    physicsSimulator.physicsEngine.paused = !physicsSimulator.physicsEngine.paused
+                }
             }
         }
 
