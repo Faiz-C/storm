@@ -11,7 +11,7 @@ import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
 import org.storm.physics.PhysicsEngine
-import org.storm.physics.entity.Entity
+import org.storm.physics.entity.PhysicsObject
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.Circle
 
@@ -19,32 +19,32 @@ class BouncingBallTestState : SwitchableState() {
 
     private val resolution = Context.RESOLUTION_IN_UNITS
 
-    override val entities: Set<Entity> = setOf(
-        ImmovableRectEntity(
+    override val entities: Set<PhysicsObject> = setOf(
+        ImmovableRectPhysicsObject(
             0.0,
             0.0,
             resolution.width,
             5.0.units
         ),
-        ImmovableRectEntity(
+        ImmovableRectPhysicsObject(
             0.0,
             0.0,
             5.0.units,
             resolution.height
         ),
-        ImmovableRectEntity(
+        ImmovableRectPhysicsObject(
             resolution.width - 5.units,
             0.0,
             5.0.units,
             resolution.height
         ),
-        ImmovableRectEntity(
+        ImmovableRectPhysicsObject(
             0.0,
             resolution.height - 5.units,
             resolution.width,
             5.0.units
         ),
-        EntityImpl(
+        PhysicsObjectImpl(
             Circle(
                 25.0.units,
                 200.0.units,

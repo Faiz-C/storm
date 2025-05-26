@@ -6,14 +6,14 @@ import org.storm.physics.collision.Impulsive
 import org.storm.physics.math.Vector
 import org.storm.core.graphics.geometry.Geometric
 import org.storm.core.graphics.geometry.Point
-import org.storm.physics.math.geometry.shapes.Shape
+import org.storm.physics.math.geometry.shapes.CollidableShape
 
 /**
  * An Entity represents an abstract object which exists in 2D space. It can have forces applied to it, collide with
  * other Entities and react when collided with. An entity experiences standard physics as well.
  */
-abstract class Entity protected constructor(
-    val boundaries: MutableMap<String, Shape>,
+abstract class PhysicsObject protected constructor(
+    val boundaries: MutableMap<String, CollidableShape>,
     var speed: Double,
     mass: Double,
     var restitution: Double
@@ -25,7 +25,7 @@ abstract class Entity protected constructor(
     }
 
     val actingForces: MutableMap<Vector, Double> = mutableMapOf()
-    val collisionState: MutableMap<Entity, Set<Shape>> = mutableMapOf()
+    val collisionState: MutableMap<PhysicsObject, Set<CollidableShape>> = mutableMapOf()
     var velocity: Vector = Vector.ZERO_VECTOR
 
     var mass: Double = 1.0
@@ -38,7 +38,7 @@ abstract class Entity protected constructor(
     var inverseMass = 1.0
         private set
 
-    val boundary: Shape? get() = this.boundaries[SINGLE_BOUNDARY]
+    val boundary: CollidableShape? get() = this.boundaries[SINGLE_BOUNDARY]
 
     init {
         require(!(this.restitution > 1 || this.restitution < 0)) { "restitution must be in the range [0, 1]" }
@@ -47,7 +47,7 @@ abstract class Entity protected constructor(
     }
 
     constructor(
-        boundary: Shape,
+        boundary: CollidableShape,
         speed: Double,
         mass: Double,
         restitution: Double
@@ -99,18 +99,6 @@ abstract class Entity protected constructor(
         this.boundaries[boundaryName]?.translate(dx, dy)
     }
 
-    /**
-     * Rotates all boundary sections of this entity by the given angle *anticlockwise* around the given point
-     *
-     * @param point Point to rotate around
-     * @param angle angle in radians to rotate by
-     */
-    open fun rotate(point: Point, angle: Double) {
-        this.boundaries.forEach { (_, boundary) ->
-            boundary.rotate(point, angle)
-        }
-    }
-
     override suspend fun render(canvas: Canvas, x: Double, y: Double) {
         this.boundaries.forEach { (_, boundary) ->
             boundary.render(canvas, x, y)
@@ -123,7 +111,7 @@ abstract class Entity protected constructor(
         }
     }
 
-    override fun react(entity: Entity) {
+    override fun react(physicsObject: PhysicsObject) {
         // Abstract Entity by default doesn't react
     }
 

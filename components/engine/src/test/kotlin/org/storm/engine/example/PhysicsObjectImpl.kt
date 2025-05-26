@@ -1,15 +1,15 @@
 package org.storm.engine.example
 
 import org.storm.core.graphics.canvas.Canvas
-import org.storm.physics.entity.Entity
-import org.storm.physics.math.geometry.shapes.Shape
+import org.storm.physics.entity.PhysicsObject
+import org.storm.physics.math.geometry.shapes.CollidableShape
 
-class EntityImpl(
-    hurtBox: Shape,
+class PhysicsObjectImpl(
+    hurtBox: CollidableShape,
     speed: Double,
     mass: Double,
     restitution: Double
-) : Entity(
+) : PhysicsObject(
     hurtBox,
     speed,
     mass,

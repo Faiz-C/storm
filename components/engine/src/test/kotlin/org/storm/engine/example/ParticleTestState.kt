@@ -9,8 +9,8 @@ import org.storm.core.graphics.geometry.Point
 import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
-import org.storm.physics.entity.Entity
-import org.storm.physics.entity.ImmovableEntity
+import org.storm.physics.entity.PhysicsObject
+import org.storm.physics.entity.ImmovablePhysicsObject
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
@@ -20,9 +20,9 @@ class ParticleTestState : SwitchableState() {
 
     private val resolution = Context.RESOLUTION_IN_UNITS
 
-    override val entities: Set<Entity> = run {
-        val entities = mutableSetOf<Entity>(
-            ImmovableEntity(
+    override val entities: Set<PhysicsObject> = run {
+        val entities = mutableSetOf<PhysicsObject>(
+            ImmovablePhysicsObject(
                 mutableMapOf(
                     "platformTop" to AABB(
                         0.0,
@@ -69,7 +69,7 @@ class ParticleTestState : SwitchableState() {
 
             usedPoints.add(topLeft)
 
-            val e: Entity = EntityImpl(
+            val e: PhysicsObject = PhysicsObjectImpl(
                 Circle(topLeft.x, topLeft.y, 2.0.units),
                 2.0.units,
                 0.5,

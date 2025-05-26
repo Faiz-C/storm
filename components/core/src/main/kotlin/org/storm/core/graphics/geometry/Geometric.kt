@@ -1,9 +1,11 @@
 package org.storm.core.graphics.geometry
 
+import org.storm.core.graphics.Renderable
+
 /**
- * A Geometric object can be translated (moved) in Euclidean (2D) space
+ * A Geometric object can be translated (moved) in Euclidean (2D) space and is Renderable
  */
-fun interface Geometric {
+interface Geometric: Renderable {
 
     /**
      * Translates (moves) the Geometric object by the given deltas

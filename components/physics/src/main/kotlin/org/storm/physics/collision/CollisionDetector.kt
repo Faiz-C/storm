@@ -4,8 +4,8 @@ import org.apache.commons.math3.util.FastMath
 import org.storm.physics.math.Vector
 import org.storm.physics.math.extensions.getDistance
 import org.storm.physics.math.geometry.shapes.Circle
-import org.storm.physics.math.geometry.shapes.ConvexPolygon
-import org.storm.physics.math.geometry.shapes.Shape
+import org.storm.physics.math.geometry.shapes.CollidableShape
+import org.storm.physics.math.geometry.shapes.Polygon
 
 /**
  * The CollisionDetector is useful for checking whether two given closed shapes (in 2D) have collided. It also has the ability
@@ -23,7 +23,7 @@ object CollisionDetector {
      * @return true if the two shapes collide, false otherwise
      */
     @JvmStatic
-    fun check(s1: Shape, s2: Shape): Boolean {
+    fun check(s1: CollidableShape, s2: CollidableShape): Boolean {
         return checkMtv(s1, s2) !== Vector.ZERO_VECTOR
     }
 
@@ -31,12 +31,12 @@ object CollisionDetector {
      * @return the Minimum Translation Vector (Zero Vector if no collision) calculated from the collision
      */
     @JvmStatic
-    fun checkMtv(s1: Shape, s2: Shape): Vector {
-        // If both circles, need to treat it differently
-        return if (s1.edges.isEmpty() && s2.edges.isEmpty()) calcCircleMtv(s1 as Circle, s2 as Circle) else calcMtv(
-            s1,
-            s2
-        )
+    fun checkMtv(s1: CollidableShape, s2: CollidableShape): Vector {
+        return when {
+            // If both circles, need to treat it differently
+            s1 is Circle && s2 is Circle -> calcCircleMtv(s1, s2)
+            else -> calcMtv(s1, s2)
+        }
     }
 
     /**
@@ -49,7 +49,7 @@ object CollisionDetector {
      * @param s2 shape to check
      * @return a Vector representing the MTV if the two polygons have collided, ZERO_VECTOR otherwise
      */
-    private fun calcMtv(s1: Shape, s2: Shape): Vector {
+    private fun calcMtv(s1: CollidableShape, s2: CollidableShape): Vector {
         var dv = Vector.ZERO_VECTOR
         var mag = Double.POSITIVE_INFINITY
 
@@ -65,7 +65,7 @@ object CollisionDetector {
             }
         }
 
-        // Need to orient to face towards Shape 1 always
+        // Need to orient to face towards CollidableShape 1 always
 
         // 1) Get the direction vector between the center of the shapes (s2.center - s1.center)
         // 2) Calculate the dot product between the vector found in (1) and the mtv
@@ -101,30 +101,42 @@ object CollisionDetector {
      * @param s2 shape to get axes for
      * @return a set of Vectors representing the separating axes to check
      */
-    private fun axes(s1: Shape, s2: Shape): Set<Vector> {
+    private fun axes(s1: CollidableShape, s2: CollidableShape): Set<Vector> {
         val axes: MutableSet<Vector> = HashSet()
 
-        s1.edges.forEach {
-            axes.add(it.vectorFromStart.counterClockwiseNormal.normalized)
+        if (s1 is Polygon) {
+            require(s1.isConvex) {
+                "Polygon s1 is must be convex"
+            }
+
+            s1.edges.forEach {
+                axes.add(it.vectorFromStart.counterClockwiseNormal.normalized)
+            }
         }
 
-        s2.edges.forEach {
-            axes.add(it.vectorFromStart.counterClockwiseNormal.normalized)
+        if (s2 is Polygon) {
+            require(s2.isConvex) {
+                "Polygon s1 is must be convex"
+            }
+
+            s2.edges.forEach {
+                axes.add(it.vectorFromStart.counterClockwiseNormal.normalized)
+            }
         }
 
         // Special Case for Circles, need to include a special axis
-        if (s1.edges.isEmpty()) {
+        if (s1 is Circle) {
             axes.add(
                 Vector(
                     s1.center,
-                    (s2 as ConvexPolygon).getClosestVertex(s1.center)
+                    (s2 as Polygon).getClosestVertex(s1.center)
                 ).counterClockwiseNormal.normalized
             )
-        } else if (s2.edges.isEmpty()) {
+        } else if (s2 is Circle) {
             axes.add(
                 Vector(
                     s2.center,
-                    (s1 as ConvexPolygon).getClosestVertex(s2.center)
+                    (s1 as Polygon).getClosestVertex(s2.center)
                 ).counterClockwiseNormal.normalized
             )
         }

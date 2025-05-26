@@ -3,14 +3,14 @@ package org.storm.physics.math
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.storm.core.graphics.geometry.Point
-import org.storm.physics.math.geometry.shapes.ConvexPolygon
+import org.storm.physics.math.geometry.shapes.Polygon
 
 class ConvexPolygonTest {
 
     @Test
     fun testTranslate() {
         // Unit Square
-        val convexPolygon = ConvexPolygon(Point(0.0, 0.0), Point(1.0, 0.0), Point(1.0, 1.0), Point(0.0, 1.0))
+        val convexPolygon = Polygon(Point(0.0, 0.0), Point(1.0, 0.0), Point(1.0, 1.0), Point(0.0, 1.0))
         convexPolygon.translate(4.0, 0.0)
         Assertions.assertEquals(Point(4.0, 0.0), convexPolygon.vertices[0])
         Assertions.assertEquals(Point(5.0, 0.0), convexPolygon.vertices[1])
@@ -20,7 +20,7 @@ class ConvexPolygonTest {
 
     @Test
     fun testGetProjection() {
-        val convexPolygon = ConvexPolygon(Point(0.0, 0.0), Point(1.0, 0.0), Point(1.0, 1.0))
+        val convexPolygon = Polygon(Point(0.0, 0.0), Point(1.0, 0.0), Point(1.0, 1.0))
         val (start, end) = convexPolygon.project(Vector(0.0, 1.0))
         Assertions.assertEquals(0.0, start, 0.0)
         Assertions.assertEquals(1.0, end, 0.0)
@@ -28,7 +28,7 @@ class ConvexPolygonTest {
 
     @Test
     fun testCenter() {
-        val convexPolygon = ConvexPolygon(Point(0.0, 3.0), Point(2.0, 0.0), Point(1.0, 0.0))
+        val convexPolygon = Polygon(Point(0.0, 3.0), Point(2.0, 0.0), Point(1.0, 0.0))
         Assertions.assertEquals(Point(1.0, 1.0), convexPolygon.center)
     }
 
@@ -38,8 +38,8 @@ class ConvexPolygonTest {
             Point(10.0, 10.0), Point(10.0, 16.0), Point(-20.0, 10.0), Point(0.0, 10.0),
             Point(20.0, 10.0), Point(16.0, 10.0), Point(20.0, 20.0)
         )
-        val square = ConvexPolygon(Point(0.0, 0.0), Point(20.0, 0.0), Point(20.0, 20.0), Point(0.0, 20.0))
-        val hexagon = ConvexPolygon(
+        val square = Polygon(Point(0.0, 0.0), Point(20.0, 0.0), Point(20.0, 20.0), Point(0.0, 20.0))
+        val hexagon = Polygon(
             Point(6.0, 0.0),
             Point(14.0, 0.0),
             Point(20.0, 10.0),

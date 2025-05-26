@@ -10,13 +10,13 @@ import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
 import org.storm.physics.PhysicsEngine
-import org.storm.physics.entity.Entity
+import org.storm.physics.entity.PhysicsObject
 import org.storm.physics.math.Vector
 import org.storm.physics.math.geometry.shapes.Circle
 
 class CircleCornerTestState : SwitchableState() {
 
-    private val player: Entity = EntityImpl(
+    private val player: PhysicsObject = PhysicsObjectImpl(
         Circle(
             25.0.units,
             200.0.units,
@@ -34,8 +34,8 @@ class CircleCornerTestState : SwitchableState() {
         KeyActionConstants.D to Vector.UNIT_EAST,
     )
 
-    override val entities: Set<Entity> = setOf(
-        ImmovableRectEntity(
+    override val entities: Set<PhysicsObject> = setOf(
+        ImmovableRectPhysicsObject(
             200.0.units,
             200.0.units,
             100.0.units,

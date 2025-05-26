@@ -5,4 +5,4 @@ import org.storm.core.graphics.geometry.Point
 /**
  * A Triangle is a ConvexPolygon with three sides and is the smallest possible ConvexPolygon.
  */
-open class Triangle(a: Point, b: Point, c: Point) : ConvexPolygon(a, b, c)
+open class Triangle(a: Point, b: Point, c: Point) : Polygon(a, b, c)

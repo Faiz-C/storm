@@ -1,7 +1,6 @@
 package org.storm.physics.visual
 
 import javafx.application.Application
-import javafx.event.EventHandler
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
@@ -12,9 +11,9 @@ import org.storm.core.event.EventManager
 import org.storm.core.extensions.units
 import org.storm.impl.jfx.extensions.getJfxKeyEventStream
 import org.storm.impl.jfx.graphics.JfxWindow
-import org.storm.physics.entity.Entity
-import org.storm.physics.entity.ImmovableEntity
-import org.storm.physics.entity.SimpleEntity
+import org.storm.physics.entity.PhysicsObject
+import org.storm.physics.entity.ImmovablePhysicsObject
+import org.storm.physics.entity.SimplePhysicsObject
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 
@@ -22,7 +21,7 @@ class VisualAtRestTest : Application() {
 
     private val resolution = Context.RESOLUTION_IN_UNITS
 
-    private val platform: Entity = ImmovableEntity(
+    private val platform: PhysicsObject = ImmovablePhysicsObject(
         AABB(
             1.units,
             resolution.height - 20.units,
@@ -30,7 +29,7 @@ class VisualAtRestTest : Application() {
             10.units
         )
     )
-    private val repellingBall: Entity = SimpleEntity(
+    private val repellingBall: PhysicsObject = SimplePhysicsObject(
         AABB(
             75.0.units,
             400.0.units,
@@ -41,7 +40,7 @@ class VisualAtRestTest : Application() {
         10.0,
         0.7
     )
-    private val repellingBall2: Entity = SimpleEntity(
+    private val repellingBall2: PhysicsObject = SimplePhysicsObject(
         AABB(
             150.0.units,
             50.0.units,
@@ -52,7 +51,7 @@ class VisualAtRestTest : Application() {
         10.0,
         0.5
     )
-    private val repellingBall3: Entity = SimpleEntity(
+    private val repellingBall3: PhysicsObject = SimplePhysicsObject(
         AABB(
             220.0.units,
             200.0.units,
@@ -63,7 +62,7 @@ class VisualAtRestTest : Application() {
         10.0,
         1.0
     )
-    private val repellingBall4: Entity = SimpleEntity(
+    private val repellingBall4: PhysicsObject = SimplePhysicsObject(
         AABB(
             300.0.units,
             100.0.units,

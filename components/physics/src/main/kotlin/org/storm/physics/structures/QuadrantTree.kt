@@ -1,9 +1,9 @@
 package org.storm.physics.structures
 
 import org.storm.core.graphics.canvas.Canvas
-import org.storm.physics.entity.Entity
+import org.storm.physics.entity.PhysicsObject
 import org.storm.physics.math.geometry.shapes.AABB
-import org.storm.physics.math.geometry.shapes.Shape
+import org.storm.physics.math.geometry.shapes.CollidableShape
 
 /**
  * A QuadrantTree is a type of SpatialDataStructure which uses a Quad Tree as its underlying data structure.
@@ -54,7 +54,7 @@ class QuadrantTree(
     private val quadrantLock: Any = Any()
     private val contentLock: Any = Any()
 
-    var content: MutableMap<Shape, Entity> = mutableMapOf()
+    var content: MutableMap<CollidableShape, PhysicsObject> = mutableMapOf()
         private set
 
     var leaf = true
@@ -78,7 +78,7 @@ class QuadrantTree(
             return synchronized(this.contentLock) { size + this@QuadrantTree.content.size }
         }
 
-    override fun insert(e: Entity, boundary: Shape): Boolean {
+    override fun insert(e: PhysicsObject, boundary: CollidableShape): Boolean {
         if (!this.boundary.contains(boundary)) return false
 
         return if (this.leaf) {
@@ -97,7 +97,7 @@ class QuadrantTree(
         }
     }
 
-    override fun remove(e: Entity, boundary: Shape): Boolean {
+    override fun remove(e: PhysicsObject, boundary: CollidableShape): Boolean {
         if (!this.boundary.contains(boundary)) return false
 
         return if (this.leaf) {
@@ -125,7 +125,7 @@ class QuadrantTree(
         this.leaf = true
     }
 
-    override fun getCloseNeighbours(e: Entity, boundary: Shape): Map<Shape, Entity> {
+    override fun getCloseNeighbours(e: PhysicsObject, boundary: CollidableShape): Map<CollidableShape, PhysicsObject> {
         val neighbours = this.content.filterKeys {
             !e.boundaries.containsValue(it)
         }
@@ -152,7 +152,7 @@ class QuadrantTree(
      * @param e Entity for which the boundary belongs too
      * @param boundary boundary Shape to allocate
      */
-    private fun allocate(e: Entity, boundary: Shape): Boolean {
+    private fun allocate(e: PhysicsObject, boundary: CollidableShape): Boolean {
         return this.getQuadrantFor(boundary)?.insert(e, boundary) ?: false
     }
 
@@ -191,7 +191,7 @@ class QuadrantTree(
      * @param boundary boundary Shape to check for
      * @return the QuadrantTree (child or parent) where s belongs to spatially, null if it belongs to no one
      */
-    private fun getQuadrantFor(boundary: Shape): QuadrantTree? {
+    private fun getQuadrantFor(boundary: CollidableShape): QuadrantTree? {
         return synchronized(this.quadrantLock) {
             this.quadrants.firstOrNull { it?.boundary?.contains(boundary) == true }
         }
