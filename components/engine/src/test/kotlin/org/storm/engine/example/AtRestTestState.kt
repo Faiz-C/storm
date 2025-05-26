@@ -11,7 +11,7 @@ import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
 import org.storm.physics.PhysicsEngine
-import org.storm.physics.entity.PhysicsObject
+import org.storm.physics.collision.CollisionObject
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
@@ -21,14 +21,14 @@ class AtRestTestState : SwitchableState() {
     private val gravity = Direction.SOUTH.vector.scale(25.0.units)
     private val resolution = Context.RESOLUTION_IN_UNITS
 
-    private val platform: PhysicsObject = ImmovableRectPhysicsObject(
+    private val platform: CollisionObject = ImmovableRectCollisionObject(
         1.0.units,
         resolution.height - 20.units,
         resolution.width - 2.units,
         10.0.units
     )
 
-    private val repellingBall: PhysicsObject = PhysicsObjectImpl(
+    private val repellingBall: CollisionObject = CollisionObjectImpl(
         AABB(
             75.0.units,
             400.0.units,
@@ -42,7 +42,7 @@ class AtRestTestState : SwitchableState() {
         it.addForce(gravity)
     }
 
-    private val repellingBall2: PhysicsObject = PhysicsObjectImpl(
+    private val repellingBall2: CollisionObject = CollisionObjectImpl(
         Circle(
             150.0.units,
             50.0.units,
@@ -55,7 +55,7 @@ class AtRestTestState : SwitchableState() {
         it.addForce(gravity)
     }
 
-    private val repellingBall3: PhysicsObject = PhysicsObjectImpl(
+    private val repellingBall3: CollisionObject = CollisionObjectImpl(
         AABB(
             225.0.units,
             200.0.units,
@@ -69,7 +69,7 @@ class AtRestTestState : SwitchableState() {
         it.addForce(gravity)
     }
 
-    private val repellingBall4: PhysicsObject = PhysicsObjectImpl(
+    private val repellingBall4: CollisionObject = CollisionObjectImpl(
         AABB(
             300.0.units,
             100.0.units,
@@ -83,7 +83,7 @@ class AtRestTestState : SwitchableState() {
         it.addForce(gravity)
     }
 
-    override val entities: Set<PhysicsObject> = setOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4)
+    override val entities: Set<CollisionObject> = setOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4)
 
     override suspend fun onRegister(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         val bgm = Context.YAML_MAPPER.readValue(this::class.java.getResourceAsStream("/sound/bgm.yml"), Sound::class.java)

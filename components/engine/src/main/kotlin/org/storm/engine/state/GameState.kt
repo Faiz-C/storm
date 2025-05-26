@@ -6,11 +6,11 @@ import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.sound.SoundManager
 import org.storm.core.update.Updatable
 import org.storm.physics.PhysicsEngine
-import org.storm.physics.entity.PhysicsObject
+import org.storm.physics.collision.CollisionObject
 
 interface GameState: Updatable, Renderable, ActionStateProcessor {
 
-    val entities: Set<PhysicsObject>
+    val entities: Set<CollisionObject>
 
     suspend fun onRegister(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         // Default behaviour is a noop

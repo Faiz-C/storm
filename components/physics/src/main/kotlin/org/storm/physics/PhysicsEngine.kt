@@ -4,7 +4,7 @@ import org.storm.core.extensions.units
 import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.Renderable
 import org.storm.core.update.Updatable
-import org.storm.physics.entity.PhysicsObject
+import org.storm.physics.collision.CollisionObject
 import org.storm.physics.math.Vector
 import org.storm.physics.structures.SpatialDataStructure
 
@@ -27,7 +27,7 @@ abstract class PhysicsEngine protected constructor(
 
     protected val entityLock: Any = Any()
 
-    var entities: Set<PhysicsObject> = setOf()
+    var entities: Set<CollisionObject> = setOf()
         set(value) {
             synchronized(this.entityLock) {
                 field = value
@@ -62,11 +62,11 @@ abstract class PhysicsEngine protected constructor(
      */
     protected open fun resetCollisionData() {
         this.collisionStructure.clear()
-        this.entities.forEach { physicsObject: PhysicsObject ->
-            physicsObject.collisionState.clear()
+        this.entities.forEach { collisionObject: CollisionObject ->
+            collisionObject.collisionState.clear()
 
-            physicsObject.boundaries.forEach { (_, boundary) ->
-                this.collisionStructure.insert(physicsObject, boundary)
+            collisionObject.boundaries.forEach { (_, boundary) ->
+                this.collisionStructure.insert(collisionObject, boundary)
             }
         }
     }
@@ -75,48 +75,48 @@ abstract class PhysicsEngine protected constructor(
      * Handles collision checks for the given Entity and returns the MTV to allow for adjustments in case of collisions.
      * If no collisions occur, a zero vector should be returned.
      *
-     * @param physicsObject Entity to check collisions for
+     * @param collisionObject Entity to check collisions for
      */
-    protected abstract fun processCollisions(physicsObject: PhysicsObject)
+    protected abstract fun processCollisions(collisionObject: CollisionObject)
 
     /**
      * Processes standard Physics for a given entity based on its physics data up to this point.
      *
-     * @param physicsObject Entity to process physics for
+     * @param collisionObject Entity to process physics for
      * @param elapsedTime elapsed time (in seconds) since the physics of this entity was last processed
      */
-    private fun processPhysics(physicsObject: PhysicsObject, elapsedTime: Double) {
+    private fun processPhysics(collisionObject: CollisionObject, elapsedTime: Double) {
         // Apply all forces onto entity
-        applyForces(physicsObject, elapsedTime)
+        applyForces(collisionObject, elapsedTime)
 
         // If the entity has zero or extremely little velocity then consider it at rest. This means we DON'T check collision
         val minimumRestVelocity = MINIMUM_REST_VELOCITY.units
-        if (physicsObject.velocity.squaredMagnitude < minimumRestVelocity * minimumRestVelocity) return
+        if (collisionObject.velocity.squaredMagnitude < minimumRestVelocity * minimumRestVelocity) return
 
         // Check and process any collisions
-        processCollisions(physicsObject)
+        processCollisions(collisionObject)
 
         // Translate the entity by the forces applied to it
-        physicsObject.translateByVelocity()
+        collisionObject.translateByVelocity()
     }
 
     /**
      * Applies all forces to the given Entity.
      *
-     * @param physicsObject Entity to apply forces for
+     * @param collisionObject Entity to apply forces for
      * @param elapsedTime elapsed time (in seconds) since forces were last applied to this Entity
      */
-    private fun applyForces(physicsObject: PhysicsObject, elapsedTime: Double) {
-        physicsObject.actingForces.replaceAll { (x, y): Vector, remainingDuration: Double ->
+    private fun applyForces(collisionObject: CollisionObject, elapsedTime: Double) {
+        collisionObject.actingForces.replaceAll { (x, y): Vector, remainingDuration: Double ->
             // Force = Mass * Acceleration. In 2D we have acceleration in both x and y directions.
-            val aX = x / physicsObject.mass // x acceleration
-            val aY = y / physicsObject.mass // y acceleration
+            val aX = x / collisionObject.mass // x acceleration
+            val aY = y / collisionObject.mass // y acceleration
 
-            physicsObject.velocity = physicsObject.velocity.add(Vector(aX * elapsedTime, aY * elapsedTime))
+            collisionObject.velocity = collisionObject.velocity.add(Vector(aX * elapsedTime, aY * elapsedTime))
             if (remainingDuration == INFINITE_DURATION) INFINITE_DURATION else remainingDuration - elapsedTime
         }
 
-        physicsObject.actingForces
+        collisionObject.actingForces
             .entries
             .removeIf { (_, duration) -> duration != INFINITE_DURATION && duration <= 0 }
     }

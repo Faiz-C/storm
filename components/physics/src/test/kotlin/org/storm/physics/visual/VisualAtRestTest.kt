@@ -11,9 +11,9 @@ import org.storm.core.event.EventManager
 import org.storm.core.extensions.units
 import org.storm.impl.jfx.extensions.getJfxKeyEventStream
 import org.storm.impl.jfx.graphics.JfxWindow
-import org.storm.physics.entity.PhysicsObject
-import org.storm.physics.entity.ImmovablePhysicsObject
-import org.storm.physics.entity.SimplePhysicsObject
+import org.storm.physics.collision.CollisionObject
+import org.storm.physics.entity.ImmovableCollisionObject
+import org.storm.physics.entity.SimpleCollisionObject
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 
@@ -21,7 +21,7 @@ class VisualAtRestTest : Application() {
 
     private val resolution = Context.RESOLUTION_IN_UNITS
 
-    private val platform: PhysicsObject = ImmovablePhysicsObject(
+    private val platform: CollisionObject = ImmovableCollisionObject(
         AABB(
             1.units,
             resolution.height - 20.units,
@@ -29,7 +29,7 @@ class VisualAtRestTest : Application() {
             10.units
         )
     )
-    private val repellingBall: PhysicsObject = SimplePhysicsObject(
+    private val repellingBall: CollisionObject = SimpleCollisionObject(
         AABB(
             75.0.units,
             400.0.units,
@@ -40,7 +40,7 @@ class VisualAtRestTest : Application() {
         10.0,
         0.7
     )
-    private val repellingBall2: PhysicsObject = SimplePhysicsObject(
+    private val repellingBall2: CollisionObject = SimpleCollisionObject(
         AABB(
             150.0.units,
             50.0.units,
@@ -51,7 +51,7 @@ class VisualAtRestTest : Application() {
         10.0,
         0.5
     )
-    private val repellingBall3: PhysicsObject = SimplePhysicsObject(
+    private val repellingBall3: CollisionObject = SimpleCollisionObject(
         AABB(
             220.0.units,
             200.0.units,
@@ -62,7 +62,7 @@ class VisualAtRestTest : Application() {
         10.0,
         1.0
     )
-    private val repellingBall4: PhysicsObject = SimplePhysicsObject(
+    private val repellingBall4: CollisionObject = SimpleCollisionObject(
         AABB(
             300.0.units,
             100.0.units,

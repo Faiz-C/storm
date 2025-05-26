@@ -16,9 +16,9 @@ import org.storm.core.graphics.geometry.Point
 import org.storm.core.graphics.Resolution
 import org.storm.impl.jfx.extensions.getJfxKeyEventStream
 import org.storm.impl.jfx.graphics.JfxWindow
-import org.storm.physics.entity.PhysicsObject
-import org.storm.physics.entity.ImmovablePhysicsObject
-import org.storm.physics.entity.SimplePhysicsObject
+import org.storm.physics.collision.CollisionObject
+import org.storm.physics.entity.ImmovableCollisionObject
+import org.storm.physics.entity.SimpleCollisionObject
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
@@ -26,8 +26,8 @@ import java.util.concurrent.ThreadLocalRandom
 
 class ParticleTest : Application() {
 
-    private val boundingBox: ImmovablePhysicsObject
-    private val entities: MutableSet<PhysicsObject> = mutableSetOf()
+    private val boundingBox: ImmovableCollisionObject
+    private val entities: MutableSet<CollisionObject> = mutableSetOf()
 
     private lateinit var physicsSimulator: PhysicsSimulator
     private val ballColour = Color(
@@ -40,7 +40,7 @@ class ParticleTest : Application() {
     init {
         Context.setResolution(Resolution.HD)
         val resolution = Context.RESOLUTION_IN_UNITS
-        boundingBox = ImmovablePhysicsObject(
+        boundingBox = ImmovableCollisionObject(
             mutableMapOf(
                 "platformTop" to AABB(
                     0.0,
@@ -84,7 +84,7 @@ class ParticleTest : Application() {
                 ThreadLocalRandom.current().nextInt(10, (resolution.height - 10.units).toInt())
                     .toDouble()
             )
-            this.entities.add(SimplePhysicsObject(Circle(x, y, 2.0.units), 3.0, 0.5, 1.0))
+            this.entities.add(SimpleCollisionObject(Circle(x, y, 2.0.units), 3.0, 0.5, 1.0))
         }
 
         this.physicsSimulator.physicsEngine.entities = this.entities
@@ -111,8 +111,8 @@ class ParticleTest : Application() {
     private suspend fun render(window: JfxWindow) {
         window.canvas.clear()
         this.physicsSimulator.physicsEngine.render(window.canvas, 0.0, 0.0)
-        this.entities.forEach { e: PhysicsObject ->
-            val canvasSettings = if (e is ImmovablePhysicsObject) {
+        this.entities.forEach { e: CollisionObject ->
+            val canvasSettings = if (e is ImmovableCollisionObject) {
                 Settings(color = Color(255.0, 0.0, 0.0, 1.0))
             } else {
                 Settings(color = ballColour)

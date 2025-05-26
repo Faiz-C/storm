@@ -1,32 +1,29 @@
-package org.storm.physics.entity
+package org.storm.physics.collision
 
-import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.Renderable
-import org.storm.physics.collision.Impulsive
-import org.storm.physics.math.Vector
+import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.geometry.Geometric
-import org.storm.core.graphics.geometry.Point
+import org.storm.physics.math.Vector
 import org.storm.physics.math.geometry.shapes.CollidableShape
 
 /**
- * An Entity represents an abstract object which exists in 2D space. It can have forces applied to it, collide with
- * other Entities and react when collided with. An entity experiences standard physics as well.
+ * Encapsulates collision and physics data for a game object
  */
-abstract class PhysicsObject protected constructor(
+class CollisionObject(
     val boundaries: MutableMap<String, CollidableShape>,
-    var speed: Double,
     mass: Double,
-    var restitution: Double
+    val restitution: Double
 ) : Impulsive, Geometric, Renderable {
 
     companion object {
-        const val SINGLE_BOUNDARY = "single boundary"
+        private const val SINGLE_BOUNDARY = "single boundary"
         private const val INFINITE_DURATION = Double.NEGATIVE_INFINITY
     }
 
     val actingForces: MutableMap<Vector, Double> = mutableMapOf()
-    val collisionState: MutableMap<PhysicsObject, Set<CollidableShape>> = mutableMapOf()
-    var velocity: Vector = Vector.ZERO_VECTOR
+    val collisionState: MutableMap<CollisionObject, Set<CollidableShape>> = mutableMapOf()
+
+    var velocity: Vector = Vector.Companion.ZERO_VECTOR
 
     var mass: Double = 1.0
         set(value) {
@@ -42,16 +39,14 @@ abstract class PhysicsObject protected constructor(
 
     init {
         require(!(this.restitution > 1 || this.restitution < 0)) { "restitution must be in the range [0, 1]" }
-        require(this.speed >= 0) { "speed cannot be lower than 0" }
         this.mass = mass
     }
 
     constructor(
         boundary: CollidableShape,
-        speed: Double,
         mass: Double,
         restitution: Double
-    ) : this(mutableMapOf(SINGLE_BOUNDARY to boundary), speed, mass, restitution)
+    ) : this(mutableMapOf(SINGLE_BOUNDARY to boundary), mass, restitution)
 
     /**
      * Translates the Entity's position by its current velocity
@@ -111,11 +106,11 @@ abstract class PhysicsObject protected constructor(
         }
     }
 
-    override fun react(physicsObject: PhysicsObject) {
+    override fun react(collisionObject: CollisionObject) {
         // Abstract Entity by default doesn't react
     }
 
     override fun toString(): String =
-        "Entity(boundaries=${this.boundaries}, speed=${this.speed}, velocity=${this.velocity}, mass=${this.mass}, restitution=${this.restitution})"
+        "Entity(boundaries=${this.boundaries}, velocity=${this.velocity}, mass=${this.mass}, restitution=${this.restitution})"
 
 }

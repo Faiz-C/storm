@@ -1,9 +1,10 @@
 package org.storm.physics.entity
 
+import org.storm.physics.collision.CollisionObject
 import org.storm.physics.math.geometry.shapes.CollidableShape
 
-class SimplePhysicsObject(boundaries: MutableMap<String, CollidableShape>, speed: Double, mass: Double, restitution: Double) :
-    PhysicsObject(boundaries, speed, mass, restitution) {
+class SimpleCollisionObject(boundaries: MutableMap<String, CollidableShape>, speed: Double, mass: Double, restitution: Double) :
+    CollisionObject(boundaries, speed, mass, restitution) {
 
     constructor(
         boundary: CollidableShape,

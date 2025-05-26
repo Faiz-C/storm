@@ -1,7 +1,7 @@
 package org.storm.physics.structures
 
 import org.storm.core.graphics.canvas.Canvas
-import org.storm.physics.entity.PhysicsObject
+import org.storm.physics.collision.CollisionObject
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.CollidableShape
 
@@ -54,7 +54,7 @@ class QuadrantTree(
     private val quadrantLock: Any = Any()
     private val contentLock: Any = Any()
 
-    var content: MutableMap<CollidableShape, PhysicsObject> = mutableMapOf()
+    var content: MutableMap<CollidableShape, CollisionObject> = mutableMapOf()
         private set
 
     var leaf = true
@@ -78,7 +78,7 @@ class QuadrantTree(
             return synchronized(this.contentLock) { size + this@QuadrantTree.content.size }
         }
 
-    override fun insert(e: PhysicsObject, boundary: CollidableShape): Boolean {
+    override fun insert(e: CollisionObject, boundary: CollidableShape): Boolean {
         if (!this.boundary.contains(boundary)) return false
 
         return if (this.leaf) {
@@ -97,7 +97,7 @@ class QuadrantTree(
         }
     }
 
-    override fun remove(e: PhysicsObject, boundary: CollidableShape): Boolean {
+    override fun remove(e: CollisionObject, boundary: CollidableShape): Boolean {
         if (!this.boundary.contains(boundary)) return false
 
         return if (this.leaf) {
@@ -125,7 +125,7 @@ class QuadrantTree(
         this.leaf = true
     }
 
-    override fun getCloseNeighbours(e: PhysicsObject, boundary: CollidableShape): Map<CollidableShape, PhysicsObject> {
+    override fun getCloseNeighbours(e: CollisionObject, boundary: CollidableShape): Map<CollidableShape, CollisionObject> {
         val neighbours = this.content.filterKeys {
             !e.boundaries.containsValue(it)
         }
@@ -152,7 +152,7 @@ class QuadrantTree(
      * @param e Entity for which the boundary belongs too
      * @param boundary boundary Shape to allocate
      */
-    private fun allocate(e: PhysicsObject, boundary: CollidableShape): Boolean {
+    private fun allocate(e: CollisionObject, boundary: CollidableShape): Boolean {
         return this.getQuadrantFor(boundary)?.insert(e, boundary) ?: false
     }
 

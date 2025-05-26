@@ -14,9 +14,9 @@ import org.storm.core.graphics.canvas.Settings
 import org.storm.core.graphics.geometry.Point
 import org.storm.impl.jfx.extensions.getJfxKeyEventStream
 import org.storm.impl.jfx.graphics.JfxWindow
-import org.storm.physics.entity.PhysicsObject
-import org.storm.physics.entity.ImmovablePhysicsObject
-import org.storm.physics.entity.SimplePhysicsObject
+import org.storm.physics.collision.CollisionObject
+import org.storm.physics.entity.ImmovableCollisionObject
+import org.storm.physics.entity.SimpleCollisionObject
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
@@ -25,7 +25,7 @@ class MultiPartBoundaryTest : Application() {
 
     private val resolution = Context.RESOLUTION_IN_UNITS
 
-    private val boundingBox = ImmovablePhysicsObject(
+    private val boundingBox = ImmovableCollisionObject(
         mutableMapOf(
             "platformTop" to AABB(
                 0.0,
@@ -54,7 +54,7 @@ class MultiPartBoundaryTest : Application() {
         )
     )
 
-    private val multiPartBoundaryEntity = SimplePhysicsObject(
+    private val multiPartBoundaryEntity = SimpleCollisionObject(
         mutableMapOf(
             "centerCircle" to Circle(
                 Point(150.0.units, 215.0.units),
@@ -90,7 +90,7 @@ class MultiPartBoundaryTest : Application() {
         1.0
     )
 
-    private val entities: MutableSet<PhysicsObject> = mutableSetOf()
+    private val entities: MutableSet<CollisionObject> = mutableSetOf()
     private lateinit var physicsSimulator: PhysicsSimulator
 
     override fun start(stage: Stage) {
@@ -126,8 +126,8 @@ class MultiPartBoundaryTest : Application() {
 
         this.physicsSimulator.physicsEngine.render(window.canvas, 0.0, 0.0)
 
-        this.entities.forEach { e: PhysicsObject ->
-            val canvasSettings = if (e is ImmovablePhysicsObject) {
+        this.entities.forEach { e: CollisionObject ->
+            val canvasSettings = if (e is ImmovableCollisionObject) {
                 Settings(color = Color(255.0, 0.0, 0.0, 1.0))
             } else {
                 Settings(color = Color(0.0, 255.0, 0.0, 1.0))
