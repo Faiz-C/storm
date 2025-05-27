@@ -6,11 +6,12 @@ import org.storm.core.context.RESOLUTION_IN_UNITS
 import org.storm.core.extensions.units
 import org.storm.core.input.action.ActionState
 import org.storm.core.graphics.geometry.Point
+import org.storm.core.sound.SoundManager
 import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
-import org.storm.physics.collision.CollisionObject
-import org.storm.physics.entity.ImmovableCollisionObject
+import org.storm.physics.PhysicsEngine
+import org.storm.physics.collision.Collider
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
@@ -20,9 +21,9 @@ class ParticleTestState : SwitchableState() {
 
     private val resolution = Context.RESOLUTION_IN_UNITS
 
-    override val entities: Set<CollisionObject> = run {
-        val entities = mutableSetOf<CollisionObject>(
-            ImmovableCollisionObject(
+    override val colliders: Set<Collider> = run {
+        val colliders = mutableSetOf(
+            Collider(
                 mutableMapOf(
                     "platformTop" to AABB(
                         0.0,
@@ -48,7 +49,9 @@ class ParticleTestState : SwitchableState() {
                         resolution.width,
                         5.0.units
                     )
-                )
+                ),
+                Double.POSITIVE_INFINITY,
+                1.0
             )
         )
 
@@ -69,19 +72,22 @@ class ParticleTestState : SwitchableState() {
 
             usedPoints.add(topLeft)
 
-            val e: CollisionObject = CollisionObjectImpl(
+            val c = Collider(
                 Circle(topLeft.x, topLeft.y, 2.0.units),
-                2.0.units,
-                0.5,
+                5.0.units,
                 1.0
-            ).also {
-                it.addForce(Direction.random().vector.scale(2.0.units), 0.1)
-            }
+            )
 
-            entities.add(e)
+            colliders.add(c)
         }
 
-        entities
+        colliders
+    }
+
+    override suspend fun onRegister(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
+        colliders.forEach {
+            physicsEngine.applyForce(Direction.random().vector.scale(2.0.units), it, 0.1)
+        }
     }
 
     override suspend fun process(actionState: ActionState) {

@@ -5,7 +5,7 @@ import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION_IN_UNITS
 import org.storm.core.extensions.units
 import org.storm.physics.collision.CollisionDetector.checkMtv
-import org.storm.physics.collision.CollisionObject
+import org.storm.physics.collision.Collider
 import org.storm.physics.math.Vector
 import org.storm.physics.structures.QuadrantTree
 
@@ -22,18 +22,19 @@ class ImpulseResolutionPhysicsEngine : PhysicsEngine(
         private const val POSITIONAL_CORRECTION_THRESHOLD = 0.01 // This is in pixels as the unit conversion is up to the user
     }
 
-    override fun processCollisions(collisionObject: CollisionObject) {
-        collisionObject.boundaries.forEach boundaries@{ (_, section) ->
-            this.collisionStructure.getCloseNeighbours(collisionObject, section)
+    override fun processCollisions(collider: Collider) {
+        collider.boundaries.forEach boundaries@{ (_, section) ->
+            this.collisionStructure.getCloseNeighbours(collider, section)
                 .forEach neighbourCollisionCheck@{ (neighbourSection, neighbour) ->
+
                     // Ignore if already interacted with
                     // This is intentionally checking the neighbours collision state instead of this entity's since we update
                     // our collision state during these checks and not our neighbours
-                    if (neighbour.collisionState[collisionObject]?.contains(section) == true) return@neighbourCollisionCheck
+                    if (neighbour.collisionState[collider]?.contains(section) == true) return@neighbourCollisionCheck
 
                     // Initially we can say that these two did not collide, but still track that we checked the two
-                    if (!collisionObject.collisionState.containsKey(neighbour)) {
-                        collisionObject.collisionState[neighbour] = setOf()
+                    if (!collider.collisionState.containsKey(neighbour)) {
+                        collider.collisionState[neighbour] = setOf()
                     }
 
                     // Check collision and get back the minimum translation vector
@@ -42,14 +43,14 @@ class ImpulseResolutionPhysicsEngine : PhysicsEngine(
                     if (mtv === Vector.ZERO_VECTOR) return@neighbourCollisionCheck
 
                     // resolve collision via impulse resolution
-                    impulsiveResolution(collisionObject, neighbour, mtv)
+                    impulsiveResolution(collider, neighbour, mtv)
 
-                    // Allow the entities to react to colliding with each other
-                    collisionObject.react(neighbour)
-                    neighbour.react(collisionObject)
+                    // trigger on Collision handlers for the colliders
+                    collider.onCollision(neighbour)
+                    neighbour.onCollision(collider)
 
                     // Update the collision state to say that we collided with this entity
-                    collisionObject.collisionState[neighbour] = collisionObject.collisionState[neighbour]!!.plus(section)
+                    collider.collisionState[neighbour] = collider.collisionState[neighbour]!!.plus(section)
                 }
         }
     }
@@ -61,7 +62,7 @@ class ImpulseResolutionPhysicsEngine : PhysicsEngine(
      * @param e2 Entity involved in the collision
      * @param mtv minimum translation vector calculated from the collision
      */
-    private fun impulsiveResolution(e1: CollisionObject, e2: CollisionObject, mtv: Vector) {
+    private fun impulsiveResolution(e1: Collider, e2: Collider, mtv: Vector) {
         val collisionNormal = mtv.normalized
         val relativeVelocity = e1.velocity.subtract(e2.velocity)
         val contactVelocity = relativeVelocity.dot(collisionNormal)
@@ -80,8 +81,7 @@ class ImpulseResolutionPhysicsEngine : PhysicsEngine(
 
         // Positional correction do to eventual floating point arithmetic error
         val mag = FastMath.max(mtv.magnitude - POSITIONAL_CORRECTION_THRESHOLD.units, 0.0)
-        val correction =
-            mag / (e1.inverseMass + e2.inverseMass) * POSITIONAL_CORRECTION_ADJUSTMENT.units
+        val correction = mag / (e1.inverseMass + e2.inverseMass) * POSITIONAL_CORRECTION_ADJUSTMENT.units
 
         val requiredE1Translation = collisionNormal.scale(correction * e1.inverseMass)
         val requiredE2Translation = collisionNormal.scale(-correction * e2.inverseMass)

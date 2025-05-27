@@ -14,9 +14,7 @@ import org.storm.core.graphics.canvas.Settings
 import org.storm.core.graphics.geometry.Point
 import org.storm.impl.jfx.extensions.getJfxKeyEventStream
 import org.storm.impl.jfx.graphics.JfxWindow
-import org.storm.physics.collision.CollisionObject
-import org.storm.physics.entity.ImmovableCollisionObject
-import org.storm.physics.entity.SimpleCollisionObject
+import org.storm.physics.collision.Collider
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
@@ -25,7 +23,7 @@ class MultiPartBoundaryTest : Application() {
 
     private val resolution = Context.RESOLUTION_IN_UNITS
 
-    private val boundingBox = ImmovableCollisionObject(
+    private val boundingBox = Collider(
         mutableMapOf(
             "platformTop" to AABB(
                 0.0,
@@ -51,10 +49,12 @@ class MultiPartBoundaryTest : Application() {
                 resolution.width,
                 5.0.units
             )
-        )
+        ),
+        Double.POSITIVE_INFINITY,
+        1.0
     )
 
-    private val multiPartBoundaryEntity = SimpleCollisionObject(
+    private val multiPartBoundaryEntity = Collider(
         mutableMapOf(
             "centerCircle" to Circle(
                 Point(150.0.units, 215.0.units),
@@ -85,12 +85,11 @@ class MultiPartBoundaryTest : Application() {
                 40.0.units
             )
         ),
-        3.0.units,
-        10.0,
+        100.0.units,
         1.0
     )
 
-    private val entities: MutableSet<CollisionObject> = mutableSetOf()
+    private val colliders: MutableSet<Collider> = mutableSetOf()
     private lateinit var physicsSimulator: PhysicsSimulator
 
     override fun start(stage: Stage) {
@@ -98,17 +97,17 @@ class MultiPartBoundaryTest : Application() {
         // Make a Display
         val window = JfxWindow()
         this.physicsSimulator = PhysicsSimulator(144.0) { render(window) }
-        this.entities.add(boundingBox)
-        this.entities.add(multiPartBoundaryEntity)
-
-        this.physicsSimulator.physicsEngine.entities = this.entities
-
-        multiPartBoundaryEntity.addForce(Direction.NORTH_WEST.vector.scale(100.0.units), 0.1)
-        multiPartBoundaryEntity.addForce(Direction.NORTH.vector.scale(100.0.units), 0.1)
-
-        this.physicsSimulator.physicsEngine.paused = true
+        this.colliders.add(boundingBox)
+        this.colliders.add(multiPartBoundaryEntity)
 
         runBlocking {
+            physicsSimulator.physicsEngine.paused = true
+
+            physicsSimulator.physicsEngine.applyForce(Direction.NORTH_WEST.vector.scale(100.0.units), multiPartBoundaryEntity, 0.1)
+            physicsSimulator.physicsEngine.applyForce(Direction.NORTH.vector.scale(100.0.units), multiPartBoundaryEntity, 0.1)
+
+            physicsSimulator.physicsEngine.setColliders(colliders)
+
             EventManager.getJfxKeyEventStream().addConsumer {
                 if (it.code == KeyCode.SPACE && it.eventType == KeyEvent.KEY_PRESSED) {
                     physicsSimulator.physicsEngine.paused = !physicsSimulator.physicsEngine.paused
@@ -126,15 +125,15 @@ class MultiPartBoundaryTest : Application() {
 
         this.physicsSimulator.physicsEngine.render(window.canvas, 0.0, 0.0)
 
-        this.entities.forEach { e: CollisionObject ->
-            val canvasSettings = if (e is ImmovableCollisionObject) {
+        this.colliders.forEach { c: Collider ->
+            val canvasSettings = if (c.immovable) {
                 Settings(color = Color(255.0, 0.0, 0.0, 1.0))
             } else {
                 Settings(color = Color(0.0, 255.0, 0.0, 1.0))
             }
 
             window.canvas.withSettings(canvasSettings) {
-                e.render(it, 0.0, 0.0)
+                c.render(it, 0.0, 0.0)
             }
         }
     }

@@ -27,7 +27,8 @@ class StormEngine(
     val window: Window,
     private val physicsEngine: PhysicsEngine,
     private val actionManager: ActionManager,
-    private val soundManager: SoundManager
+    private val soundManager: SoundManager,
+    private val renderingDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) {
 
     companion object {
@@ -49,9 +50,7 @@ class StormEngine(
     private var physicsDelay: Int = 0
 
     private var gameLoop: Job? = null
-    private val engineCoroutineScope: CoroutineScope = CoroutineScope(Executors.newSingleThreadExecutor() {
-        Thread(it).apply { isDaemon = true }
-    }.asCoroutineDispatcher())
+    private val engineCoroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default.limitedParallelism(1))
 
     // Stateful Vars
     private var currentState: GameState? = null
@@ -125,7 +124,6 @@ class StormEngine(
      * Swaps the current active State to the one associated with the given id with or without resetting it.
      *
      * @param stateId unique id of the state to switch to
-     * @param reset   true if resetting the state is wanted, false otherwise (default false)
      */
     suspend fun swapState(stateId: String) {
         val newState = this.states[stateId] ?: throw StormEngineException("could not find state for id $stateId")
@@ -139,9 +137,7 @@ class StormEngine(
 
         this.currentState = newState
 
-        this.physicsEngine.clearAllForces()
-
-        this.physicsEngine.entities = this.currentState!!.entities
+        this.physicsEngine.setColliders(this.currentState!!.colliders)
 
         this.currentState!!.onSwapOn(this.physicsEngine, this.soundManager)
 
@@ -208,7 +204,7 @@ class StormEngine(
         }
 
         if (++this.renderDelay >= this.renderFpsRatio) {
-            withContext(Dispatchers.JavaFx) {
+            withContext(renderingDispatcher) {
                 this@StormEngine.window.canvas.clear()
                 this@StormEngine.currentState!!.render(this@StormEngine.window.canvas, 0.0, 0.0)
                 this@StormEngine.renderDelay = 0

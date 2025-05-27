@@ -6,11 +6,11 @@ import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.sound.SoundManager
 import org.storm.core.update.Updatable
 import org.storm.physics.PhysicsEngine
-import org.storm.physics.collision.CollisionObject
+import org.storm.physics.collision.Collider
 
 interface GameState: Updatable, Renderable, ActionStateProcessor {
 
-    val entities: Set<CollisionObject>
+    val colliders: Set<Collider>
 
     suspend fun onRegister(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         // Default behaviour is a noop
@@ -33,7 +33,7 @@ interface GameState: Updatable, Renderable, ActionStateProcessor {
     }
 
     override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-        this.entities.forEach { it.render(canvas, x, y) }
+        this.colliders.forEach { it.render(canvas, x, y) }
     }
 
 }

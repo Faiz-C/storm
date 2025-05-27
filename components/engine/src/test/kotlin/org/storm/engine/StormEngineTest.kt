@@ -3,6 +3,8 @@ package org.storm.engine
 import javafx.application.Application
 import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.runBlocking
 import org.storm.core.event.EventManager
 import org.storm.core.input.action.ActionEvent

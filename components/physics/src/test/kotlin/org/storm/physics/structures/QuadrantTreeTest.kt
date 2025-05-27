@@ -5,8 +5,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.storm.core.graphics.geometry.Point
-import org.storm.physics.collision.CollisionObject
-import org.storm.physics.entity.SimpleCollisionObject
+import org.storm.physics.collision.Collider
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
 import org.storm.physics.math.geometry.shapes.CollidableShape
@@ -30,8 +29,8 @@ class QuadrantTreeTest {
     fun testInsert_single() {
         val quadrantTree = QuadrantTree(0, 100.0, 100.0)
         val s: CollidableShape = Triangle(Point(5.0, 5.0), Point(15.0, 15.0), Point(7.0, 77.0))
-        val e: CollisionObject = SimpleCollisionObject(s, 3.0, 10.0, 0.3)
-        quadrantTree.insert(e, e.boundary!!)
+        val c = Collider(s, 3.0, 0.3)
+        quadrantTree.insert(c, c.boundary!!)
 
         assertEquals(1, quadrantTree.content.size)
         assertTrue(quadrantTree.leaf)
@@ -43,14 +42,14 @@ class QuadrantTreeTest {
         val maxSize = 25
         val totalEntities = 1000000
         var start = System.nanoTime()
-        val entities: Set<CollisionObject> = (0 until totalEntities).map {
+        val entities: Set<Collider> = (0 until totalEntities).map {
             val s: CollidableShape = AABB(
                 rand.nextInt(101 - maxSize).toDouble(),
                 rand.nextInt(101 - maxSize).toDouble(),
                 (rand.nextInt(maxSize) + 1).toDouble(),
                 (rand.nextInt(maxSize) + 1).toDouble()
             )
-            SimpleCollisionObject(s, 3.0, 10.0, 0.3)
+            Collider(s, 3.0, 0.3)
         }.toSet()
 
         var elapsed = System.nanoTime() - start
@@ -84,8 +83,8 @@ class QuadrantTreeTest {
                 (rand.nextInt(25) + 1).toDouble(),
                 (rand.nextInt(25) + 1).toDouble()
             )
-            val e: CollisionObject = SimpleCollisionObject(s, 3.0, 10.0, 0.3)
-            quadrantTree.insert(e, e.boundary!!)
+            val c = Collider(s, 3.0, 0.3)
+            quadrantTree.insert(c, c.boundary!!)
         }
         assertTrue(quadrantTree.leaf)
     }
@@ -94,7 +93,7 @@ class QuadrantTreeTest {
     fun testRemove() {
         val quadrantTree = QuadrantTree(0, 100.0, 100.0)
         val totalEntities = 10
-        var last: CollisionObject? = null
+        var last: Collider? = null
         for (i in 0 until totalEntities) {
             val s: CollidableShape = AABB(
                 rand.nextInt(101).toDouble(),
@@ -102,9 +101,9 @@ class QuadrantTreeTest {
                 (rand.nextInt(25) + 1).toDouble(),
                 (rand.nextInt(25) + 1).toDouble()
             )
-            val e: CollisionObject = SimpleCollisionObject(s, 3.0, 10.0, 0.3)
-            quadrantTree.insert(e, e.boundary!!)
-            last = e
+            val c = Collider(s, 3.0, 0.3)
+            quadrantTree.insert(c, c.boundary!!)
+            last = c
         }
 
         assertFalse(quadrantTree.leaf)
@@ -127,8 +126,8 @@ class QuadrantTreeTest {
                 (rand.nextInt(maxSize) + 1).toDouble(),
                 (rand.nextInt(maxSize) + 1).toDouble()
             )
-            val e: CollisionObject = SimpleCollisionObject(s, 3.0, 10.0, 0.3)
-            quadrantTree.insert(e, e.boundary!!)
+            val c = Collider(s, 3.0, 0.3)
+            quadrantTree.insert(c, c.boundary!!)
         }
 
         assertEquals(10, quadrantTree.size)
@@ -139,11 +138,11 @@ class QuadrantTreeTest {
     @Test
     fun testGetCloseNeighboursAsLeaf() {
         val quadrantTree = QuadrantTree(0, 100.0, 100.0)
-        val e1 = SimpleCollisionObject(AABB(20.0, 20.0, 30.0, 30.0), 3.0, 10.0, 0.3)
-        val e2 = SimpleCollisionObject(AABB(60.0, 65.0, 30.0, 30.0), 3.0, 10.0, 0.3)
-        val e3 = SimpleCollisionObject(Circle(45.0, 34.0, 30.0), 3.0, 10.0, 0.3)
-        val e4 = SimpleCollisionObject(Circle(15.0, 7.0, 5.0), 3.0, 10.0, 0.3)
-        val e5 = SimpleCollisionObject(Circle(50.0, 20.0, 10.0), 3.0, 10.0, 0.3)
+        val e1 = Collider(AABB(20.0, 20.0, 30.0, 30.0), 3.0, 0.3)
+        val e2 = Collider(AABB(60.0, 65.0, 30.0, 30.0), 3.0, 0.3)
+        val e3 = Collider(Circle(45.0, 34.0, 30.0), 3.0, 0.3)
+        val e4 = Collider(Circle(15.0, 7.0, 5.0), 3.0, 0.3)
+        val e5 = Collider(Circle(50.0, 20.0, 10.0), 3.0, 0.3)
 
         setOf(e1, e2, e3, e4, e5).forEach {
             assertTrue(quadrantTree.insert(it, it.boundary!!))
@@ -158,15 +157,15 @@ class QuadrantTreeTest {
     @Test
     fun testGetCloseNeighboursNonLeaf() {
         val quadrantTree = QuadrantTree(0, 100.0, 100.0)
-        val e1 = SimpleCollisionObject(AABB(20.0, 20.0, 30.0, 30.0), 3.0, 10.0, 0.3)
-        val e2 = SimpleCollisionObject(AABB(60.0, 65.0, 30.0, 30.0), 3.0, 10.0, 0.3)
-        val e3 = SimpleCollisionObject(Circle(45.0, 34.0, 30.0), 3.0, 10.0, 0.3)
-        val e4 = SimpleCollisionObject(Circle(15.0, 7.0, 5.0), 3.0, 10.0, 0.3)
-        val e5 = SimpleCollisionObject(Circle(50.0, 20.0, 10.0), 3.0, 10.0, 0.3)
-        val e6 = SimpleCollisionObject(Circle(40.0, 30.0, 3.0), 3.0, 10.0, 0.3)
-        val e7 = SimpleCollisionObject(Circle(55.0, 38.0, 8.0), 3.0, 10.0, 0.3)
-        val e8 = SimpleCollisionObject(Circle(35.0, 43.0, 2.0), 3.0, 10.0, 0.3)
-        val e9 = SimpleCollisionObject(Circle(82.0, 32.0, 5.0), 3.0, 10.0, 0.3)
+        val e1 = Collider(AABB(20.0, 20.0, 30.0, 30.0), 3.0, 0.3)
+        val e2 = Collider(AABB(60.0, 65.0, 30.0, 30.0), 3.0, 0.3)
+        val e3 = Collider(Circle(45.0, 34.0, 30.0), 3.0, 0.3)
+        val e4 = Collider(Circle(15.0, 7.0, 5.0), 3.0, 0.3)
+        val e5 = Collider(Circle(50.0, 20.0, 10.0), 3.0, 0.3)
+        val e6 = Collider(Circle(40.0, 30.0, 3.0), 3.0, 0.3)
+        val e7 = Collider(Circle(55.0, 38.0, 8.0), 3.0, 0.3)
+        val e8 = Collider(Circle(35.0, 43.0, 2.0), 3.0, 0.3)
+        val e9 = Collider(Circle(82.0, 32.0, 5.0), 3.0, 0.3)
 
         setOf(e1, e2, e3, e4, e5, e6, e7, e8, e9).forEach {
             assertTrue(quadrantTree.insert(it, it.boundary!!))

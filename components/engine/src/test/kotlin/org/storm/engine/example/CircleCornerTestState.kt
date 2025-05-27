@@ -10,22 +10,23 @@ import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
 import org.storm.physics.PhysicsEngine
-import org.storm.physics.collision.CollisionObject
+import org.storm.physics.collision.Collider
 import org.storm.physics.math.Vector
 import org.storm.physics.math.geometry.shapes.Circle
 
 class CircleCornerTestState : SwitchableState() {
 
-    private val player: CollisionObject = CollisionObjectImpl(
+    private data class Player(var speed: Double) : Collider(
         Circle(
             25.0.units,
             200.0.units,
             10.0.units
         ),
-        2.0.units,
-        10.0,
+        100.0.units,
         0.1
     )
+
+    private val player = Player(2.0.units)
 
     private val movementVectors = mapOf(
         KeyActionConstants.W to Vector.UNIT_NORTH,
@@ -34,8 +35,8 @@ class CircleCornerTestState : SwitchableState() {
         KeyActionConstants.D to Vector.UNIT_EAST,
     )
 
-    override val entities: Set<CollisionObject> = setOf(
-        ImmovableRectCollisionObject(
+    override val colliders: Set<Collider> = setOf(
+        ImmovableRectCollider(
             200.0.units,
             200.0.units,
             100.0.units,

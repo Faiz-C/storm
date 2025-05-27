@@ -11,7 +11,7 @@ import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
 import org.storm.physics.PhysicsEngine
-import org.storm.physics.collision.CollisionObject
+import org.storm.physics.collision.Collider
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
@@ -21,74 +21,67 @@ class AtRestTestState : SwitchableState() {
     private val gravity = Direction.SOUTH.vector.scale(25.0.units)
     private val resolution = Context.RESOLUTION_IN_UNITS
 
-    private val platform: CollisionObject = ImmovableRectCollisionObject(
+    private val platform: Collider = ImmovableRectCollider(
         1.0.units,
         resolution.height - 20.units,
         resolution.width - 2.units,
         10.0.units
     )
 
-    private val repellingBall: CollisionObject = CollisionObjectImpl(
+    private val repellingBall: Collider = Collider(
         AABB(
             75.0.units,
             400.0.units,
             20.0.units,
             20.0.units
         ),
-        2.0.units,
-        10.0,
+        100.0.units,
         0.7
-    ).also {
-        it.addForce(gravity)
-    }
+    )
 
-    private val repellingBall2: CollisionObject = CollisionObjectImpl(
+    private val repellingBall2: Collider = Collider(
         Circle(
             150.0.units,
             50.0.units,
             20.0.units
         ),
-        2.0.units,
-        10.0,
+        100.0.units,
         0.5
-    ).also {
-        it.addForce(gravity)
-    }
+    )
 
-    private val repellingBall3: CollisionObject = CollisionObjectImpl(
+    private val repellingBall3: Collider = Collider(
         AABB(
             225.0.units,
             200.0.units,
             20.0.units,
             20.0.units
         ),
-        2.0.units,
-        10.0,
+        100.0.units,
         1.0
-    ).also {
-        it.addForce(gravity)
-    }
+    )
 
-    private val repellingBall4: CollisionObject = CollisionObjectImpl(
+    private val repellingBall4: Collider = Collider(
         AABB(
             300.0.units,
             100.0.units,
             20.0.units,
             20.0.units
         ),
-        2.0.units,
-        10.0,
+        100.0.units,
         0.2
-    ).also {
-        it.addForce(gravity)
-    }
+    )
 
-    override val entities: Set<CollisionObject> = setOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4)
+    override val colliders: Set<Collider> = setOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4)
 
     override suspend fun onRegister(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         val bgm = Context.YAML_MAPPER.readValue(this::class.java.getResourceAsStream("/sound/bgm.yml"), Sound::class.java)
         soundManager.add("bgm", bgm)
         soundManager.adjustAllVolume(0.1)
+
+        physicsEngine.applyForce(gravity, repellingBall)
+        physicsEngine.applyForce(gravity, repellingBall2)
+        physicsEngine.applyForce(gravity, repellingBall3)
+        physicsEngine.applyForce(gravity, repellingBall4)
     }
 
     override suspend fun onSwapOff(physicsEngine: PhysicsEngine, soundManager: SoundManager) {

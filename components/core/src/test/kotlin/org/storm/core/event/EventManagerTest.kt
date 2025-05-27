@@ -51,16 +51,16 @@ class EventManagerTest {
     fun testGetEventStream() {
         // Doesn't exist
         val notFound = assertThrows<IllegalArgumentException> {
-            EventManager.getEventStream<TestEvent>("test-event")
+            EventManager.getEventStream<TestEvent>("test-2-event")
         }
 
         assert(notFound.message!!.contains("not found")) {
             "Expected the exception to explain that the event was not found"
         }
 
-        EventManager.createEventStream<TestEvent>("test-event", autoStart = false)
+        EventManager.createEventStream<TestEvent>("test-2-event", autoStart = false)
 
-        val stream = EventManager.getEventStream<TestEvent>("test-event")
+        val stream = EventManager.getEventStream<TestEvent>("test-2-event")
 
         runBlocking {
             stream.produce(TestEvent("hello world"))
