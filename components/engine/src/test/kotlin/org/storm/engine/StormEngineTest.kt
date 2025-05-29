@@ -25,7 +25,8 @@ class StormEngineTest : Application() {
             physicsFps = 240,
             actionManager = actionManager,
             soundManager = SoundManager(),
-            window = JfxWindow()
+            window = JfxWindow(),
+            renderingDispatcher = Dispatchers.JavaFx // For JavaFx we need to render on its UI dispatcher coroutines
         )
 
         val inputBindings = InputBindingsImpl()

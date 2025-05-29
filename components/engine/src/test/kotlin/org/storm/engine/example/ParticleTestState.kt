@@ -74,8 +74,7 @@ class ParticleTestState : SwitchableState() {
 
             val c = Collider(
                 Circle(topLeft.x, topLeft.y, 2.0.units),
-                5.0.units,
-                1.0
+                5.0.units
             )
 
             colliders.add(c)

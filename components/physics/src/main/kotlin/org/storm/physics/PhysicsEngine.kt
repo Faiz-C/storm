@@ -8,6 +8,7 @@ import org.storm.core.graphics.Renderable
 import org.storm.core.update.Updatable
 import org.storm.physics.collision.Collider
 import org.storm.physics.math.Vector
+import org.storm.physics.math.geometry.shapes.CollidableShape
 import org.storm.physics.structures.SpatialDataStructure
 import java.util.concurrent.ConcurrentHashMap
 
@@ -31,7 +32,8 @@ abstract class PhysicsEngine protected constructor(
     var paused = false
 
     // Tracks what forces exist in the game, what colliders they are acting on, and for how long
-    private val forces: MutableMap<Vector, MutableMap<Collider, Double>> = ConcurrentHashMap<Vector, MutableMap<Collider, Double>>()
+    private val forces: MutableMap<Vector, MutableMap<Collider, Double>> = mutableMapOf()
+    private val collisions: MutableMap<Collider, MutableMap<CollidableShape, Boolean>> = mutableMapOf()
 
     protected val entityMutex = Mutex()
 
@@ -105,24 +107,35 @@ abstract class PhysicsEngine protected constructor(
     /**
      * Resets all collision data for all entities.
      */
-    protected open fun resetCollisionData() {
+    protected open suspend fun resetCollisionData() {
         this.collisionStructure.clear()
-        this.colliders.forEach { collidier: Collider ->
-            collidier.collisionState.clear()
-
-            collidier.boundaries.forEach { (_, boundary) ->
-                this.collisionStructure.insert(collidier, boundary)
+        this.collisions.clear()
+        this.colliders.forEach { collider: Collider ->
+            collider.boundaries.forEach { (_, boundary) ->
+                this.collisionStructure.insert(collider, boundary)
             }
         }
+    }
+
+    protected fun hasCheckedCollision(c1: Collider, c2: Collider, boundary: CollidableShape): Boolean {
+        return collisions[c1]?.contains(boundary) == true || collisions[c2]?.contains(boundary) == true
+    }
+
+    protected fun updateCollisionState(collider: Collider, boundary: CollidableShape, collided: Boolean) {
+        collisions.computeIfPresent(collider) { _, boundaries ->
+            boundaries[boundary] = collided
+            boundaries
+        }
+        collisions.putIfAbsent(collider, mutableMapOf(boundary to collided))
     }
 
     /**
      * Handles collision checks for the given Collider and returns the MTV to allow for adjustments in case of collisions.
      * If no collisions occur, a zero vector should be returned.
      *
-     * @param collidable Collider to check collisions for
+     * @param collider Collider to check collisions for
      */
-    protected abstract fun processCollisions(collidable: Collider)
+    protected abstract suspend fun processCollisions(collider: Collider)
 
     /**
      * Processes standard Physics for a given entity based on its physics data up to this point.
@@ -130,7 +143,7 @@ abstract class PhysicsEngine protected constructor(
      * @param collider Collider to process physics for
      * @param elapsedTime elapsed time (in seconds) since the physics of this entity was last processed
      */
-    private fun processPhysics(collider: Collider, elapsedTime: Double) {
+    private suspend fun processPhysics(collider: Collider, elapsedTime: Double) {
         // Apply all forces onto entity
         applyForces(collider, elapsedTime)
 

@@ -4,6 +4,7 @@ import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION_IN_UNITS
 import org.storm.core.context.YAML_MAPPER
 import org.storm.core.extensions.units
+import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.input.action.ActionState
 import org.storm.core.sound.Sound
 import org.storm.core.sound.SoundManager
@@ -21,7 +22,7 @@ class AtRestTestState : SwitchableState() {
     private val gravity = Direction.SOUTH.vector.scale(25.0.units)
     private val resolution = Context.RESOLUTION_IN_UNITS
 
-    private val platform: Collider = ImmovableRectCollider(
+    private val platform = ImmovableRect(
         1.0.units,
         resolution.height - 20.units,
         resolution.width - 2.units,
@@ -71,7 +72,7 @@ class AtRestTestState : SwitchableState() {
         0.2
     )
 
-    override val colliders: Set<Collider> = setOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4)
+    override val colliders: Set<Collider> = setOf(platform.collider, repellingBall, repellingBall2, repellingBall3, repellingBall4)
 
     override suspend fun onRegister(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         val bgm = Context.YAML_MAPPER.readValue(this::class.java.getResourceAsStream("/sound/bgm.yml"), Sound::class.java)
@@ -96,6 +97,13 @@ class AtRestTestState : SwitchableState() {
         super.process(actionState)
         if (actionState.isFirstActivation(KeyActionConstants.SPACE)) {
             Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
+        }
+    }
+
+    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+        platform.render(canvas, x, y)
+        colliders.drop(1).forEach {
+            it.render(canvas, x, y)
         }
     }
 }

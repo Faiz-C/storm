@@ -32,7 +32,7 @@ interface SpatialDataStructure: Renderable {
     /**
      * @param collider Collider for which the boundary belongs too
      * @param boundary boundary Shape to find neighbours for
-     * @return map of (Shape -> Entity it belongs too) which are close spatially to the boundary
+     * @return map of (Boundary -> Collider it belongs too) which are close spatially to the boundary
      */
     fun getCloseNeighbours(collider: Collider, boundary: CollidableShape): Map<CollidableShape, Collider>
 
