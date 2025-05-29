@@ -1,20 +1,14 @@
 package org.storm.impl.jfx.graphics
 
 import javafx.scene.Scene
-import javafx.scene.input.KeyEvent
-import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
-import kotlinx.coroutines.runBlocking
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION
-import org.storm.core.event.EventManager
-import org.storm.core.event.EventStream
-import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.Resolution
 import org.storm.core.graphics.Window
+import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.utils.observation.Observable
 import org.storm.core.utils.observation.Observer
-import org.storm.impl.jfx.extensions.registerJfxInputEvents
 import javafx.scene.canvas.Canvas as SceneCanvas
 
 /**
@@ -45,7 +39,6 @@ class JfxWindow : Scene(Pane()), Window, Observer {
     init {
         this.resolution = resolution
         Context.addObserver(this)
-        EventManager.registerJfxInputEvents(this)
     }
 
     override fun update(o: Observable) {

@@ -14,6 +14,7 @@ import org.storm.core.input.InputBindings
 import org.storm.core.input.action.ActionEvent
 import org.storm.core.input.action.ActionManager
 import org.storm.impl.jfx.extensions.getJfxKeyEventStream
+import org.storm.impl.jfx.extensions.registerJfxKeyEvents
 import org.storm.impl.jfx.graphics.JfxWindow
 import org.storm.storyboard.helpers.StoryBoardSimulator
 
@@ -28,6 +29,8 @@ class StoryBoardEngineTest : Application() {
         engine.switchState("top-left")
 
         val window = JfxWindow()
+
+        EventManager.registerJfxKeyEvents(window)
 
         val actionManager = ActionManager()
 

@@ -15,6 +15,7 @@ import org.storm.core.graphics.canvas.Settings
 import org.storm.core.graphics.geometry.Point
 import org.storm.core.graphics.Resolution
 import org.storm.impl.jfx.extensions.getJfxKeyEventStream
+import org.storm.impl.jfx.extensions.registerJfxKeyEvents
 import org.storm.impl.jfx.graphics.JfxWindow
 import org.storm.physics.collision.Collider
 import org.storm.physics.enums.Direction
@@ -74,6 +75,9 @@ class ParticleTest : Application() {
         // Make a Display
         val resolution = Context.RESOLUTION_IN_UNITS
         val window = JfxWindow()
+
+        EventManager.registerJfxKeyEvents(window)
+
         this.physicsSimulator = PhysicsSimulator(144.0) { render(window) }
         this.colliders.add(boundingBox)
 

@@ -6,11 +6,14 @@ import javafx.stage.Stage
 import kotlinx.coroutines.runBlocking
 import org.storm.core.event.EventManager
 import org.storm.impl.jfx.extensions.getJfxKeyEventStream
+import org.storm.impl.jfx.extensions.registerJfxKeyEvents
 
 class JfxWindowTest: Application() {
 
     override fun start(stage: Stage) {
         val window = JfxWindow()
+
+        EventManager.registerJfxKeyEvents(window)
 
         runBlocking {
             EventManager.getJfxKeyEventStream().addConsumer {

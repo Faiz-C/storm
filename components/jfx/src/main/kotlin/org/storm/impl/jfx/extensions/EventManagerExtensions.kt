@@ -10,13 +10,25 @@ import org.storm.impl.jfx.graphics.JfxWindow
 private const val KEY_EVENT_STREAM = "key-events"
 private const val MOUSE_EVENT_STREAM = "mouse-events"
 
-internal fun EventManager.registerJfxInputEvents(window: JfxWindow) {
+/**
+ * Registers the key events emitted by the given window as an event stream within the engine
+ *
+ * @param window JfxWindow to listen for key events from
+ */
+fun EventManager.registerJfxKeyEvents(window: JfxWindow) {
     createEventStream<KeyEvent>(KEY_EVENT_STREAM).also { stream ->
         window.addEventHandler(KeyEvent.ANY) {
             runBlocking { stream.produce(it) }
         }
     }
+}
 
+/**
+ * Registers the mouse events emitted by the given window as an event stream within the engine
+ *
+ * @param window JfxWindow to listen for mouse events from
+ */
+fun EventManager.registerJfxMouseEvents(window: JfxWindow) {
     createEventStream<MouseEvent>(MOUSE_EVENT_STREAM).also { stream ->
         window.addEventHandler(MouseEvent.ANY) {
             runBlocking { stream.produce(it) }

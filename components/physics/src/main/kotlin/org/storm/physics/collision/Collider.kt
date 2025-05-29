@@ -12,7 +12,7 @@ import org.storm.physics.math.geometry.shapes.CollidableShape
 class Collider(
     val boundaries: MutableMap<String, CollidableShape>,
     mass: Double,
-    var restitution: Double = 1.0,
+    var restitution: Double = 0.7,
     val associatedObj: Any? = null
 ) : Geometric, Renderable {
 
@@ -50,14 +50,26 @@ class Collider(
         this.mass = mass
     }
 
+    /**
+     * Triggers a collision between this collider and the given collider's specific boundary. This will trigger all
+     * registered collision handlers.
+     *
+     * @param collider Collider which owns the boundary we collided with
+     * @param boundary Specific boundary we collided with
+     */
     fun collide(collider: Collider, boundary: CollidableShape) {
         collisionHandlers.forEach {
             it(collider, boundary)
         }
     }
 
-    fun addOnCollisionHandler(block: (Collider, CollidableShape) -> Unit) {
-        collisionHandlers.add(block)
+    /**
+     * Adds the given callback as a collision handler to be called when this collider collides with something.
+     *
+     * @param callback the callback function to invoke when a collision occurs
+     */
+    fun addOnCollisionHandler(callback: (Collider, CollidableShape) -> Unit) {
+        collisionHandlers.add(callback)
     }
 
     /**

@@ -12,12 +12,14 @@ import org.storm.core.input.action.ActionManager
 import org.storm.core.sound.SoundManager
 import org.storm.engine.example.*
 import org.storm.impl.jfx.extensions.getJfxKeyEventStream
+import org.storm.impl.jfx.extensions.registerJfxKeyEvents
 import org.storm.impl.jfx.graphics.JfxWindow
 import org.storm.physics.ImpulseResolutionPhysicsEngine
 
 class StormEngineTest : Application() {
 
     override fun start(primaryStage: Stage) {
+        val window = JfxWindow()
         val actionManager = ActionManager()
         val stormEngine = StormEngine(
             physicsEngine = ImpulseResolutionPhysicsEngine(),
@@ -25,9 +27,11 @@ class StormEngineTest : Application() {
             physicsFps = 240,
             actionManager = actionManager,
             soundManager = SoundManager(),
-            window = JfxWindow(),
+            window = window,
             renderingDispatcher = Dispatchers.JavaFx // For JavaFx we need to render on its UI dispatcher coroutines
         )
+
+        EventManager.registerJfxKeyEvents(window)
 
         val inputBindings = InputBindingsImpl()
 

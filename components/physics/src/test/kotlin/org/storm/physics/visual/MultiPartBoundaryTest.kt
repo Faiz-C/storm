@@ -13,6 +13,7 @@ import org.storm.core.graphics.canvas.Color
 import org.storm.core.graphics.canvas.Settings
 import org.storm.core.graphics.geometry.Point
 import org.storm.impl.jfx.extensions.getJfxKeyEventStream
+import org.storm.impl.jfx.extensions.registerJfxKeyEvents
 import org.storm.impl.jfx.graphics.JfxWindow
 import org.storm.physics.collision.Collider
 import org.storm.physics.enums.Direction
@@ -96,6 +97,9 @@ class MultiPartBoundaryTest : Application() {
 
         // Make a Display
         val window = JfxWindow()
+
+        EventManager.registerJfxKeyEvents(window)
+
         this.physicsSimulator = PhysicsSimulator(144.0) { render(window) }
         this.colliders.add(boundingBox)
         this.colliders.add(multiPartBoundaryEntity)
