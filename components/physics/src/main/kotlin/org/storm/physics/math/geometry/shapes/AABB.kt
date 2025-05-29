@@ -1,6 +1,6 @@
 package org.storm.physics.math.geometry.shapes
 
-import org.storm.core.render.geometry.Point
+import org.storm.core.graphics.geometry.Point
 import org.storm.physics.math.extensions.getSquaredDistance
 
 /**
@@ -12,7 +12,7 @@ open class AABB(
     y: Double,
     width: Double,
     height: Double
-) : ConvexPolygon(
+): Polygon(
     Point(x, y),
     Point(x + width, y),
     Point(x + width, y + height),
@@ -42,21 +42,17 @@ open class AABB(
      * @param shape Shape to check
      * @return true if the given Shape is completely contained within this rectangle
      */
-    operator fun contains(shape: Shape): Boolean {
-        return if (shape.edges.isEmpty()) containsCircle(shape as Circle) else containsPolygon(shape as ConvexPolygon)
-    }
-
-    override fun contains(p: Point): Boolean {
-        // Axis Aligned Rectangles have a quicker way to check for point containment
-        val (tlx, tly) = this.vertices[TOP_LEFT_POINT]
-        val (trx, _) = this.vertices[TOP_RIGHT_POINT]
-        val (_, bry) = this.vertices[BOTTOM_RIGHT_POINT]
-        return (p.x in tlx..trx) && (p.y in tly..bry)
+    operator fun contains(shape: CollidableShape): Boolean {
+        return if (shape is Circle) {
+            containsCircle(shape)
+        } else {
+            containsPolygon(shape as Polygon)
+        }
     }
 
     /**
      * @param circle Circle to check
-     * @return true if the Circle is completely contained within this rectangle
+     * @return true if the given Circle is completely contained within this rectangle
      */
     private fun containsCircle(circle: Circle): Boolean {
         val nearestVertex = getClosestVertex(circle.center)
@@ -64,15 +60,23 @@ open class AABB(
     }
 
     /**
-     * @param polygon ConvexPolygon to check
-     * @return true if the ConvexPolygon is completely contained within this rectangle
+     * @param polygon Polygon to check
+     * @return true if the given Shape is completely contained within this rectangle
      */
-    private fun containsPolygon(polygon: ConvexPolygon): Boolean {
+    private fun containsPolygon(polygon: Polygon): Boolean {
         polygon.vertices.forEach { vertex ->
-            if (vertex !in this) {
+            if (!this.contains(vertex)) {
                 return false
             }
         }
         return true
+    }
+
+    override operator fun contains(p: Point): Boolean {
+        // Axis Aligned Rectangles have a quicker way to check for point containment
+        val (tlx, tly) = this.vertices[TOP_LEFT_POINT]
+        val (trx, _) = this.vertices[TOP_RIGHT_POINT]
+        val (_, bry) = this.vertices[BOTTOM_RIGHT_POINT]
+        return (p.x in tlx..trx) && (p.y in tly..bry)
     }
 }

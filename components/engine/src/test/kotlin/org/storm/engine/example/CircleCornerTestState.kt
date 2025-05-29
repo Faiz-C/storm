@@ -3,28 +3,39 @@ package org.storm.engine.example
 import org.storm.core.context.Context
 import org.storm.core.context.YAML_MAPPER
 import org.storm.core.extensions.units
+import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.input.action.ActionState
+import org.storm.core.sound.Sound
+import org.storm.core.sound.SoundManager
 import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
 import org.storm.physics.PhysicsEngine
-import org.storm.physics.entity.Entity
+import org.storm.physics.collision.Collider
 import org.storm.physics.math.Vector
 import org.storm.physics.math.geometry.shapes.Circle
-import org.storm.sound.Sound
-import org.storm.sound.manager.SoundManager
 
 class CircleCornerTestState : SwitchableState() {
 
-    private val player: Entity = EntityImpl(
-        Circle(
-            25.0.units,
-            200.0.units,
-            10.0.units
-        ),
-        2.0.units,
-        10.0,
-        0.1
+    private data class Player(var speed: Double) {
+        val collider = Collider(
+            Circle(
+                25.0.units,
+                200.0.units,
+                10.0.units
+            ),
+            100.0.units,
+            0.1,
+            this
+        )
+    }
+
+    private val player = Player(2.0.units)
+    private val rect = ImmovableRect(
+        200.0.units,
+        200.0.units,
+        100.0.units,
+        100.0.units
     )
 
     private val movementVectors = mapOf(
@@ -34,14 +45,9 @@ class CircleCornerTestState : SwitchableState() {
         KeyActionConstants.D to Vector.UNIT_EAST,
     )
 
-    override val entities: Set<Entity> = setOf(
-        ImmovableRectEntity(
-            200.0.units,
-            200.0.units,
-            100.0.units,
-            100.0.units
-        ),
-        player
+    override val colliders: Set<Collider> = setOf(
+        rect.collider,
+        player.collider
     )
 
     override suspend fun onRegister(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
@@ -66,12 +72,17 @@ class CircleCornerTestState : SwitchableState() {
             Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
         }
 
-        this.player.velocity = Vector.ZERO_VECTOR
+        this.player.collider.velocity = Vector.ZERO_VECTOR
         this.movementVectors.map { (action, vector) ->
             if (actionState.isActionHeld(action, 1)) {
-                this.player.velocity += vector.scale(this.player.speed)
+                this.player.collider.velocity += vector.scale(this.player.speed)
             }
         }
+    }
+
+    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+        rect.render(canvas, x, y)
+        player.collider.render(canvas, x, y)
     }
 
 }

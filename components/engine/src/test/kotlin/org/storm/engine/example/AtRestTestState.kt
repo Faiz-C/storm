@@ -4,92 +4,85 @@ import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION_IN_UNITS
 import org.storm.core.context.YAML_MAPPER
 import org.storm.core.extensions.units
+import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.input.action.ActionState
-import org.storm.core.render.canvas.Canvas
+import org.storm.core.sound.Sound
+import org.storm.core.sound.SoundManager
 import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
 import org.storm.physics.PhysicsEngine
-import org.storm.physics.entity.Entity
+import org.storm.physics.collision.Collider
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.Circle
-import org.storm.sound.Sound
-import org.storm.sound.manager.SoundManager
 
 class AtRestTestState : SwitchableState() {
 
     private val gravity = Direction.SOUTH.vector.scale(25.0.units)
     private val resolution = Context.RESOLUTION_IN_UNITS
 
-    private val platform: Entity = ImmovableRectEntity(
+    private val platform = ImmovableRect(
         1.0.units,
         resolution.height - 20.units,
         resolution.width - 2.units,
         10.0.units
     )
 
-    private val repellingBall: Entity = EntityImpl(
+    private val repellingBall: Collider = Collider(
         AABB(
             75.0.units,
             400.0.units,
             20.0.units,
             20.0.units
         ),
-        2.0.units,
-        10.0,
+        100.0.units,
         0.7
-    ).also {
-        it.addForce(gravity)
-    }
+    )
 
-    private val repellingBall2: Entity = EntityImpl(
+    private val repellingBall2: Collider = Collider(
         Circle(
             150.0.units,
             50.0.units,
             20.0.units
         ),
-        2.0.units,
-        10.0,
+        100.0.units,
         0.5
-    ).also {
-        it.addForce(gravity)
-    }
+    )
 
-    private val repellingBall3: Entity = EntityImpl(
+    private val repellingBall3: Collider = Collider(
         AABB(
             225.0.units,
             200.0.units,
             20.0.units,
             20.0.units
         ),
-        2.0.units,
-        10.0,
+        100.0.units,
         1.0
-    ).also {
-        it.addForce(gravity)
-    }
+    )
 
-    private val repellingBall4: Entity = EntityImpl(
+    private val repellingBall4: Collider = Collider(
         AABB(
             300.0.units,
             100.0.units,
             20.0.units,
             20.0.units
         ),
-        2.0.units,
-        10.0,
+        100.0.units,
         0.2
-    ).also {
-        it.addForce(gravity)
-    }
+    )
 
-    override val entities: Set<Entity> = setOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4)
+    override val colliders: Set<Collider> = setOf(platform.collider, repellingBall, repellingBall2, repellingBall3, repellingBall4)
 
     override suspend fun onRegister(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         val bgm = Context.YAML_MAPPER.readValue(this::class.java.getResourceAsStream("/sound/bgm.yml"), Sound::class.java)
         soundManager.add("bgm", bgm)
         soundManager.adjustAllVolume(0.1)
+
+        physicsEngine.applyForce(gravity, repellingBall)
+        physicsEngine.applyForce(gravity, repellingBall2)
+        physicsEngine.applyForce(gravity, repellingBall3)
+        physicsEngine.applyForce(gravity, repellingBall4)
     }
 
     override suspend fun onSwapOff(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
@@ -104,6 +97,13 @@ class AtRestTestState : SwitchableState() {
         super.process(actionState)
         if (actionState.isFirstActivation(KeyActionConstants.SPACE)) {
             Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
+        }
+    }
+
+    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+        platform.render(canvas, x, y)
+        colliders.drop(1).forEach {
+            it.render(canvas, x, y)
         }
     }
 }

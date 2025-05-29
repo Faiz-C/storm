@@ -1,14 +1,17 @@
 version = "1.0.0"
 
-dependencies {
-    api(project(":components:core"))
-    api(project(":components:animation"))
-    api(project(":components:sound"))
-}
-
 javafx {
     version = "21.0.2"
-    modules = listOf("javafx.graphics", "javafx.media")
+    modules("javafx.graphics", "javafx.media")
+    configuration = "testImplementation"
+}
+
+dependencies {
+    api(project(":components:core"))
+}
+
+dependencies {
+    testImplementation(project(":components:jfx"))
 }
 
 publishing {

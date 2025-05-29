@@ -1,17 +1,17 @@
 package org.storm.physics.visual
 
 import javafx.application.Application
-import javafx.event.EventHandler
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
+import kotlinx.coroutines.runBlocking
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION_IN_UNITS
+import org.storm.core.event.EventManager
 import org.storm.core.extensions.units
-import org.storm.core.ui.impl.JfxWindow
-import org.storm.physics.entity.Entity
-import org.storm.physics.entity.ImmovableEntity
-import org.storm.physics.entity.SimpleEntity
+import org.storm.impl.jfx.extensions.getJfxKeyEventStream
+import org.storm.impl.jfx.graphics.JfxWindow
+import org.storm.physics.collision.Collider
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.AABB
 
@@ -19,56 +19,55 @@ class VisualAtRestTest : Application() {
 
     private val resolution = Context.RESOLUTION_IN_UNITS
 
-    private val platform: Entity = ImmovableEntity(
+    private val platform: Collider = Collider(
         AABB(
             1.units,
             resolution.height - 20.units,
             resolution.width - 2.units,
             10.units
-        )
+        ),
+        Double.POSITIVE_INFINITY,
+        1.0
     )
-    private val repellingBall: Entity = SimpleEntity(
+    private val repellingBall: Collider = Collider(
         AABB(
             75.0.units,
             400.0.units,
             20.0.units,
             20.0.units
         ),
-        3.0,
         10.0,
         0.7
     )
-    private val repellingBall2: Entity = SimpleEntity(
+
+    private val repellingBall2: Collider = Collider(
         AABB(
             150.0.units,
             50.0.units,
             20.0.units,
             20.0.units
         ),
-        3.0,
-        10.0,
+        100.0.units,
         0.5
     )
-    private val repellingBall3: Entity = SimpleEntity(
+    private val repellingBall3: Collider = Collider(
         AABB(
             220.0.units,
             200.0.units,
             20.0.units,
             20.0.units
         ),
-        3.0,
-        10.0,
+        100.0.units,
         1.0
     )
-    private val repellingBall4: Entity = SimpleEntity(
+    private val repellingBall4: Collider = Collider(
         AABB(
             300.0.units,
             100.0.units,
             20.0.units,
             20.0.units
         ),
-        3.0,
-        10.0,
+        100.0.units,
         0.2
     )
     private lateinit var physicsSimulator: PhysicsSimulator
@@ -77,18 +76,21 @@ class VisualAtRestTest : Application() {
         // Make a Display
         val window = JfxWindow()
         physicsSimulator = PhysicsSimulator(400.0) { render(window) }
-        physicsSimulator.physicsEngine.entities =
-            setOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4)
-        repellingBall.addForce(Direction.SOUTH.vector.scale(10.0.units))
-        repellingBall.addForce(Direction.NORTH.vector.scale(30.0.units), 2.0)
-        repellingBall2.addForce(Direction.SOUTH.vector.scale(30.0.units))
-        repellingBall3.addForce(Direction.SOUTH.vector.scale(25.0.units))
-        repellingBall4.addForce(Direction.SOUTH.vector.scale(25.0.units))
 
-        physicsSimulator.physicsEngine.paused = true
-        window.onKeyPressed = EventHandler { keyEvent: KeyEvent ->
-            if (keyEvent.code == KeyCode.SPACE) {
-                physicsSimulator.physicsEngine.paused = !physicsSimulator.physicsEngine.paused
+        runBlocking {
+            physicsSimulator.physicsEngine.paused = true
+            physicsSimulator.physicsEngine.setColliders(setOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4))
+
+            physicsSimulator.physicsEngine.applyForce(Direction.SOUTH.vector.scale(10.0.units), repellingBall)
+            physicsSimulator.physicsEngine.applyForce(Direction.NORTH.vector.scale(30.0.units), repellingBall, 2.0)
+            physicsSimulator.physicsEngine.applyForce(Direction.SOUTH.vector.scale(30.0.units), repellingBall2)
+            physicsSimulator.physicsEngine.applyForce(Direction.SOUTH.vector.scale(25.0.units), repellingBall3)
+            physicsSimulator.physicsEngine.applyForce(Direction.SOUTH.vector.scale(25.0.units), repellingBall4)
+
+            EventManager.getJfxKeyEventStream().addConsumer {
+                if (it.code == KeyCode.SPACE && it.eventType == KeyEvent.KEY_PRESSED) {
+                    physicsSimulator.physicsEngine.paused = !physicsSimulator.physicsEngine.paused
+                }
             }
         }
 

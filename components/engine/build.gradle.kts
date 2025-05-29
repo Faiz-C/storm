@@ -1,14 +1,15 @@
 version = "1.1.0"
 
+javafx {
+    version = "21.0.2"
+    modules("javafx.graphics", "javafx.media")
+    configuration = "testImplementation"
+}
+
 dependencies {
     api(project(":components:core"))
     api(project(":components:physics"))
-    api(project(":components:sound"))
-}
-
-javafx {
-    version = "21.0.2"
-    modules = listOf("javafx.graphics", "javafx.media")
+    testImplementation(project(":components:jfx"))
 }
 
 tasks {

@@ -2,7 +2,7 @@ package org.storm.physics.collision
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.storm.core.render.geometry.Point
+import org.storm.core.graphics.geometry.Point
 import org.storm.physics.collision.CollisionDetector.check
 import org.storm.physics.collision.CollisionDetector.checkMtv
 import org.storm.physics.math.Vector

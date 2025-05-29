@@ -1,0 +1,6 @@
+---
+type: "jfx-sound"
+file: "src/test/resources/music/bgm1.mp3"
+loops: 1
+soundType: "BGM"
+...

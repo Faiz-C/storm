@@ -1,7 +1,7 @@
 package org.storm.core.context
 
 import org.junit.jupiter.api.Test
-import org.storm.core.ui.Resolution
+import org.storm.core.graphics.Resolution
 
 class CoreContextTest {
 

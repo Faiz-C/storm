@@ -7,12 +7,9 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import org.storm.core.context.CoreContext.JSON_MAPPER
-import org.storm.core.context.CoreContext.XML_MAPPER
-import org.storm.core.context.CoreContext.YAML_MAPPER
 import org.storm.core.extensions.units
-import org.storm.core.render.UnitConvertor
-import org.storm.core.ui.Resolution
+import org.storm.core.graphics.UnitConvertor
+import org.storm.core.graphics.Resolution
 
 object CoreContext {
     const val RESOLUTION = "resolution"

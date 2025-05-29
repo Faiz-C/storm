@@ -4,65 +4,66 @@ import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION_IN_UNITS
 import org.storm.core.context.YAML_MAPPER
 import org.storm.core.extensions.units
+import org.storm.core.graphics.Renderable
+import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.input.action.ActionState
-import org.storm.core.render.canvas.Canvas
+import org.storm.core.sound.Sound
+import org.storm.core.sound.SoundManager
 import org.storm.engine.KeyActionConstants
 import org.storm.engine.context.REQUEST_QUEUE
 import org.storm.engine.request.types.TogglePhysicsRequest
 import org.storm.physics.PhysicsEngine
-import org.storm.physics.entity.Entity
+import org.storm.physics.collision.Collider
 import org.storm.physics.enums.Direction
 import org.storm.physics.math.geometry.shapes.Circle
-import org.storm.sound.Sound
-import org.storm.sound.manager.SoundManager
 
 class BouncingBallTestState : SwitchableState() {
 
     private val resolution = Context.RESOLUTION_IN_UNITS
 
-    override val entities: Set<Entity> = setOf(
-        ImmovableRectEntity(
+    private val rects: Set<ImmovableRect> = setOf(
+        ImmovableRect(
             0.0,
             0.0,
             resolution.width,
             5.0.units
         ),
-        ImmovableRectEntity(
+        ImmovableRect(
             0.0,
             0.0,
             5.0.units,
             resolution.height
         ),
-        ImmovableRectEntity(
+        ImmovableRect(
             resolution.width - 5.units,
             0.0,
             5.0.units,
             resolution.height
         ),
-        ImmovableRectEntity(
+        ImmovableRect(
             0.0,
             resolution.height - 5.units,
             resolution.width,
             5.0.units
-        ),
-        EntityImpl(
-            Circle(
-                25.0.units,
-                200.0.units,
-                15.0.units
-            ),
-            5.0.units,
-            11.0,
-            1.0
-        ).also {
-            it.addForce(Direction.SOUTH_EAST.vector.scale(100.0.units), 0.1)
-        }
+        )
     )
+
+    override val colliders: Set<Collider> = rects.map { it.collider }.plus(Collider(
+        Circle(
+            25.0.units,
+            200.0.units,
+            15.0.units
+        ),
+        100.0.units,
+        1.0
+    )).toSet()
 
     override suspend fun onRegister(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         val bgm = Context.YAML_MAPPER.readValue(this::class.java.getResourceAsStream("/sound/bgm.yml"), Sound::class.java)
         soundManager.add("bgm", bgm)
         soundManager.adjustAllVolume(0.1)
+
+        physicsEngine.applyForce(Direction.SOUTH_EAST.vector.scale(100.0.units), colliders.last(), 0.1)
     }
 
     override suspend fun onSwapOn(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
@@ -78,5 +79,13 @@ class BouncingBallTestState : SwitchableState() {
         if (actionState.isFirstActivation(KeyActionConstants.SPACE)) {
             Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
         }
+    }
+
+    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+        rects.forEach {
+            it.render(canvas, x, y)
+        }
+
+        colliders.last().render(canvas, x, y)
     }
 }

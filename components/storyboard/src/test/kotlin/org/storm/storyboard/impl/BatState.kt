@@ -1,14 +1,14 @@
 package org.storm.storyboard.impl
 
-import org.storm.animations.Animation
-import org.storm.animations.sprite.SpriteAnimation
-import org.storm.animations.sprite.SpriteSheet
 import org.storm.core.serialization.Polymorphic
 import org.storm.core.input.action.ActionState
-import org.storm.core.render.canvas.Canvas
-import org.storm.core.render.Image
-import org.storm.core.render.impl.JfxImage
-import org.storm.core.ui.Resolution
+import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.Image
+import org.storm.core.graphics.Resolution
+import org.storm.core.graphics.animation.Animation
+import org.storm.core.graphics.animation.sprite.SpriteAnimation
+import org.storm.core.graphics.animation.sprite.SpriteSheet
+import org.storm.impl.jfx.graphics.JfxImage
 import org.storm.storyboard.StoryBoardState
 import org.storm.storyboard.dialogue.script.Script
 

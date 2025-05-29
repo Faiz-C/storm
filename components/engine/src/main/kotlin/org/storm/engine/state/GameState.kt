@@ -1,16 +1,16 @@
 package org.storm.engine.state
 
 import org.storm.core.input.action.ActionStateProcessor
-import org.storm.core.render.Renderable
-import org.storm.core.render.canvas.Canvas
+import org.storm.core.graphics.Renderable
+import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.sound.SoundManager
 import org.storm.core.update.Updatable
 import org.storm.physics.PhysicsEngine
-import org.storm.physics.entity.Entity
-import org.storm.sound.manager.SoundManager
+import org.storm.physics.collision.Collider
 
 interface GameState: Updatable, Renderable, ActionStateProcessor {
 
-    val entities: Set<Entity>
+    val colliders: Set<Collider>
 
     suspend fun onRegister(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         // Default behaviour is a noop
@@ -33,7 +33,7 @@ interface GameState: Updatable, Renderable, ActionStateProcessor {
     }
 
     override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-        this.entities.forEach { it.render(canvas, x, y) }
+        this.colliders.forEach { it.render(canvas, x, y) }
     }
 
 }

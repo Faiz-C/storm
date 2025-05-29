@@ -7,14 +7,15 @@ import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
 import kotlinx.coroutines.runBlocking
 import org.storm.core.context.Context
-import org.storm.core.context.CoreContext
 import org.storm.core.context.YAML_MAPPER
 import org.storm.core.context.loadMappers
 import org.storm.core.event.EventManager
 import org.storm.core.input.InputBindings
 import org.storm.core.input.action.ActionEvent
 import org.storm.core.input.action.ActionManager
-import org.storm.core.ui.impl.JfxWindow
+import org.storm.impl.jfx.extensions.getJfxKeyEventStream
+import org.storm.impl.jfx.extensions.registerJfxKeyEvents
+import org.storm.impl.jfx.graphics.JfxWindow
 import org.storm.storyboard.helpers.StoryBoardSimulator
 
 class StoryBoardEngineTest : Application() {
@@ -29,6 +30,8 @@ class StoryBoardEngineTest : Application() {
 
         val window = JfxWindow()
 
+        EventManager.registerJfxKeyEvents(window)
+
         val actionManager = ActionManager()
 
         val inputActionInputBindings = InputBindings<KeyEvent> { t ->
@@ -42,7 +45,7 @@ class StoryBoardEngineTest : Application() {
         }
 
         runBlocking {
-            EventManager.getEventStream<KeyEvent>(JfxWindow.KEY_EVENT_STREAM).addConsumer {
+            EventManager.getJfxKeyEventStream().addConsumer {
                 val action = inputActionInputBindings.getAction(it) ?: return@addConsumer
                 when (it.eventType) {
                     KeyEvent.KEY_PRESSED -> actionManager.submitActionEvent(ActionEvent(action, true))
