@@ -13,7 +13,7 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             groupId = group as String
-            artifactId = "core"
+            artifactId = "jfx"
             version = version
 
             from(components["kotlin"])
