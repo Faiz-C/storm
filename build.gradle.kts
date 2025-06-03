@@ -33,19 +33,19 @@ allprojects {
         val coroutinesVersion = "1.9.0"
         val junitVersion = "5.9.0"
 
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$coroutinesVersion")
+        api("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+        api("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$coroutinesVersion")
 
-        implementation("org.slf4j:slf4j-api:$slf4jVersion")
-        implementation("org.slf4j:slf4j-simple:$slf4jVersion")
+        api("org.slf4j:slf4j-api:$slf4jVersion")
+        api("org.slf4j:slf4j-simple:$slf4jVersion")
 
-        implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-        implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
-        implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
-        implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+        api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+        api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
+        api("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
+        api("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
-        implementation("org.apache.commons:commons-lang3:3.17.0")
-        implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
+        api("org.apache.commons:commons-lang3:3.17.0")
+        api("com.github.ben-manes.caffeine:caffeine:3.1.8")
 
         testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
         testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
