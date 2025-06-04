@@ -54,7 +54,7 @@ class StormEngineTest : Application() {
         }
 
 
-        primaryStage.scene = stormEngine.window as JfxWindow
+        primaryStage.scene = window
         primaryStage.show()
     }
 

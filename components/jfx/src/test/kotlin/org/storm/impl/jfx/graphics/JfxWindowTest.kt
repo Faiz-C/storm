@@ -5,13 +5,14 @@ import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
 import kotlinx.coroutines.runBlocking
 import org.storm.core.event.EventManager
+import org.storm.core.graphics.Resolution
 import org.storm.impl.jfx.extensions.getJfxKeyEventStream
 import org.storm.impl.jfx.extensions.registerJfxKeyEvents
 
 class JfxWindowTest: Application() {
 
     override fun start(stage: Stage) {
-        val window = JfxWindow()
+        val window = JfxWindow(Resolution.FHD)
 
         EventManager.registerJfxKeyEvents(window)
 

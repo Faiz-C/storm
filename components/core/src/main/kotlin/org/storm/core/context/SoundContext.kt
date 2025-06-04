@@ -1,7 +1,5 @@
 package org.storm.core.context
 
-import org.storm.core.context.Context
-
 object SoundContext {
     const val MASTER_VOLUME = "masterVolume"
     const val BGM_VOLUME = "bgmVolume"
@@ -12,22 +10,22 @@ object SoundContext {
 /**
  * @return The master volume of the game. This is a global volume that affects all sounds.
  */
-val Context.MASTER_VOLUME: Double get() = SETTINGS[SoundContext.MASTER_VOLUME] as? Double ?: 1.0 // 100%
+val Context.MASTER_VOLUME: Double get() = settings[SoundContext.MASTER_VOLUME] as? Double ?: 1.0 // 100%
 
 /**
  * @return The background music volume of the game. This is a global volume that affects all background music.
  */
-val Context.BGM_VOLUME: Double get() = SETTINGS[SoundContext.BGM_VOLUME] as? Double ?: 1.0 // 100%
+val Context.BGM_VOLUME: Double get() = settings[SoundContext.BGM_VOLUME] as? Double ?: 1.0 // 100%
 
 /**
  * @return The effect volume of the game. This is a global volume that affects all sound effects.
  */
-val Context.EFFECT_VOLUME: Double get() = SETTINGS[SoundContext.EFFECT_VOLUME] as? Double ?: 1.0 // 100%
+val Context.EFFECT_VOLUME: Double get() = settings[SoundContext.EFFECT_VOLUME] as? Double ?: 1.0 // 100%
 
 /**
  * @return The voice volume of the game. This is a global volume that affects all voice sounds.
  */
-val Context.VOICE_VOLUME: Double get() = SETTINGS[SoundContext.VOICE_VOLUME] as? Double ?: 1.0 // 100%
+val Context.VOICE_VOLUME: Double get() = settings[SoundContext.VOICE_VOLUME] as? Double ?: 1.0 // 100%
 
 /**
  * Sets the master volume of the game. This is a global volume that affects all sounds.
@@ -36,9 +34,7 @@ val Context.VOICE_VOLUME: Double get() = SETTINGS[SoundContext.VOICE_VOLUME] as?
  * @param schedule whether to schedule the update for the next frame
  */
 fun Context.setMasterVolume(volume: Double, schedule: Boolean = false) {
-    update(schedule) {
-        mapOf(SoundContext.MASTER_VOLUME to volume)
-    }
+    update(mapOf(SoundContext.MASTER_VOLUME to volume), schedule)
 }
 
 /**
@@ -48,9 +44,7 @@ fun Context.setMasterVolume(volume: Double, schedule: Boolean = false) {
  * @param schedule whether to schedule the update for the next frame
  */
 fun Context.setBgmVolume(volume: Double, schedule: Boolean = false) {
-    update(schedule) {
-        mapOf(SoundContext.BGM_VOLUME to volume)
-    }
+    update(mapOf(SoundContext.BGM_VOLUME to volume), schedule)
 }
 
 /**
@@ -60,9 +54,7 @@ fun Context.setBgmVolume(volume: Double, schedule: Boolean = false) {
  * @param schedule whether to schedule the update for the next frame
  */
 fun Context.setEffectVolume(volume: Double, schedule: Boolean = false) {
-    update(schedule) {
-        mapOf(SoundContext.EFFECT_VOLUME to volume)
-    }
+    update(mapOf(SoundContext.EFFECT_VOLUME to volume), schedule)
 }
 
 /**
@@ -72,7 +64,5 @@ fun Context.setEffectVolume(volume: Double, schedule: Boolean = false) {
  * @param schedule whether to schedule the update for the next frame
  */
 fun Context.setVoiceVolume(volume: Double, schedule: Boolean = false) {
-    update(schedule) {
-        mapOf(SoundContext.VOICE_VOLUME to volume)
-    }
+    update(mapOf(SoundContext.VOICE_VOLUME to volume), schedule)
 }

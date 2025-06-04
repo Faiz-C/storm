@@ -1,7 +1,11 @@
 package org.storm.core.event
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.slf4j.LoggerFactory
@@ -11,12 +15,26 @@ class EventStream<T> internal constructor(val id: String): AutoCloseable {
         private val logger = LoggerFactory.getLogger(EventStream::class.java)
     }
 
+    private val coroutineScope = CoroutineScope(Dispatchers.Default.limitedParallelism(4))
+
     private val queue = Channel<T>(Channel.UNLIMITED)
     private val consumers = mutableListOf<suspend (T) -> Unit>()
     private val consumerMutex = Mutex()
 
+    fun produceAsync(event: T) {
+        coroutineScope.launch {
+            produce(event)
+        }
+    }
+
     suspend fun produce(event: T) {
         queue.send(event)
+    }
+
+    fun addConsumerAsync(consumer: suspend (T) -> Unit) {
+        coroutineScope.launch {
+            addConsumer(consumer)
+        }
     }
 
     suspend fun addConsumer(consumer: suspend (T) -> Unit) {
@@ -51,5 +69,9 @@ class EventStream<T> internal constructor(val id: String): AutoCloseable {
 
     override fun close() {
         queue.close()
+
+        if (coroutineScope.isActive) {
+            coroutineScope.cancel("Closing Event Manager")
+        }
     }
 }

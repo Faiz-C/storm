@@ -3,30 +3,28 @@ package org.storm.impl.jfx.graphics
 import javafx.scene.Scene
 import javafx.scene.layout.Pane
 import org.storm.core.context.Context
+import org.storm.core.context.CoreContext
 import org.storm.core.context.RESOLUTION
+import org.storm.core.context.getContextEventStream
+import org.storm.core.event.EventManager
 import org.storm.core.graphics.Resolution
 import org.storm.core.graphics.Window
 import org.storm.core.graphics.canvas.Canvas
-import org.storm.core.utils.observation.Observable
-import org.storm.core.utils.observation.Observer
 import javafx.scene.canvas.Canvas as SceneCanvas
 
 /**
  * An implementation of a Window using Java FX. Key (KeyEvent) and Mouse (MouseEvent) inputs are available to be listened
  * to through the EventManager.
  */
-class JfxWindow : Scene(Pane()), Window, Observer {
-
-    companion object {
-   }
+class JfxWindow(resolution: Resolution = Context.RESOLUTION) : Scene(Pane()), Window {
 
     private val sceneCanvas: SceneCanvas = SceneCanvas()
     private val pane: Pane = (this.root as Pane).also {
         it.children.add(this.sceneCanvas)
     }
 
-    override var resolution: Resolution = Context.RESOLUTION
-        set(value) {
+    override var resolution: Resolution = resolution
+        private set(value) {
             field = value
             pane.setMaxSize(value.width, value.height)
             pane.setMinSize(value.width, value.height)
@@ -34,16 +32,16 @@ class JfxWindow : Scene(Pane()), Window, Observer {
             sceneCanvas.height = value.height
         }
 
-    override val canvas: Canvas = JfxCanvas(sceneCanvas.graphicsContext2D)
+    override val canvas: Canvas get() = JfxCanvas(sceneCanvas.graphicsContext2D)
 
     init {
-        this.resolution = resolution
-        Context.addObserver(this)
+        this.resolution = resolution // trigger the setter
+
+        EventManager.getContextEventStream().addConsumerAsync {
+            if (it.hasSettingChanged(CoreContext.RESOLUTION)) {
+                this.resolution = Context.RESOLUTION
+            }
+        }
     }
 
-    override fun update(o: Observable) {
-        if (o !is Context) return
-
-        this.resolution = o.RESOLUTION
-    }
 }

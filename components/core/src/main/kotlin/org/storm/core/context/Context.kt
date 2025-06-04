@@ -1,20 +1,21 @@
 package org.storm.core.context
 
-import org.storm.core.utils.observation.Observable
+import org.storm.core.event.EventManager
+import org.storm.core.event.EventStream
 
 /**
- * The Context object encapsulates the settings for the game. It is observable, so that any changes to the settings
- * can be observed by other components, updating them if necessary. The settings are stored as a simple map to allow
- * for easy flexibility and creation of extension functions.
+ * The Context object encapsulates the settings/global state for the game. The settings are stored as a simple map to allow
+ * for easy flexibility and creation of extension functions. Upon changes to the inner settings the Context will emit
+ * ContextChange events which can be listened to by any component.
  */
-object Context: Observable() {
-    private val mutableSettings: MutableMap<String, Any> = mutableMapOf()
-    private val updates: MutableSet<(Map<String, Any>) -> Map<String, Any>> = mutableSetOf()
+object Context {
+
+    private val updates: MutableList<Map<String, Any>> = mutableListOf()
 
     /**
      * @return Current settings for the context.
      */
-    var SETTINGS: Map<String, Any> = this.mutableSettings
+    var settings: Map<String, Any> = mapOf()
         private set
 
     /**
@@ -24,26 +25,48 @@ object Context: Observable() {
      * Note: Any updates which take place while the game loop is running should be scheduled to avoid potential
      * concurrency issues.
      *
-     * @param updater A function that takes the current settings and returns updated settings.
+     * @param settingsToUpdate A map of settings to update
      * @param schedule Whether to schedule the update or apply it immediately (default false).
      */
-    fun update(schedule: Boolean = false, updater: (Map<String, Any>) -> Map<String, Any>) {
+    fun update(settingsToUpdate: Map<String, Any>, schedule: Boolean = false) {
         if (schedule) {
-            this.updates.add(updater)
+            this.updates.add(settingsToUpdate)
             return
         }
 
-        this.SETTINGS = updater(this.mutableSettings)
-        this.updateObservers()
+        processUpdates(listOf(settingsToUpdate))?.let {
+            EventManager.getContextEventStream().produceAsync(it)
+        }
     }
 
     /**
      * Run all scheduled updates to update the context.
      */
     fun runScheduledUpdates() {
-        this.SETTINGS = this.updates.fold(mutableSettings.toMap()) { acc, updater ->
-            acc + updater(mutableSettings)
+        processUpdates(this.updates)?.let {
+            EventManager.getContextEventStream().produceAsync(it)
         }
-        this.updateObservers()
+
+        this.updates.clear()
+    }
+
+    /**
+     * Processes the list of setting updates in order and validates changes to the settings. If settings of the context
+     * change then an event object is returned.
+     *
+     * @param updates List of setting changes to apply on top of the existing settings
+     * @return ContextEvent if settings changed, null if nothing changed
+     */
+    private fun processUpdates(updates: List<Map<String, Any>>): ContextEvent? {
+        val oldSettings = this.settings.toMap()
+        val newSettings = updates.fold(oldSettings) { acc, settingsToUpdate ->
+            acc + settingsToUpdate
+        }
+
+        if (oldSettings == newSettings) return null
+
+        this.settings = newSettings
+
+        return ContextEvent(oldSettings, newSettings)
     }
 }
