@@ -32,7 +32,8 @@ class JfxWindow(resolution: Resolution = Context.RESOLUTION) : Scene(Pane()), Wi
             sceneCanvas.height = value.height
         }
 
-    override val canvas: Canvas get() = JfxCanvas(sceneCanvas.graphicsContext2D)
+    override var canvas: Canvas = JfxCanvas(sceneCanvas.graphicsContext2D)
+        private set
 
     init {
         this.resolution = resolution // trigger the setter
@@ -40,6 +41,7 @@ class JfxWindow(resolution: Resolution = Context.RESOLUTION) : Scene(Pane()), Wi
         EventManager.getContextEventStream().addConsumerAsync {
             if (it.hasSettingChanged(CoreContext.RESOLUTION)) {
                 this.resolution = Context.RESOLUTION
+                this.canvas = JfxCanvas(sceneCanvas.graphicsContext2D)
             }
         }
     }
