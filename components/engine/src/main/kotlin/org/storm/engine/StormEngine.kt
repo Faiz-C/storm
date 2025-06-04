@@ -1,13 +1,12 @@
 package org.storm.engine
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.javafx.JavaFx
 import org.apache.commons.math3.util.FastMath
 import org.storm.core.context.Context
 import org.storm.core.context.loadMappers
 import org.storm.core.extensions.scheduleOnInterval
-import org.storm.core.input.action.ActionManager
 import org.storm.core.graphics.Window
+import org.storm.core.input.action.ActionManager
 import org.storm.core.sound.SoundManager
 import org.storm.core.utils.TimeUtils.toSeconds
 import org.storm.engine.context.REQUEST_QUEUE
@@ -15,7 +14,6 @@ import org.storm.engine.exception.StormEngineException
 import org.storm.engine.request.Request
 import org.storm.engine.state.GameState
 import org.storm.physics.PhysicsEngine
-import java.util.concurrent.Executors
 
 /**
  * The StormEngine combines the multiple components of the Storm libraries to create a simple, straight forward and

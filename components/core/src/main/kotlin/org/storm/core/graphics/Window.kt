@@ -7,6 +7,6 @@ import org.storm.core.graphics.canvas.Canvas
  * be drawn on using it's Canvas.
  */
 interface Window {
-    var resolution: Resolution
+    val resolution: Resolution
     val canvas: Canvas
 }

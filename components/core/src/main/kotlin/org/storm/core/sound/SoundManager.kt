@@ -4,17 +4,34 @@ import org.storm.core.context.BGM_VOLUME
 import org.storm.core.context.Context
 import org.storm.core.context.EFFECT_VOLUME
 import org.storm.core.context.MASTER_VOLUME
+import org.storm.core.context.SoundContext
 import org.storm.core.context.VOICE_VOLUME
+import org.storm.core.context.getContextEventStream
+import org.storm.core.event.EventManager
 import org.storm.core.exception.SoundException
-import org.storm.core.utils.observation.Observable
-import org.storm.core.utils.observation.Observer
 
 /**
  * A SoundManager is a helpful way of tracking and using sounds within a game
  */
 class SoundManager(
     private val sounds: MutableMap<String, Sound> = mutableMapOf(),
-): Observer {
+) {
+
+    init {
+        EventManager.getContextEventStream().addConsumerAsync {
+            if (it.hasSettingChanged(SoundContext.BGM_VOLUME) || it.hasSettingChanged(SoundContext.MASTER_VOLUME)) {
+                adjustAllVolume(Context.BGM_VOLUME * Context.MASTER_VOLUME, Sound.Type.BGM.value)
+            }
+
+            if (it.hasSettingChanged(SoundContext.EFFECT_VOLUME) || it.hasSettingChanged(SoundContext.MASTER_VOLUME)) {
+                adjustAllVolume(Context.EFFECT_VOLUME * Context.MASTER_VOLUME, Sound.Type.EFFECT.value)
+            }
+
+            if (it.hasSettingChanged(SoundContext.VOICE_VOLUME) || it.hasSettingChanged(SoundContext.MASTER_VOLUME)) {
+                adjustAllVolume(Context.VOICE_VOLUME * Context.MASTER_VOLUME, Sound.Type.EFFECT.value)
+            }
+        }
+    }
 
     /**
      * Adds the given sound to the SoundManager under the given id
@@ -101,13 +118,5 @@ class SoundManager(
      */
     fun pauseAll() {
         sounds.forEach { (_, sound: Sound) -> sound.pause() }
-    }
-
-    override fun update(o: Observable) {
-        if (o !is Context) return
-
-        adjustAllVolume(o.BGM_VOLUME * o.MASTER_VOLUME, Sound.Type.BGM.value)
-        adjustAllVolume(o.EFFECT_VOLUME * o.MASTER_VOLUME, Sound.Type.EFFECT.value)
-        adjustAllVolume(o.VOICE_VOLUME * o.MASTER_VOLUME, Sound.Type.VOICE.value)
     }
 }

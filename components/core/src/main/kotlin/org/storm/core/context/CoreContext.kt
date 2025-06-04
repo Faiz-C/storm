@@ -23,43 +23,41 @@ object CoreContext {
  * Loads default mappers for JSON, YAML and XML to help with serialization and deserialization of data
  */
 fun Context.loadMappers() {
-    this.update { settings ->
-        settings + mapOf(
-            CoreContext.JSON_MAPPER to jacksonObjectMapper(),
-            CoreContext.YAML_MAPPER to YAMLMapper()
-                .configure(JsonParser.Feature.ALLOW_YAML_COMMENTS, true)
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .registerKotlinModule(),
-            CoreContext.XML_MAPPER to XmlMapper()
-                .registerKotlinModule()
-        )
-    }
+    this.update(mapOf(
+        CoreContext.JSON_MAPPER to jacksonObjectMapper(),
+        CoreContext.YAML_MAPPER to YAMLMapper()
+            .configure(JsonParser.Feature.ALLOW_YAML_COMMENTS, true)
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .registerKotlinModule(),
+        CoreContext.XML_MAPPER to XmlMapper()
+            .registerKotlinModule()
+    ))
 }
 
 /**
  * @return A data mapper which can read, convert and write JSON
  */
-val Context.JSON_MAPPER get() = SETTINGS[CoreContext.JSON_MAPPER] as ObjectMapper
+val Context.JSON_MAPPER get() = settings[CoreContext.JSON_MAPPER] as ObjectMapper
 
 /**
  * @return A data mapper which can read, convert and write YAML
  */
-val Context.YAML_MAPPER get() = SETTINGS[CoreContext.YAML_MAPPER] as ObjectMapper
+val Context.YAML_MAPPER get() = settings[CoreContext.YAML_MAPPER] as ObjectMapper
 
 /**
  * @return A data mapper which can read, convert and write XML
  */
-val Context.XML_MAPPER get() = SETTINGS[CoreContext.YAML_MAPPER] as ObjectMapper
+val Context.XML_MAPPER get() = settings[CoreContext.YAML_MAPPER] as ObjectMapper
 
 /**
  * @return The current unit convertor used for converting between pixels and game engine units.
  */
-val Context.UNIT_CONVERTOR get() = SETTINGS[CoreContext.UNIT_CONVERTOR] as? UnitConvertor ?: UnitConvertor.DEFAULT
+val Context.UNIT_CONVERTOR get() = settings[CoreContext.UNIT_CONVERTOR] as? UnitConvertor ?: UnitConvertor.DEFAULT
 
 /**
  * @return The current resolution of the game window.
  */
-val Context.RESOLUTION: Resolution get() = SETTINGS[CoreContext.RESOLUTION] as? Resolution ?: Resolution.SD
+val Context.RESOLUTION: Resolution get() = settings[CoreContext.RESOLUTION] as? Resolution ?: Resolution.SD
 
 /**
  * @return The current resolution of the game window in game units
@@ -75,9 +73,7 @@ val Context.RESOLUTION_IN_UNITS: Resolution get() = Resolution(RESOLUTION.width.
 fun Context.setResolution(resolution: Resolution, schedule: Boolean = false) {
     if (resolution == this.RESOLUTION) return
 
-    update(schedule) { settings ->
-        settings + (CoreContext.RESOLUTION to resolution)
-    }
+    update(mapOf(CoreContext.RESOLUTION to resolution), schedule)
 }
 
 /**
@@ -88,7 +84,5 @@ fun Context.setResolution(resolution: Resolution, schedule: Boolean = false) {
  * @param ppu the number of pixels per unit
  */
 fun Context.setPPU(ppu: Double) {
-    update(true) { settings ->
-        settings + (CoreContext.UNIT_CONVERTOR to UnitConvertor(ppu))
-    }
+    update(mapOf(CoreContext.UNIT_CONVERTOR to UnitConvertor(ppu)), true)
 }
