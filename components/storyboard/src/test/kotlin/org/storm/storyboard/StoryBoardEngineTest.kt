@@ -2,6 +2,7 @@ package org.storm.storyboard
 
 import com.fasterxml.jackson.core.type.TypeReference
 import javafx.application.Application
+import javafx.event.Event
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
@@ -48,8 +49,8 @@ class StoryBoardEngineTest : Application() {
             EventManager.getJfxKeyEventStream().addConsumer {
                 val action = inputActionInputBindings.getAction(it) ?: return@addConsumer
                 when (it.eventType) {
-                    KeyEvent.KEY_PRESSED -> actionManager.submitActionEvent(ActionEvent(action, true))
-                    KeyEvent.KEY_RELEASED -> actionManager.submitActionEvent(ActionEvent(action, false))
+                    KeyEvent.KEY_PRESSED -> actionManager.submitActionEvent(ActionEvent(action, true, it))
+                    KeyEvent.KEY_RELEASED -> actionManager.submitActionEvent(ActionEvent(action, false, it))
                 }
             }
         }

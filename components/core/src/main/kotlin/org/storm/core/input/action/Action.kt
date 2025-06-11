@@ -8,5 +8,6 @@ data class Action(
     val activeFrames: Int = 0, // Within the game engine this is equivalent to active frames
     val inDebounce: Boolean = false,
     val timeHeld: Long, // In Millis
-    val lastUpdateTime: Long // In Millis
+    val lastUpdateTime: Long, // In Millis
+    val input: Any // The original input that caused this action
 )
