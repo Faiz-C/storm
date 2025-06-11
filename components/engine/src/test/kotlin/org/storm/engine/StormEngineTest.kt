@@ -1,6 +1,7 @@
 package org.storm.engine
 
 import javafx.application.Application
+import javafx.event.Event
 import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
 import kotlinx.coroutines.Dispatchers
@@ -44,8 +45,8 @@ class StormEngineTest : Application() {
             EventManager.getJfxKeyEventStream().addConsumer {
                 val action = inputBindings.getAction(it) ?: return@addConsumer
                 when (it.eventType) {
-                    KeyEvent.KEY_PRESSED -> actionManager.submitActionEvent(ActionEvent(action, true))
-                    KeyEvent.KEY_RELEASED -> actionManager.submitActionEvent(ActionEvent(action, false))
+                    KeyEvent.KEY_PRESSED -> actionManager.submitActionEvent(ActionEvent(action, true, it))
+                    KeyEvent.KEY_RELEASED -> actionManager.submitActionEvent(ActionEvent(action, false, it))
                 }
             }
             stormEngine.fpsChangeAllow = false

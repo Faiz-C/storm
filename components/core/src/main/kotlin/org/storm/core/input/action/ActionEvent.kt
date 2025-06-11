@@ -5,5 +5,6 @@ package org.storm.core.input.action
  */
 data class ActionEvent(
     val action: String,
-    val active: Boolean
+    val active: Boolean,
+    val input: Any
 )

@@ -44,6 +44,9 @@ class ActionManager(
         }
     }
 
+    /**
+     * Updates the active frame counts of all active actions
+     */
     suspend fun updateActiveFrames() {
         actionMutex.withLock {
             activeActions.forEach { (action, info) ->
@@ -54,6 +57,9 @@ class ActionManager(
         }
     }
 
+    /**
+     * Resets the state of the ActionManager
+     */
     suspend fun reset() {
         actionMutex.withLock {
             activeActions.clear()
@@ -125,7 +131,7 @@ class ActionManager(
 
         activeActions.putIfAbsent(
             actionEvent.action,
-            Action(inDebounce = false, timeHeld = 0L, lastUpdateTime = currentTime)
+            Action(inDebounce = false, timeHeld = 0L, lastUpdateTime = currentTime, input = actionEvent.input)
         )
     }
 

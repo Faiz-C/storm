@@ -16,7 +16,7 @@ class ActionManagerTest {
 
     @Test
     fun testSubmitEvents() = runBlocking {
-        actionManager.submitActionEvent(ActionEvent("up", true))
+        actionManager.submitActionEvent(ActionEvent("up", true, "test"))
 
         actionManager.updateActiveFrames()
         val state = actionManager.getStateSnapshot()
@@ -25,7 +25,7 @@ class ActionManagerTest {
             "Expected exactly 1 activation and 1 active frame for the 'up' action"
         }
 
-        actionManager.submitActionEvent(ActionEvent("up", false))
+        actionManager.submitActionEvent(ActionEvent("up", false, "test"))
 
         actionManager.updateActiveFrames()
         val stateAfter = actionManager.getStateSnapshot()
@@ -41,10 +41,10 @@ class ActionManagerTest {
 
     @Test
     fun testDebounce() = runBlocking {
-        actionManager.submitActionEvent(ActionEvent("up", true))
-        actionManager.submitActionEvent(ActionEvent("up", true))
-        actionManager.submitActionEvent(ActionEvent("up", true))
-        actionManager.submitActionEvent(ActionEvent("up", true))
+        actionManager.submitActionEvent(ActionEvent("up", true, "test"))
+        actionManager.submitActionEvent(ActionEvent("up", true, "test"))
+        actionManager.submitActionEvent(ActionEvent("up", true, "test"))
+        actionManager.submitActionEvent(ActionEvent("up", true, "test"))
 
         val state = actionManager.getStateSnapshot()
 
@@ -63,8 +63,8 @@ class ActionManagerTest {
 
         val actionManagerWithoutDebounce = ActionManager(debounceTime = Duration.ofMillis(0))
 
-        actionManagerWithoutDebounce.submitActionEvent(ActionEvent("up", true))
-        actionManagerWithoutDebounce.submitActionEvent(ActionEvent("up", true))
+        actionManagerWithoutDebounce.submitActionEvent(ActionEvent("up", true, "test"))
+        actionManagerWithoutDebounce.submitActionEvent(ActionEvent("up", true, "test"))
 
         actionManagerWithoutDebounce.updateActiveFrames()
         val withoutDebounceState = actionManagerWithoutDebounce.getStateSnapshot()
@@ -76,8 +76,8 @@ class ActionManagerTest {
 
     @Test
     fun testActionCombinations() = runBlocking {
-        actionManager.submitActionEvent(ActionEvent("move-right", true))
-        actionManager.submitActionEvent(ActionEvent("jump", true))
+        actionManager.submitActionEvent(ActionEvent("move-right", true, "test"))
+        actionManager.submitActionEvent(ActionEvent("jump", true, "test"))
 
         actionManager.updateActiveFrames()
         val state = actionManager.getStateSnapshot()
