@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
  * A RequestQueue is a simple non-blocking queue for queuing Requests for the StormEngine to action on at the start
  * of the next game loop iteration.
  */
-class RequestQueue {
+object RequestQueue {
 
     private val queue: Queue<List<Request>> = ConcurrentLinkedQueue()
 

@@ -1,30 +1,11 @@
-package org.storm.core.input.action
-
-import kotlin.math.min
+package org.storm.core.input
 
 /**
- * A snapshot of the current state of actions within the game.
+ * Represents the current state of active actions within the game and which inputs originated them
  */
 data class ActionState(
-    val activeActions: Map<String, Action>,
-    val activeActionHistory: List<String>,
-    val eventHistory: List<ActionEvent>,
-    val eventCountSinceLastSnapshot: Int,
-    val actionCountSinceLastSnapshot: Int
+    val activeActions: Map<String, Input>
 ) {
-
-    val eventsSinceLastSnapshot: List<ActionEvent>
-        get() = eventHistory.subList(
-            min(0, eventHistory.size - eventCountSinceLastSnapshot),
-            eventHistory.size
-        )
-
-    val actionsSinceLastSnapshot: List<String>
-        get() = activeActionHistory.subList(
-            min(0, activeActionHistory.size - actionCountSinceLastSnapshot),
-            activeActionHistory.size
-        )
-
     /**
      * @param action The action to check
      * @return true if the action is active, only been triggered once and has only been active for one snapshot

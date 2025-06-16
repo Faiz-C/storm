@@ -1,14 +1,15 @@
 package org.storm.engine.state
 
-import org.storm.core.input.action.ActionStateProcessor
+import org.storm.core.input.ActionStateProcessor
 import org.storm.core.graphics.Renderable
 import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.input.InputTranslator
 import org.storm.core.sound.SoundManager
 import org.storm.core.update.Updatable
 import org.storm.physics.PhysicsEngine
 import org.storm.physics.collision.Collider
 
-interface GameState: Updatable, Renderable, ActionStateProcessor {
+interface GameState: Updatable, Renderable, InputTranslator, ActionStateProcessor {
 
     val colliders: Set<Collider>
 

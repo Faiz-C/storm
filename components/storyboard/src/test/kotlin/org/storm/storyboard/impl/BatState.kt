@@ -1,13 +1,13 @@
 package org.storm.storyboard.impl
 
 import org.storm.core.serialization.Polymorphic
-import org.storm.core.input.action.ActionState
 import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.Image
 import org.storm.core.graphics.Resolution
 import org.storm.core.graphics.animation.Animation
 import org.storm.core.graphics.animation.sprite.SpriteAnimation
 import org.storm.core.graphics.animation.sprite.SpriteSheet
+import org.storm.core.input.ActionState
 import org.storm.impl.jfx.graphics.JfxImage
 import org.storm.storyboard.StoryBoardState
 import org.storm.storyboard.dialogue.script.Script

@@ -4,11 +4,11 @@ import org.storm.core.context.Context
 import org.storm.core.context.YAML_MAPPER
 import org.storm.core.extensions.units
 import org.storm.core.graphics.canvas.Canvas
-import org.storm.core.input.action.ActionState
+import org.storm.core.input.ActionState
 import org.storm.core.sound.Sound
 import org.storm.core.sound.SoundManager
-import org.storm.engine.KeyActionConstants
-import org.storm.engine.context.REQUEST_QUEUE
+import org.storm.engine.Controls
+import org.storm.engine.request.RequestQueue
 import org.storm.engine.request.types.TogglePhysicsRequest
 import org.storm.physics.PhysicsEngine
 import org.storm.physics.collision.Collider
@@ -39,10 +39,10 @@ class CircleCornerTestState : SwitchableState() {
     )
 
     private val movementVectors = mapOf(
-        KeyActionConstants.W to Vector.UNIT_NORTH,
-        KeyActionConstants.S to Vector.UNIT_SOUTH,
-        KeyActionConstants.A to Vector.UNIT_WEST,
-        KeyActionConstants.D to Vector.UNIT_EAST,
+        Controls.W to Vector.UNIT_NORTH,
+        Controls.S to Vector.UNIT_SOUTH,
+        Controls.A to Vector.UNIT_WEST,
+        Controls.D to Vector.UNIT_EAST,
     )
 
     override val colliders: Set<Collider> = setOf(
@@ -62,14 +62,14 @@ class CircleCornerTestState : SwitchableState() {
 
     override suspend fun onSwapOn(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         soundManager.play("bgm")
-        Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
+        RequestQueue.submit(TogglePhysicsRequest())
     }
 
     override suspend fun process(actionState: ActionState) {
         super.process(actionState)
 
-        if (actionState.isFirstActivation(KeyActionConstants.SPACE)) {
-            Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
+        if (actionState.isFirstActivation(Controls.SPACE)) {
+            RequestQueue.submit(TogglePhysicsRequest())
         }
 
         this.player.collider.velocity = Vector.ZERO_VECTOR
