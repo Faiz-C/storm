@@ -4,11 +4,11 @@ import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION
 import org.storm.core.context.RESOLUTION_IN_UNITS
 import org.storm.core.extensions.units
-import org.storm.core.input.action.ActionState
 import org.storm.core.graphics.geometry.Point
+import org.storm.core.input.ActionState
 import org.storm.core.sound.SoundManager
-import org.storm.engine.KeyActionConstants
-import org.storm.engine.context.REQUEST_QUEUE
+import org.storm.engine.Controls
+import org.storm.engine.request.RequestQueue
 import org.storm.engine.request.types.TogglePhysicsRequest
 import org.storm.physics.PhysicsEngine
 import org.storm.physics.collision.Collider
@@ -92,8 +92,8 @@ class ParticleTestState : SwitchableState() {
     override suspend fun process(actionState: ActionState) {
         super.process(actionState)
 
-        if (actionState.isFirstActivation(KeyActionConstants.SPACE)) {
-            Context.REQUEST_QUEUE.submit(TogglePhysicsRequest())
+        if (actionState.isFirstActivation(Controls.SPACE)) {
+            RequestQueue.submit(TogglePhysicsRequest())
         }
     }
 

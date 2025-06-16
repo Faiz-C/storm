@@ -6,12 +6,13 @@ import org.storm.core.context.Context
 import org.storm.core.context.loadMappers
 import org.storm.core.extensions.scheduleOnInterval
 import org.storm.core.graphics.Window
-import org.storm.core.input.action.ActionManager
+import org.storm.core.input.InputManager
 import org.storm.core.sound.SoundManager
-import org.storm.core.utils.TimeUtils.toSeconds
-import org.storm.engine.context.REQUEST_QUEUE
+import org.storm.core.utils.toMilliseconds
+import org.storm.core.utils.toSeconds
 import org.storm.engine.exception.StormEngineException
 import org.storm.engine.request.Request
+import org.storm.engine.request.RequestQueue
 import org.storm.engine.state.GameState
 import org.storm.physics.PhysicsEngine
 
@@ -24,7 +25,7 @@ class StormEngine(
     val physicsFps: Int = renderFps,
     val window: Window,
     private val physicsEngine: PhysicsEngine,
-    private val actionManager: ActionManager,
+    private val inputManager: InputManager,
     private val soundManager: SoundManager,
     private val renderingDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) {
@@ -80,7 +81,7 @@ class StormEngine(
 
             // 1 / fps == fixed number of calls per second, but we want it in terms of nanoseconds as that is our tracking
             // metric, therefore we multiply by 1000000000 to go from seconds to nanoseconds -> 1000000000 / fps
-            this.fixedTimeStepInterval = 1000000000L / this.physicsFps
+            this.fixedTimeStepInterval = 1_000_000_000L / this.physicsFps
 
             // Restart the loop with the new interval rate
             this.gameLoop = this.engineCoroutineScope.scheduleOnInterval(1000L / higher) {
@@ -173,7 +174,7 @@ class StormEngine(
         this.accumulator += adjustedElapsedFrameTime
 
         // First handle the next set of requests
-        Context.REQUEST_QUEUE.next()?.let { requests: List<Request> ->
+        RequestQueue.next()?.let { requests: List<Request> ->
             requests.forEach { request -> request.execute(this, this.physicsEngine, this.soundManager) }
         }
 
@@ -185,8 +186,9 @@ class StormEngine(
         val frameState = this.currentState!!
 
         // Process Input
-        this.actionManager.updateActiveFrames()
-        frameState.process(this.actionManager.getStateSnapshot())
+        this.inputManager.updateInputState(toMilliseconds(this.lastUpdateTime))
+        val actionState = frameState.getActionState(this.inputManager.getCurrentInputState())
+        frameState.process(actionState)
 
         // Then allow the state to do any internal updating
         frameState.update(toSeconds(this.lastUpdateTime), toSeconds(elapsedFrameTime))

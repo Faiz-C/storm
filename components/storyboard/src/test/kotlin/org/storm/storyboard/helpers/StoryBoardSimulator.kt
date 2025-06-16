@@ -3,6 +3,7 @@ package org.storm.storyboard.helpers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import org.storm.core.extensions.scheduleOnInterval
+import org.storm.core.utils.toSeconds
 import java.util.concurrent.Executors
 
 class StoryBoardSimulator(
@@ -11,18 +12,12 @@ class StoryBoardSimulator(
     private val updateHandler: suspend (Double, Double) -> Unit
 ) {
 
-    companion object {
-        private fun toSeconds(nanoSeconds: Double): Double {
-            return nanoSeconds * 0.000000001
-        }
-    }
-
     private val coroutineScope = CoroutineScope(Executors.newSingleThreadExecutor() {
         Thread(it).apply { isDaemon = true }
     }.asCoroutineDispatcher())
 
-    private var lastUpdateTime: Double = System.nanoTime().toDouble()
-    private val fixedStepInterval: Double = 1000000000.0 / this.targetFps
+    private var lastUpdateTime: Long = System.nanoTime()
+    private val fixedStepInterval: Long = (1000000000.0 / this.targetFps).toLong()
     private var accumulator = 0.0
 
     fun simulate() {
@@ -30,7 +25,7 @@ class StoryBoardSimulator(
     }
 
     private suspend fun run() {
-        val now = System.nanoTime().toDouble()
+        val now = System.nanoTime()
         val elapsedFrameTime = now - lastUpdateTime
         lastUpdateTime = now
         accumulator += elapsedFrameTime
