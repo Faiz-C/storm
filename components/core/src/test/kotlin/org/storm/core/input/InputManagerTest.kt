@@ -64,8 +64,8 @@ class InputManagerTest {
     fun testDebounce() = runBlocking {
         inputManager.processInput(InputEvent("w", "test"))
         inputManager.processInput(InputEvent("w", "test"))
-        inputManager.processInput(InputEvent("w", "test"))
-        inputManager.processInput(InputEvent("w", "test"))
+        inputManager.processInput(InputEvent("w", "test2"))
+        inputManager.processInput(InputEvent("w", "test4"))
 
         inputManager.updateInputState(System.currentTimeMillis().toDouble())
         val state = inputTranslator.getActionState(inputManager.getCurrentInputState())
@@ -81,6 +81,10 @@ class InputManagerTest {
         // Testing the tracking of activations during the debounce window
         assert(state.activeActions["up"]?.activations == 4) {
             "Expected 'up' to have 4 activations since the action is in debounce"
+        }
+
+        assert(state.activeActions["up"]?.rawInput == "test4") {
+            "Expected 'up' action's raw input to be updated to test4 instead of test"
         }
 
         val inputManagerWithoutDebounce = InputManager(debounceTime = Duration.ofMillis(0))

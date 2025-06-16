@@ -133,7 +133,8 @@ class InputManager(
                 activations = if (inDebounce) info.activations + 1 else 1,
                 inDebounce = inDebounce,
                 timeHeld = info.timeHeld + elapsedTime,
-                lastUpdateTime = currentTime
+                lastUpdateTime = currentTime,
+                rawInput = event.input
             )
         }
 
