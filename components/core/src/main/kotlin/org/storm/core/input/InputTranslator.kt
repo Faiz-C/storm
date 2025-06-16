@@ -1,7 +1,7 @@
 package org.storm.core.input
 
 /**
- * InputBindings help translate an InputState into an ActionState for the game engine components to utilize when updating
+ * InputTranslator help translate an InputState into an ActionState for the game engine components to utilize when updating
  * in game state.
  */
 fun interface InputTranslator {
