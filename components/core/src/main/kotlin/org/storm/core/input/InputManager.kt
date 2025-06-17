@@ -2,6 +2,7 @@ package org.storm.core.input
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.storm.core.utils.toMilliseconds
 import java.time.Duration
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentHashMap
@@ -13,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap
 class InputManager(
     private val debounceTime: Duration = Duration.ofMillis(200),
     private val maxInputHistory: Int = 5,
-    private val maxInputDeadTimeMillis: Long = 8000L // time until we can safely drop
+    private val maxInputDeadTimeMillis: Long = 100L // time until we can safely drop
 ) {
 
     /**
@@ -123,7 +124,7 @@ class InputManager(
             return
         }
 
-        val currentTime = System.currentTimeMillis()
+        val currentTime = toMilliseconds(System.nanoTime())
 
         activeInputs.computeIfPresent(event.type) { _, info ->
             val elapsedTime = currentTime - info.lastUpdateTime
@@ -140,7 +141,7 @@ class InputManager(
 
         activeInputs.putIfAbsent(
             event.type,
-            Input(inDebounce = false, timeHeld = 0L, lastUpdateTime = currentTime, rawInput = event.input)
+            Input(inDebounce = false, timeHeld = 0.0, lastUpdateTime = currentTime, rawInput = event.input)
         )
     }
 }

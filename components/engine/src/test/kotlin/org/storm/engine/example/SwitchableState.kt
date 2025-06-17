@@ -1,6 +1,7 @@
 package org.storm.engine.example
 
-import org.storm.core.context.Context
+import javafx.scene.input.MouseEvent
+import org.storm.core.graphics.geometry.Point
 import org.storm.core.input.ActionState
 import org.storm.core.input.InputState
 import org.storm.engine.Controls
@@ -12,7 +13,6 @@ import org.storm.engine.Controls.TWO
 import org.storm.engine.request.RequestQueue
 import org.storm.engine.request.types.StateChangeRequest
 import org.storm.engine.state.GameState
-import kotlin.collections.contains
 
 abstract class SwitchableState : GameState {
 
@@ -37,6 +37,13 @@ abstract class SwitchableState : GameState {
             }.mapKeys {
                 Controls.BINDINGS[it.key]!!
             }
+
+        // Just for validating mouse inputs
+        inputState.activeInputs["mouse-moved"]?.let {
+            val input = it.rawInput as MouseEvent
+            val pos = Point(input.x, input.y)
+            println("Mouse position: $pos, ${it.lastUpdateTime}")
+        }
 
         return ActionState(activeActions)
     }

@@ -10,6 +10,7 @@ import org.storm.core.context.RESOLUTION_IN_UNITS
 import org.storm.core.event.EventManager
 import org.storm.core.extensions.units
 import org.storm.impl.jfx.extensions.getJfxKeyEventStream
+import org.storm.impl.jfx.extensions.registerJfxKeyEvents
 import org.storm.impl.jfx.graphics.JfxWindow
 import org.storm.physics.collision.Collider
 import org.storm.physics.enums.Direction
@@ -76,6 +77,8 @@ class VisualAtRestTest : Application() {
         // Make a Display
         val window = JfxWindow()
         physicsSimulator = PhysicsSimulator(400.0) { render(window) }
+
+        EventManager.registerJfxKeyEvents(window)
 
         runBlocking {
             physicsSimulator.physicsEngine.paused = true
