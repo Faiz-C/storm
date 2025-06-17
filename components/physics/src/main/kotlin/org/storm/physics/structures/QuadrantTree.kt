@@ -20,8 +20,8 @@ class QuadrantTree(
         class Quadrant(
             x: Double,
             y: Double,
-            private val width: Double,
-            private val height: Double
+            width: Double,
+            height: Double
         ) : AABB(x, y, width, height) {
 
             override suspend fun render(canvas: Canvas, x: Double, y: Double) {

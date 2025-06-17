@@ -10,8 +10,8 @@ import org.storm.physics.math.extensions.getSquaredDistance
 open class AABB(
     x: Double,
     y: Double,
-    width: Double,
-    height: Double
+    val width: Double,
+    val height: Double
 ): Polygon(
     Point(x, y),
     Point(x + width, y),
