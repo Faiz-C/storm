@@ -39,11 +39,11 @@ abstract class SwitchableState : GameState {
             }
 
         // Just for validating mouse inputs
-        inputState.activeInputs["mouse-moved"]?.let {
-            val input = it.rawInput as MouseEvent
-            val pos = Point(input.x, input.y)
-            println("Mouse position: $pos, ${it.lastUpdateTime}")
-        }
+        //inputState.activeInputs["mouse-moved"]?.let {
+        //    val input = it.rawInput as MouseEvent
+        //    val pos = Point(input.x, input.y)
+        //    println("Mouse position: $pos, ${it.lastUpdateTime}")
+        //}
 
         return ActionState(activeActions)
     }

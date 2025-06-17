@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap
 class InputManager(
     private val debounceTime: Duration = Duration.ofMillis(200),
     private val maxInputHistory: Int = 5,
-    private val maxInputDeadTimeMillis: Long = 100L // time until we can safely drop
+    private val maxInputDeadTimeMillis: Double = 100.0 // time until we can safely drop
 ) {
 
     /**

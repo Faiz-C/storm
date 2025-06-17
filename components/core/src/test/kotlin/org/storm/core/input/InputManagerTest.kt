@@ -3,11 +3,12 @@ package org.storm.core.input
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.storm.core.utils.toMilliseconds
 import java.time.Duration
 
 class InputManagerTest {
 
-    private val inputManager = InputManager(maxInputDeadTimeMillis = 1000)
+    private val inputManager = InputManager(maxInputDeadTimeMillis = 1000.0)
 
     private val inputTranslator = object: InputTranslator {
 
@@ -38,7 +39,7 @@ class InputManagerTest {
     fun testProcessInputs() = runBlocking {
         inputManager.processInput(InputEvent("w", "test"))
 
-        inputManager.updateInputState(System.currentTimeMillis().toDouble())
+        inputManager.updateInputState(toMilliseconds(System.nanoTime()))
         val actionState = inputTranslator.getActionState(inputManager.getCurrentInputState())
 
         assert(actionState.isFirstActivation("up")) {
@@ -47,7 +48,7 @@ class InputManagerTest {
 
         // Simulate 1 second passing without this same input being triggered, it should be cleaned up as it's considered
         // dead now
-        inputManager.updateInputState(System.currentTimeMillis().toDouble() + 2000)
+        inputManager.updateInputState(toMilliseconds(System.nanoTime()) + 2000)
         val inputStateAfter = inputManager.getCurrentInputState()
         val actionStateAfter = inputTranslator.getActionState(inputStateAfter)
 
@@ -67,7 +68,7 @@ class InputManagerTest {
         inputManager.processInput(InputEvent("w", "test2"))
         inputManager.processInput(InputEvent("w", "test4"))
 
-        inputManager.updateInputState(System.currentTimeMillis().toDouble())
+        inputManager.updateInputState(toMilliseconds(System.nanoTime()))
         val state = inputTranslator.getActionState(inputManager.getCurrentInputState())
 
         assert(state.activeActions.containsKey("up")) {
@@ -92,7 +93,7 @@ class InputManagerTest {
         inputManagerWithoutDebounce.processInput(InputEvent("w", "test"))
         inputManagerWithoutDebounce.processInput(InputEvent("w", "test"))
 
-        inputManager.updateInputState(System.currentTimeMillis().toDouble())
+        inputManager.updateInputState(toMilliseconds(System.nanoTime()))
         val withoutDebounceState = inputTranslator.getActionState(inputManagerWithoutDebounce.getCurrentInputState())
 
         assert(withoutDebounceState.activeActions["up"]?.activations == 1) {
@@ -105,7 +106,7 @@ class InputManagerTest {
         inputManager.processInput(InputEvent("d", "test"))
         inputManager.processInput(InputEvent("space", "test"))
 
-        inputManager.updateInputState(System.currentTimeMillis().toDouble())
+        inputManager.updateInputState(toMilliseconds(System.nanoTime()))
         val state = inputTranslator.getActionState(inputManager.getCurrentInputState())
 
         assert(state.isCombinationPresent(listOf("right", "jump"))) {
