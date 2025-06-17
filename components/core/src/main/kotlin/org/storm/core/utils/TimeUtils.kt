@@ -5,7 +5,7 @@ package org.storm.core.utils
  * @return the given nanoseconds in seconds
  */
 fun toSeconds(nanoSeconds: Long): Double {
-    return nanoSeconds * 0.000000001
+    return nanoSeconds / 1_000_000_000.0
 }
 
 /**
@@ -13,5 +13,5 @@ fun toSeconds(nanoSeconds: Long): Double {
  * @return the given nanoseconds in milliseconds
  */
 fun toMilliseconds(nanoSeconds: Long): Double {
-    return nanoSeconds * 0.000001
+    return nanoSeconds / 1_000_000.0
 }
