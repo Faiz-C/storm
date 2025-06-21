@@ -10,6 +10,7 @@ import org.storm.core.context.Context
 import org.storm.core.context.YAML_MAPPER
 import org.storm.core.context.loadMappers
 import org.storm.core.event.EventManager
+import org.storm.core.input.Action
 import org.storm.core.input.ActionState
 import org.storm.core.input.InputEvent
 import org.storm.core.input.InputManager
@@ -44,9 +45,9 @@ class StoryBoardEngineTest : Application() {
             val activeActions = state.activeInputs
                 .filterKeys {
                     bindings.contains(it)
-                }.mapKeys {
-                    bindings[it.key]!!
-                }
+                }.map { (key, value) ->
+                    bindings[key]!! to Action(value)
+                }.toMap()
 
             ActionState(activeActions)
         }

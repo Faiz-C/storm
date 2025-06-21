@@ -72,6 +72,7 @@ class CircleCornerTestState : SwitchableState() {
             RequestQueue.submit(TogglePhysicsRequest())
         }
 
+        // TODO: this is kinda jank, should update eventually
         this.player.collider.velocity = Vector.ZERO_VECTOR
         this.movementVectors.map { (action, vector) ->
             if (actionState.isActionHeld(action, 1)) {

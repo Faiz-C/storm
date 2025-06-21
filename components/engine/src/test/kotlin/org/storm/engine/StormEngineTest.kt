@@ -23,7 +23,7 @@ class StormEngineTest : Application() {
 
     override fun start(primaryStage: Stage) {
         val window = JfxWindow()
-        val inputManager = InputManager()
+        val inputManager = InputManager(maxInputDeadTimeMillis = 500.0)
         val stormEngine = StormEngine(
             physicsEngine = ImpulseResolutionPhysicsEngine(),
             renderFps = 144,

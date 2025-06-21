@@ -2,6 +2,7 @@ package org.storm.engine.example
 
 import javafx.scene.input.MouseEvent
 import org.storm.core.graphics.geometry.Point
+import org.storm.core.input.Action
 import org.storm.core.input.ActionState
 import org.storm.core.input.InputState
 import org.storm.engine.Controls
@@ -34,9 +35,9 @@ abstract class SwitchableState : GameState {
         val activeActions = inputState.activeInputs
             .filterKeys {
                 Controls.BINDINGS.contains(it)
-            }.mapKeys {
-                Controls.BINDINGS[it.key]!!
-            }
+            }.map { (key, value) ->
+                Controls.BINDINGS[key]!! to Action(value)
+            }.toMap()
 
         // Just for validating mouse inputs
         //inputState.activeInputs["mouse-moved"]?.let {

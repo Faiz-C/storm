@@ -4,14 +4,22 @@ package org.storm.core.input
  * Represents the current state of active actions within the game and which inputs originated them
  */
 data class ActionState(
-    val activeActions: Map<String, Input>
+    val activeActions: Map<String, Action>
 ) {
     /**
      * @param action The action to check
      * @return true if the action is active, only been triggered once and has only been active for one snapshot
      */
     fun isFirstActivation(action: String): Boolean {
-        return activeActions[action]?.let { it.activations == 1 && it.activeFrames == 1 } ?: false
+        return activeActions[action]?.let { it.input.activations == 1 && it.input.activeFrames == 1 } ?: false
+    }
+
+    /**
+     * @param action The action to check
+     * @return true if the action is active, false otherwise
+     */
+    fun isActive(action: String): Boolean {
+        return activeActions.containsKey(action)
     }
 
     /**
@@ -29,7 +37,7 @@ data class ActionState(
      */
     fun isActionHeld(action: String, activeFramesThreshold: Int = 2): Boolean {
         return activeActions[action]?.let {
-            it.activeFrames >= activeFramesThreshold
+            it.input.activeFrames >= activeFramesThreshold
         } == true
     }
 

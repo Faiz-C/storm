@@ -26,6 +26,10 @@ open class AABB(
         const val BOTTOM_LEFT_POINT = 3
     }
 
+    val x: Double get() = vertices[TOP_LEFT_POINT].x
+
+    val y: Double get() = vertices[TOP_LEFT_POINT].y
+
     /**
      * @param aabb AxisAlignedRectangle to check against
      * @return true if this and the given AxisAlignedRectangle intersect

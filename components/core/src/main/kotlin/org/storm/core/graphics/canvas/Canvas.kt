@@ -17,8 +17,8 @@ abstract class Canvas(
      * Draws the given text onto the screen starting at the given coordinates.
      *
      * @param text the text to draw onto the screen
-     * @param x the x coordinate to start drawing the text from in game engine units
-     * @param y the y coordinate to start drawing the text from in game engine units
+     * @param x the x coordinate *of the bottom left corner* to start drawing the text from in game units
+     * @param y the y coordinate *of the bottom left corner* to start drawing the text from in game units
      */
     suspend fun drawText(text: String, x: Double, y: Double) {
         drawTextWithPixels(text, x.pixels, y.pixels)
@@ -109,6 +109,33 @@ abstract class Canvas(
     }
 
     /**
+     * Executes the given block of code using the given brush settings.
+     *
+     * @param thickness the thickness of the brush stroke
+     * @param color the color of the brush
+     * @param fill whether to fill shapes (true) or just draw outlines (false)
+     * @param font the font to use for text
+     * @param block the block of code to run with these settings
+     */
+    suspend fun withSettings(
+        thickness: Double = settings.thickness,
+        color: Color = settings.color,
+        fill: Boolean = settings.fill,
+        font: Font = settings.font,
+        block: suspend (Canvas) -> Unit
+    ) {
+        try {
+            settingHistory.push(this.settings)
+            this.settings = Settings(thickness, color, fill, font)
+            onSettingsChange(this.settings)
+            block(this)
+        } finally {
+            this.settings = this.settingHistory.pop()
+            onSettingsChange(this.settings)
+        }
+    }
+
+    /**
      * Clears the Canvas
      */
     abstract suspend fun clear()
@@ -135,8 +162,8 @@ abstract class Canvas(
      * Draws the given text onto the screen starting at the given coordinates.
      *
      * @param text the text to draw onto the screen
-     * @param x the x coordinate to start drawing the text from in pixels
-     * @param y the y coordinate to start drawing the text from in pixels
+     * @param x the x coordinate *of the bottom left corner* to start drawing the text from in pixels
+     * @param y the y coordinate *of the bottom left corner* to start drawing the text from in pixels
      */
     abstract suspend fun drawTextWithPixels(text: String, x: Double, y: Double)
 

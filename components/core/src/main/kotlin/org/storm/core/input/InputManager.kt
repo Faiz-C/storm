@@ -4,8 +4,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.storm.core.utils.toMilliseconds
 import java.time.Duration
-import java.util.LinkedList
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.min
 
 /**
  * Handles input, input history and input debouncing. Stores states of different inputs which occur and offers snapshot
@@ -14,7 +15,10 @@ import java.util.concurrent.ConcurrentHashMap
 class InputManager(
     private val debounceTime: Duration = Duration.ofMillis(200),
     private val maxInputHistory: Int = 5,
-    private val maxInputDeadTimeMillis: Double = 100.0 // time until we can safely drop
+    private val maxInputDeadTimeMillis: Double = 1000.0, // time until we can safely drop
+    private val maxTrackedActivations: Int = 500, // 500 consecutive activations
+    private val maxTrackedFrames: Int = 100, // 100 consecutive frames
+    private val maxTrackedHoldTimeMillis: Double = 60000.0 // 1m
 ) {
 
     /**
@@ -63,7 +67,7 @@ class InputManager(
                         activeInputs.remove(inputName, input)
                     } else {
                         activeInputs[inputName] = input.copy(
-                            activeFrames = input.activeFrames + 1
+                            activeFrames = min(input.activeFrames + 1, maxTrackedFrames)
                         )
                     }
                 }
@@ -131,9 +135,9 @@ class InputManager(
             val inDebounce = elapsedTime < debounceTime.toMillis()
 
             info.copy(
-                activations = if (inDebounce) info.activations + 1 else 1,
+                activations = if (inDebounce) min(info.activations + 1, maxTrackedActivations) else 1,
                 inDebounce = inDebounce,
-                timeHeld = info.timeHeld + elapsedTime,
+                timeHeld = min(info.timeHeld + elapsedTime, maxTrackedHoldTimeMillis),
                 lastUpdateTime = currentTime,
                 rawInput = event.input
             )

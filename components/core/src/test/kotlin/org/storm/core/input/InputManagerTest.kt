@@ -22,9 +22,9 @@ class InputManagerTest {
             val activeActions = inputState.activeInputs
                 .filterKeys {
                     bindings.contains(it)
-                }.mapKeys {
-                    bindings[it.key]!!
-                }
+                }.map { (key, value) ->
+                    bindings[key]!! to Action(value)
+                }.toMap()
 
             return ActionState(activeActions)
         }
@@ -75,16 +75,16 @@ class InputManagerTest {
             "Expected 'up' to be an active action"
         }
 
-        assert(state.activeActions["up"]?.inDebounce == true) {
+        assert(state.activeActions["up"]?.input?.inDebounce == true) {
             "Expected 'up' to be in debounce"
         }
 
         // Testing the tracking of activations during the debounce window
-        assert(state.activeActions["up"]?.activations == 4) {
+        assert(state.activeActions["up"]?.input?.activations == 4) {
             "Expected 'up' to have 4 activations since the action is in debounce"
         }
 
-        assert(state.activeActions["up"]?.rawInput == "test4") {
+        assert(state.activeActions["up"]?.input?.rawInput == "test4") {
             "Expected 'up' action's raw input to be updated to test4 instead of test"
         }
 
@@ -96,7 +96,7 @@ class InputManagerTest {
         inputManager.updateInputState(toMilliseconds(System.nanoTime()))
         val withoutDebounceState = inputTranslator.getActionState(inputManagerWithoutDebounce.getCurrentInputState())
 
-        assert(withoutDebounceState.activeActions["up"]?.activations == 1) {
+        assert(withoutDebounceState.activeActions["up"]?.input?.activations == 1) {
             "Expected 'up' to have 1 activation when there is no debounce"
         }
     }
