@@ -17,7 +17,7 @@ open class Ellipse(
 
     override suspend fun render(canvas: Canvas, x: Double, y: Double) {
         canvas.withSettings(canvas.settings.copy(fill = true)) {
-            it.drawEllipse(x + center.x - width / 2, y + center.y - height / 2, width, height)
+            drawEllipse(x + center.x - width / 2, y + center.y - height / 2, width, height)
         }
     }
 

@@ -96,12 +96,12 @@ abstract class Canvas(
      * @param settings the Brush settings to use
      * @param block the block of code to run
      */
-    suspend fun withSettings(settings: Settings, block: suspend (Canvas) -> Unit) {
+    suspend fun withSettings(settings: Settings, block: suspend Canvas.() -> Unit) {
         try {
             settingHistory.push(this.settings)
             this.settings = settings
             onSettingsChange(this.settings)
-            block(this)
+            block()
         } finally {
             this.settings = this.settingHistory.pop()
             onSettingsChange(this.settings)
@@ -122,17 +122,9 @@ abstract class Canvas(
         color: Color = settings.color,
         fill: Boolean = settings.fill,
         font: Font = settings.font,
-        block: suspend (Canvas) -> Unit
+        block: suspend Canvas.() -> Unit
     ) {
-        try {
-            settingHistory.push(this.settings)
-            this.settings = Settings(thickness, color, fill, font)
-            onSettingsChange(this.settings)
-            block(this)
-        } finally {
-            this.settings = this.settingHistory.pop()
-            onSettingsChange(this.settings)
-        }
+        withSettings(Settings(thickness, color, fill, font), block)
     }
 
     /**

@@ -32,7 +32,7 @@ open class Polygon(
 
     override suspend fun render(canvas: Canvas, x: Double, y: Double) {
         canvas.withSettings(canvas.settings.copy(fill = true)) {
-            it.drawPolygon(this.vertices)
+            drawPolygon(this@Polygon.vertices)
         }
     }
 

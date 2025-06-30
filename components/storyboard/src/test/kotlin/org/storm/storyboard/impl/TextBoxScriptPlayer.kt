@@ -54,12 +54,12 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
 
         // Draw the speaker
         canvas.withSettings(Settings(fill = true, font = Font(size = 20.0, weight = 700))) {
-            it.drawTextWithPixels(speaker, 10.0, screenHeight - TEXT_BOX_HEIGHT - 17.0)
+            drawTextWithPixels(speaker, 10.0, screenHeight - TEXT_BOX_HEIGHT - 17.0)
         }
 
         // Draw the current line of dialogue
         canvas.withSettings(Settings(fill = true, font = Font(size = 20.0))) {
-            it.drawTextWithPixels(screenText, 5.0, screenHeight - TEXT_BOX_HEIGHT + 25.0)
+            drawTextWithPixels(screenText, 5.0, screenHeight - TEXT_BOX_HEIGHT + 25.0)
         }
 
         if (scriptState != Script.State.MAKING_CHOICE) return

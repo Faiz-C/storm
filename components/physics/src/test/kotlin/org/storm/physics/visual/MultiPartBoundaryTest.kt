@@ -137,7 +137,7 @@ class MultiPartBoundaryTest : Application() {
             }
 
             window.canvas.withSettings(canvasSettings) {
-                c.render(it, 0.0, 0.0)
+                c.render(this, 0.0, 0.0)
             }
         }
     }
