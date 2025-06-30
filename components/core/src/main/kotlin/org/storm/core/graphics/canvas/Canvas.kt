@@ -162,8 +162,8 @@ abstract class Canvas(
      * Draws the given text onto the screen starting at the given coordinates.
      *
      * @param text the text to draw onto the screen
-     * @param x the x coordinate *of the bottom left corner* to start drawing the text from in pixels
-     * @param y the y coordinate *of the bottom left corner* to start drawing the text from in pixels
+     * @param x the x coordinate of the top left corner to start drawing the text from in pixels
+     * @param y the y coordinate of the top left corner to start drawing the text from in pixels
      */
     abstract suspend fun drawTextWithPixels(text: String, x: Double, y: Double)
 

@@ -4,14 +4,29 @@ import javafx.scene.canvas.GraphicsContext
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
+import javafx.scene.text.Text
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION
 import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.canvas.Settings
 import org.storm.core.graphics.Image
 import org.storm.core.graphics.geometry.Point
+import kotlin.math.ceil
 
 class JfxCanvas(private val gc: GraphicsContext): Canvas() {
+
+    companion object {
+        fun getTextBounds(text: String, font: org.storm.core.graphics.canvas.Font): Pair<Double, Double> {
+            val textNode = Text(text)
+            textNode.font = Font.font(
+                font.type,
+                FontWeight.findByWeight(font.weight),
+                font.size
+            )
+            val bounds = textNode.layoutBounds
+            return ceil(bounds.width) to ceil(bounds.height)
+        }
+    }
 
     override suspend fun clear() {
         gc.clearRect(0.0, 0.0, Context.RESOLUTION.width, Context.RESOLUTION.height)
@@ -34,8 +49,9 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
     }
 
     override suspend fun drawTextWithPixels(text: String, x: Double, y: Double) {
+        val (_, textHeight) = getTextBounds(text, this.settings.font)
         if (this.settings.fill) {
-            gc.fillText(text, x, y)
+            gc.fillText(text, x, y + textHeight)
         } else {
             gc.strokeText(text, x, y)
         }
