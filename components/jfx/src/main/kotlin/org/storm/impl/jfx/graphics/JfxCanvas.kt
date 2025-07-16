@@ -44,11 +44,11 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
         )
     }
 
-    override suspend fun drawLineWithPixels(x1: Double, y1: Double, x2: Double, y2: Double) {
+    override suspend fun drawLine(x1: Double, y1: Double, x2: Double, y2: Double) {
         gc.strokeLine(x1, y1, x2, y2)
     }
 
-    override suspend fun drawTextWithPixels(text: String, x: Double, y: Double) {
+    override suspend fun drawText(text: String, x: Double, y: Double) {
         val (_, textHeight) = getTextBounds(text, this.settings.font)
         if (this.settings.fill) {
             gc.fillText(text, x, y + textHeight)
@@ -57,7 +57,7 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
         }
     }
 
-    override suspend fun drawRectWithPixels(x: Double, y: Double, width: Double, height: Double) {
+    override suspend fun drawRect(x: Double, y: Double, width: Double, height: Double) {
         if (this.settings.fill) {
             gc.fillRect(x, y, width, height)
         } else {
@@ -65,7 +65,7 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
         }
     }
 
-    override suspend fun drawEllipseWithPixels(x: Double, y: Double, width: Double, height: Double) {
+    override suspend fun drawEllipse(x: Double, y: Double, width: Double, height: Double) {
         if (this.settings.fill) {
             gc.fillOval(x, y, width, height)
         } else {
@@ -73,7 +73,7 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
         }
     }
 
-    override suspend fun drawPolygonWithPixels(points: List<Point>) {
+    override suspend fun drawPolygon(points: List<Point>) {
         val size = points.size
         val xCoordinates = DoubleArray(size)
         val yCoordinates = DoubleArray(size)
@@ -91,7 +91,7 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
         }
     }
 
-    override suspend fun drawImageWithPixels(image: Image, x: Double, y: Double) {
+    override suspend fun drawImage(image: Image, x: Double, y: Double) {
         require(image is JfxImage) {
             "JfxCanvas only supports drawing JfxImage objects"
         }

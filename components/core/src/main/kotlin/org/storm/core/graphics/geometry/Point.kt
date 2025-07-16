@@ -24,7 +24,7 @@ data class Point(
     }
 
     override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-        canvas.drawEllipse(x + this.x, y + this.y, 1.units, 1.units)
+        canvas.drawEllipseWithUnits(x + this.x, y + this.y, 1.units, 1.units)
     }
 
     override fun toString(): String = "Point(x=$x, y=$y)"

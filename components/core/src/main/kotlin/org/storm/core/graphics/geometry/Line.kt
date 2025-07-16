@@ -21,7 +21,7 @@ open class Line(
     }
 
     override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-        canvas.drawLine(x + this.start.x, y + this.start.y, this.end.x, this.end.y)
+        canvas.drawLineWithUnits(x + this.start.x, y + this.start.y, this.end.x, this.end.y)
     }
 
     override fun toString(): String = "Line(start=$start, end=$end)"

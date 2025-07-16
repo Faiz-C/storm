@@ -47,19 +47,19 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
         val (screenWidth, screenHeight) = Context.RESOLUTION
 
         // Draw a rectangle to wrap around the text
-        canvas.drawRectWithPixels(1.0, screenHeight - TEXT_BOX_HEIGHT, screenWidth - canvas.settings.thickness, TEXT_BOX_HEIGHT - 1.0)
+        canvas.drawRect(1.0, screenHeight - TEXT_BOX_HEIGHT, screenWidth - canvas.settings.thickness, TEXT_BOX_HEIGHT - 1.0)
 
         // Draw a rectangle on top of the above to wrap around the speaker
-        canvas.drawRectWithPixels(1.0, screenHeight - TEXT_BOX_HEIGHT - 40.0, 70.0, 40.0)
+        canvas.drawRect(1.0, screenHeight - TEXT_BOX_HEIGHT - 40.0, 70.0, 40.0)
 
         // Draw the speaker
         canvas.withSettings(Settings(fill = true, font = Font(size = 20.0, weight = 700))) {
-            drawTextWithPixels(speaker, 10.0, screenHeight - TEXT_BOX_HEIGHT - 17.0)
+            drawText(speaker, 10.0, screenHeight - TEXT_BOX_HEIGHT - 17.0)
         }
 
         // Draw the current line of dialogue
         canvas.withSettings(Settings(fill = true, font = Font(size = 20.0))) {
-            drawTextWithPixels(screenText, 5.0, screenHeight - TEXT_BOX_HEIGHT + 25.0)
+            drawText(screenText, 5.0, screenHeight - TEXT_BOX_HEIGHT + 25.0)
         }
 
         if (scriptState != Script.State.MAKING_CHOICE) return
@@ -73,7 +73,7 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
             }
 
             canvas.withSettings(Settings(fill = true, color = color)) {
-                canvas.drawTextWithPixels(choiceText, 10.0, (screenHeight - TEXT_BOX_HEIGHT + 60.0) + (i * 20.0))
+                canvas.drawText(choiceText, 10.0, (screenHeight - TEXT_BOX_HEIGHT + 60.0) + (i * 20.0))
             }
         }
     }

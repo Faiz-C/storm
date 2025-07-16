@@ -25,7 +25,7 @@ class QuadrantTree(
         ) : AABB(x, y, width, height) {
 
             override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-                canvas.drawPolygon(this.vertices)
+                canvas.drawPolygonWithUnits(this.vertices)
             }
 
             fun subdivide(): Array<Quadrant> {
