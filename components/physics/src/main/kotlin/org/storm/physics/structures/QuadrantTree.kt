@@ -1,6 +1,7 @@
 package org.storm.physics.structures
 
 import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.geometry.shape.Rectangle.Companion.TOP_LEFT_POINT
 import org.storm.physics.collision.Collider
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.CollidableShape

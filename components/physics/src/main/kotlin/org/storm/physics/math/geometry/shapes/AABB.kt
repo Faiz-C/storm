@@ -1,6 +1,10 @@
 package org.storm.physics.math.geometry.shapes
 
 import org.storm.core.graphics.geometry.Point
+import org.storm.core.graphics.geometry.shape.Rectangle.Companion.BOTTOM_LEFT_POINT
+import org.storm.core.graphics.geometry.shape.Rectangle.Companion.BOTTOM_RIGHT_POINT
+import org.storm.core.graphics.geometry.shape.Rectangle.Companion.TOP_LEFT_POINT
+import org.storm.core.graphics.geometry.shape.Rectangle.Companion.TOP_RIGHT_POINT
 import org.storm.physics.math.extensions.getSquaredDistance
 
 /**
@@ -18,13 +22,6 @@ open class AABB(
     Point(x + width, y + height),
     Point(x, y + height)
 ) {
-
-    companion object {
-        const val TOP_LEFT_POINT = 0
-        const val TOP_RIGHT_POINT = 1
-        const val BOTTOM_RIGHT_POINT = 2
-        const val BOTTOM_LEFT_POINT = 3
-    }
 
     val x: Double get() = vertices[TOP_LEFT_POINT].x
 
