@@ -39,6 +39,15 @@ open class AABB(
         return otrx >= blx && oblx <= trpx && otry <= bly && obly >= trpy
     }
 
+    fun containsCompletely(p: Point): Boolean {
+        // Axis Aligned Rectangles have a quicker way to check for point containment
+        val (tlx, tly) = this.vertices[TOP_LEFT_POINT]
+        val (trx, _) = this.vertices[TOP_RIGHT_POINT]
+        val (_, bry) = this.vertices[BOTTOM_RIGHT_POINT]
+
+        return p.x > tlx && p.x < trx && p.y > tly && p.y < bry
+    }
+
     /**
      * @param shape Shape to check
      * @return true if the given Shape is completely contained within this rectangle
@@ -49,6 +58,15 @@ open class AABB(
         } else {
             containsPolygon(shape as Polygon)
         }
+    }
+
+    override operator fun contains(p: Point): Boolean {
+        // Axis Aligned Rectangles have a quicker way to check for point containment
+        val (tlx, tly) = this.vertices[TOP_LEFT_POINT]
+        val (trx, _) = this.vertices[TOP_RIGHT_POINT]
+        val (_, bry) = this.vertices[BOTTOM_RIGHT_POINT]
+
+        return p.x >= tlx && p.x <= trx && p.y >= tly && p.y <= bry
     }
 
     /**
@@ -71,13 +89,5 @@ open class AABB(
             }
         }
         return true
-    }
-
-    override operator fun contains(p: Point): Boolean {
-        // Axis Aligned Rectangles have a quicker way to check for point containment
-        val (tlx, tly) = this.vertices[TOP_LEFT_POINT]
-        val (trx, _) = this.vertices[TOP_RIGHT_POINT]
-        val (_, bry) = this.vertices[BOTTOM_RIGHT_POINT]
-        return (p.x in tlx..trx) && (p.y in tly..bry)
     }
 }
