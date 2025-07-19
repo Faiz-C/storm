@@ -39,7 +39,11 @@ open class AABB(
         return otrx >= blx && oblx <= trpx && otry <= bly && obly >= trpy
     }
 
-    fun containsCompletely(p: Point): Boolean {
+    /**
+     * @param p Point to check
+     * @return true iff the point is strictly contained within this rectangle (not on boundaries)
+     */
+    fun strictlyContains(p: Point): Boolean {
         // Axis Aligned Rectangles have a quicker way to check for point containment
         val (tlx, tly) = this.vertices[TOP_LEFT_POINT]
         val (trx, _) = this.vertices[TOP_RIGHT_POINT]
@@ -50,7 +54,7 @@ open class AABB(
 
     /**
      * @param shape Shape to check
-     * @return true if the given Shape is completely contained within this rectangle
+     * @return true iff the given Shape is completely contained within this rectangle
      */
     operator fun contains(shape: CollidableShape): Boolean {
         return if (shape is Circle) {
