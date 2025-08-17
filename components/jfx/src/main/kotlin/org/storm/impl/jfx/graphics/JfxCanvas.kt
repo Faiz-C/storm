@@ -102,8 +102,8 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
     private fun org.storm.core.graphics.canvas.Color.toJfxColor(): Color {
         return Color(
             this.red / 255.0,
-            this.blue / 255.0,
             this.green / 255.0,
+            this.blue / 255.0,
             this.alpha
         )
     }
