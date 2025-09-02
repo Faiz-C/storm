@@ -52,6 +52,9 @@ object EventManager: AutoCloseable {
         return eventStreams[eventStreamId]!! as EventStream<T>
     }
 
+    /**
+     * Processes all queued events for all registered event streams
+     */
     suspend fun processEvents() {
         eventStreams.values.forEach { stream ->
             stream.process()
