@@ -1,23 +1,12 @@
 package org.storm.core.event
 
-import kotlinx.coroutines.*
-import org.slf4j.LoggerFactory
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
 /**
  * The EventManager is responsible for the async setup and tear down of EventStreams used within the game engine.
  */
 object EventManager: AutoCloseable {
-    private val logger = LoggerFactory.getLogger(EventManager::class.java)
-    private val executor = Executors.newCachedThreadPool {
-        Thread(it).also {
-            it.isDaemon = true
-        }
-    }
-    private val coroutineScope = CoroutineScope(executor.asCoroutineDispatcher() + SupervisorJob())
     private val eventStreams = ConcurrentHashMap<String, EventStream<*>>()
 
     /**
@@ -27,19 +16,13 @@ object EventManager: AutoCloseable {
      * @throws IllegalArgumentException When an EventStream already exists for the given id
      * @return An EventStream for the wanted generic type T
      */
-    fun <T> createEventStream(eventStreamId: String = UUID.randomUUID().toString(), autoStart: Boolean = true): EventStream<T> {
+    fun <T> createEventStream(eventStreamId: String = UUID.randomUUID().toString()): EventStream<T> {
         require(!eventStreams.containsKey(eventStreamId)) {
             "Event id $eventStreamId is already in use"
         }
 
         return EventStream<T>(eventStreamId).also {
             eventStreams[eventStreamId] = it
-
-            if (!autoStart) return@also
-
-            coroutineScope.launch {
-                it.start()
-            }
         }
     }
 
@@ -69,22 +52,15 @@ object EventManager: AutoCloseable {
         return eventStreams[eventStreamId]!! as EventStream<T>
     }
 
+    suspend fun processEvents() {
+        eventStreams.values.forEach { stream ->
+            stream.process()
+        }
+    }
+
     override fun close() {
         eventStreams.forEach {
             it.value.close()
-        }
-
-        if (coroutineScope.isActive) {
-            coroutineScope.cancel()
-        }
-
-        if (!executor.isShutdown) {
-            executor.shutdownNow()
-            val terminated = executor.awaitTermination(5L, TimeUnit.SECONDS)
-
-            if (!terminated) {
-                logger.error("Failed to terminate executor on shutdown of EventManager")
-            }
         }
     }
 }

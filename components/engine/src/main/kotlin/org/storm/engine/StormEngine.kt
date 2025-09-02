@@ -4,6 +4,7 @@ import kotlinx.coroutines.*
 import org.apache.commons.math3.util.FastMath
 import org.storm.core.context.Context
 import org.storm.core.context.loadMappers
+import org.storm.core.event.EventManager
 import org.storm.core.extensions.scheduleOnInterval
 import org.storm.core.graphics.Window
 import org.storm.core.input.InputManager
@@ -173,13 +174,13 @@ class StormEngine(
         this.lastUpdateTime = now
         this.accumulator += adjustedElapsedFrameTime
 
+        // Run all scheduled context updates
+        Context.runScheduledUpdates()
+
         // First handle the next set of requests
         RequestQueue.next()?.let { requests: List<Request> ->
             requests.forEach { request -> request.execute(this, this.physicsEngine, this.soundManager) }
         }
-
-        // Run all scheduled context updates
-        Context.runScheduledUpdates()
 
         // Capture the current state of the game here so the next steps of the game loop doesn't
         // get disrupted by potential changes to the current state
@@ -189,6 +190,9 @@ class StormEngine(
         this.inputManager.updateInputState(toMilliseconds(this.lastUpdateTime))
         val actionState = frameState.getActionState(this.inputManager.getCurrentInputState())
         frameState.process(actionState)
+
+        // Process all events that came in since last run,
+        EventManager.processEvents()
 
         // Then allow the state to do any internal updating
         frameState.update(toSeconds(this.lastUpdateTime), toSeconds(elapsedFrameTime))

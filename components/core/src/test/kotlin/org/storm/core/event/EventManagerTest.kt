@@ -19,7 +19,7 @@ class EventManagerTest {
 
     @Test
     fun testSimpleEventStream() {
-        val stream = EventManager.createEventStream<TestEvent>("test-event", autoStart = false)
+        val stream = EventManager.createEventStream<TestEvent>("test-event")
 
         runBlocking {
             val results = mutableListOf<TestEvent>()
@@ -30,8 +30,7 @@ class EventManagerTest {
             stream.produce(TestEvent("hello"))
             stream.produce(TestEvent("world"))
 
-            stream.consume()
-            stream.consume()
+            stream.process()
 
             assert(results.size == 2) {
                 "Expected 2 events to be consumed, but ${results.size} were consumed instead"
@@ -58,16 +57,19 @@ class EventManagerTest {
             "Expected the exception to explain that the event was not found"
         }
 
-        EventManager.createEventStream<TestEvent>("test-2-event", autoStart = false)
+        EventManager.createEventStream<TestEvent>("test-2-event")
 
         val stream = EventManager.getEventStream<TestEvent>("test-2-event")
 
         runBlocking {
-            stream.produce(TestEvent("hello world"))
-            val event = stream.consume()
-            assert(event.data == "hello world") {
-                "Expected to consume event with data 'hello world'"
+            stream.addConsumer { event ->
+                assert(event.data == "hello world") {
+                    "Expected to consume event with data 'hello world'"
+                }
             }
+
+            stream.produce(TestEvent("hello world"))
+            stream.process()
         }
 
     }
