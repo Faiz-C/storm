@@ -35,7 +35,7 @@ object Context {
         }
 
         processUpdates(listOf(settingsToUpdate))?.let {
-            EventManager.getContextEventStream().produceAsync(it)
+            EventManager.getContextEventStream().produce(it)
         }
     }
 
@@ -44,7 +44,7 @@ object Context {
      */
     fun runScheduledUpdates() {
         processUpdates(this.updates)?.let {
-            EventManager.getContextEventStream().produceAsync(it)
+            EventManager.getContextEventStream().produce(it)
         }
 
         this.updates.clear()

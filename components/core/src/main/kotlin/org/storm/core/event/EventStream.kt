@@ -30,20 +30,6 @@ class EventStream<T> internal constructor(val id: String): AutoCloseable {
     private val consumerMutex = Mutex()
 
     /**
-     * Asynchronously produces an event and adds it to the queue to be processed during [process].
-     *
-     * This method launches a coroutine to enqueue the event. The event will be handled
-     * during the next call to [process].
-     *
-     * @param event The event to produce.
-     */
-    fun produceAsync(event: T) {
-        coroutineScope.launch {
-            produce(event)
-        }
-    }
-
-    /**
      * Produces an event and adds it to the queue to be processed during [process].
      * Thread-safe.
      *
