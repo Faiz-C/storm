@@ -1,5 +1,7 @@
 package org.storm.core.event
 
+import java.util.Queue
+import java.util.concurrent.ConcurrentLinkedQueue
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -23,13 +25,15 @@ class EventStream<T> internal constructor(val id: String): AutoCloseable {
     /**
      * Thread-safe queue of pending events to be processed during [process].
      */
-    private val pendingEvents = mutableListOf<T>()
-    private val pendingEventsMutex = Mutex()
+    private val pendingEvents: Queue<T> = ConcurrentLinkedQueue()
     private val consumers = mutableListOf<suspend (T) -> Unit>()
     private val consumerMutex = Mutex()
 
     /**
      * Asynchronously produces an event and adds it to the queue to be processed during [process].
+     *
+     * This method launches a coroutine to enqueue the event. The event will be handled
+     * during the next call to [process].
      *
      * @param event The event to produce.
      */
@@ -43,16 +47,20 @@ class EventStream<T> internal constructor(val id: String): AutoCloseable {
      * Produces an event and adds it to the queue to be processed during [process].
      * Thread-safe.
      *
+     * This method suspends until the event is enqueued. The event will be handled
+     * during the next call to [process].
+     *
      * @param event The event to produce.
      */
-    suspend fun produce(event: T) {
-        pendingEventsMutex.withLock {
-            pendingEvents.add(event)
-        }
+    fun produce(event: T) {
+        pendingEvents.add(event)
     }
 
     /**
      * Asynchronously adds a consumer (event handler) to this stream.
+     *
+     * This method launches a coroutine to add the consumer. The consumer will be called
+     * for each event during [process].
      *
      * @param consumer The suspend function to handle events.
      */
@@ -65,6 +73,8 @@ class EventStream<T> internal constructor(val id: String): AutoCloseable {
     /**
      * Adds a consumer (event handler) to this stream.
      * Thread-safe.
+     *
+     * The consumer will be called for each event during [process].
      *
      * @param consumer The suspend function to handle events.
      */
@@ -80,19 +90,16 @@ class EventStream<T> internal constructor(val id: String): AutoCloseable {
      * in sync with the game loop.
      *
      * This method is thread-safe and drains the event queue, ensuring no events are missed.
+     *
+     * WARNING:
+     * If new events are produced during processing, they will also be processed before returning.
+     * Ensure you are not looping events.
+     *
      */
     internal suspend fun process() {
-        val eventsToProcess = mutableListOf<T>()
-
-        pendingEventsMutex.withLock {
-            eventsToProcess.addAll(pendingEvents)
-            pendingEvents.clear()
-        }
-
-        if (eventsToProcess.isEmpty()) return
-
         consumerMutex.withLock {
-            eventsToProcess.forEach { event ->
+            while (true) {
+                val event = pendingEvents.poll() ?: break
                 notify(event)
             }
         }

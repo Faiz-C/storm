@@ -15,7 +15,12 @@ class EventManagerTest {
         }
     }
 
-    data class TestEvent(val data: String)
+    private data class TestEvent(val data: String)
+
+    private sealed interface EventType {
+        data class A(val id: String): EventType
+        data class B(val name: String): EventType
+    }
 
     @Test
     fun testSimpleEventStream() {
@@ -71,6 +76,43 @@ class EventManagerTest {
             stream.produce(TestEvent("hello world"))
             stream.process()
         }
+    }
 
+    @Test
+    fun testEventProducesEvent() {
+        EventManager.createEventStream<EventType>("test-3-event")
+
+        val stream = EventManager.getEventStream<EventType>("test-3-event")
+
+        runBlocking {
+            val results = mutableListOf<EventType>()
+
+            stream.addConsumer {
+                results.add(it)
+            }
+
+            stream.addConsumer {
+                when (it) {
+                    is EventType.A -> stream.produce(EventType.B("world"))
+                    else -> {}
+                }
+            }
+
+            stream.produce(EventType.A("hello"))
+
+            stream.process()
+
+            assert(results.size == 2) {
+                "Expected 2 events to be consumed, but ${results.size} were consumed instead"
+            }
+
+            assert(results.filter { it is EventType.A }.size == 1) {
+                "Expected one event of type A to be recorded"
+            }
+
+            assert(results.filter { it is EventType.B }.size == 1) {
+                "Expected one event of type B to be recorded"
+            }
+        }
     }
 }
