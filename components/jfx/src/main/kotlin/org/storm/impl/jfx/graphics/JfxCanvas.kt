@@ -53,7 +53,7 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
         if (this.settings.fill) {
             gc.fillText(text, x, y + textHeight)
         } else {
-            gc.strokeText(text, x, y)
+            gc.strokeText(text, x, y + textHeight)
         }
     }
 
