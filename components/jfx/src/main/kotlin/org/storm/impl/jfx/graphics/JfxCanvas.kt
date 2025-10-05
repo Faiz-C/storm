@@ -11,7 +11,6 @@ import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.canvas.Settings
 import org.storm.core.graphics.Image
 import org.storm.core.graphics.geometry.Point
-import kotlin.math.ceil
 
 class JfxCanvas(private val gc: GraphicsContext): Canvas() {
 
@@ -24,7 +23,7 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
                 font.size
             )
             val bounds = textNode.layoutBounds
-            return ceil(bounds.width) to ceil(bounds.height)
+            return bounds.width to textNode.baselineOffset
         }
     }
 

@@ -15,6 +15,7 @@ import org.storm.core.input.ActionState
 import org.storm.core.input.InputEvent
 import org.storm.core.input.InputManager
 import org.storm.core.input.InputTranslator
+import org.storm.core.utils.toMilliseconds
 import org.storm.impl.jfx.extensions.getJfxKeyEventStream
 import org.storm.impl.jfx.extensions.registerJfxKeyEvents
 import org.storm.impl.jfx.graphics.JfxWindow
@@ -65,7 +66,8 @@ class StoryBoardEngineTest : Application() {
             window.canvas.clear()
             engine.render(window.canvas, 0.0, 0.0)
         }) { time, elapsedTime ->
-            inputManager.updateInputState(time * 1000)
+            EventManager.processEvents()
+            inputManager.updateInputState(time * 1000) // seconds to milliseconds
             engine.process(inputTranslator.getActionState(inputManager.getCurrentInputState()))
             engine.update(time, elapsedTime)
         }

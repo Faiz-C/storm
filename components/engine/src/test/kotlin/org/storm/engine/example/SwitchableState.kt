@@ -1,7 +1,5 @@
 package org.storm.engine.example
 
-import javafx.scene.input.MouseEvent
-import org.storm.core.graphics.geometry.Point
 import org.storm.core.input.Action
 import org.storm.core.input.ActionState
 import org.storm.core.input.InputState

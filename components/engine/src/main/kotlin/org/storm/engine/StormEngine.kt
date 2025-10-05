@@ -186,13 +186,13 @@ class StormEngine(
         // get disrupted by potential changes to the current state
         val frameState = this.currentState!!
 
+        // Process all events that came in since last run
+        EventManager.processEvents()
+
         // Process Input
         this.inputManager.updateInputState(toMilliseconds(this.lastUpdateTime))
         val actionState = frameState.getActionState(this.inputManager.getCurrentInputState())
         frameState.process(actionState)
-
-        // Process all events that came in since last run,
-        EventManager.processEvents()
 
         // Then allow the state to do any internal updating
         frameState.update(toSeconds(this.lastUpdateTime), toSeconds(elapsedFrameTime))
