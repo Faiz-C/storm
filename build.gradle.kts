@@ -44,7 +44,7 @@ allprojects {
         api("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
         api("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
-        api("org.apache.commons:commons-lang3:3.17.0")
+        api("org.apache.commons:commons-lang3:3.18.0")
         api("com.github.ben-manes.caffeine:caffeine:3.1.8")
 
         testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
