@@ -8,10 +8,16 @@ import org.storm.physics.PhysicsEngine
 /**
  * A Request which toggles the pause state of the PhysicsEngine.
  */
-class TogglePhysicsRequest: Request {
+class TogglePhysicsRequest(
+    private val paused: Boolean? = null
+): Request {
 
     override suspend fun execute(stormEngine: StormEngine, physicsEngine: PhysicsEngine, soundManager: SoundManager) {
-        physicsEngine.paused = !physicsEngine.paused
+        if (paused != null) {
+            physicsEngine.paused = this.paused
+        } else {
+            physicsEngine.paused = !physicsEngine.paused
+        }
     }
 
 }

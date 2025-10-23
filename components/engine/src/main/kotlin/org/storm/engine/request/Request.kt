@@ -13,7 +13,9 @@ fun interface Request {
     /**
      * Executes the Request using the given StormEngine
      *
-     * @param stormEngine instance of the StormEngine which will be used to handle this request
+     * @param stormEngine instance of the StormEngine in use
+     * @param physicsEngine instance of the PhysicsEngine in use
+     * @param soundManager instance of the SoundManager in use
      */
     suspend fun execute(stormEngine: StormEngine, physicsEngine: PhysicsEngine, soundManager: SoundManager)
 
