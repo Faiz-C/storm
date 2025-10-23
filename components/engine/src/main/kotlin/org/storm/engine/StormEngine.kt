@@ -121,14 +121,25 @@ class StormEngine(
     }
 
     /**
-     * Swaps the current active State to the one associated with the given id with or without resetting it.
+     * Swaps the current active State to the one associated with the given id. This state must be registered to the
+     * engine beforehand.
      *
      * @param stateId unique id of the state to switch to
      */
     suspend fun swapState(stateId: String) {
         val newState = this.states[stateId] ?: throw StormEngineException("could not find state for id $stateId")
 
-        if (newState === this.currentState) return
+        swapState(newState)
+    }
+
+    /**
+     * Swaps the current active State to the given state. The given state does not need to be registered to the engine.
+     * Specifically useful for when your state is not a singleton.
+     *
+     * @param newState the new state to switch to
+     */
+    suspend fun swapState(newState: GameState) {
+        if (newState == this.currentState) return
 
         // Stop the engine temporarily during the swap
         this.paused = true
