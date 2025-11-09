@@ -12,19 +12,19 @@ data class Color(
     }
 
     init {
-        require(0.0 <= red && red <= 255.0) {
+        require(red in 0.0..255.0) {
             "red value must be within range [0, 255]"
         }
 
-        require(0.0 <= green && green <= 255.0) {
+        require(green in 0.0..255.0) {
             "green value must be within range [0, 255]"
         }
 
-        require(0.0 <= blue && blue <= 255.0) {
+        require(blue in 0.0..255.0) {
             "blue value must be within range [0, 255]"
         }
 
-        require(0.0 <= alpha && alpha <= 1.0) {
+        require(alpha in 0.0..1.0) {
             "alpha value must be within range [0, 1]"
         }
     }
