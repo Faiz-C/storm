@@ -14,7 +14,7 @@ class SpriteSheet(
     spriteWidth: Double,
     spriteHeight: Double
 ) {
-    private val sprites: Array<Array<Image>> = spriteSheet.chop(spriteWidth, spriteHeight)
+    val sprites: Array<Array<Image>> = spriteSheet.chop(spriteWidth, spriteHeight)
 
     /**
      * @param row row number of the sprite
