@@ -11,8 +11,8 @@ import org.storm.core.graphics.Image
  */
 class SpriteSheet(
     spriteSheet: Image,
-    spriteWidth: Double,
-    spriteHeight: Double
+    val spriteWidth: Double,
+    val spriteHeight: Double
 ) {
     val sprites: Array<Array<Image>> = spriteSheet.chop(spriteWidth, spriteHeight)
 
