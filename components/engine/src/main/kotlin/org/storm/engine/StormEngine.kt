@@ -197,9 +197,6 @@ class StormEngine(
         // get disrupted by potential changes to the current state
         val frameState = this.currentState!!
 
-        // Process all events that came in since last run
-        EventManager.processEvents()
-
         // Process Input
         this.inputManager.updateInputState(toMilliseconds(this.lastUpdateTime))
         val actionState = frameState.getActionState(this.inputManager.getCurrentInputState())
@@ -217,6 +214,9 @@ class StormEngine(
             }
             this.physicsDelay = 0
         }
+
+        // Process all events that were produced this frame
+        EventManager.processEvents()
 
         if (++this.renderDelay >= this.renderFpsRatio) {
             withContext(renderingDispatcher) {
