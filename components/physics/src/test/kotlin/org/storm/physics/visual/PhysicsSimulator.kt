@@ -5,13 +5,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.withContext
+import org.storm.core.event.EventManager
 import org.storm.core.extensions.scheduleOnInterval
 import org.storm.physics.ImpulseResolutionPhysicsEngine
 import org.storm.physics.PhysicsEngine
+import org.storm.physics.collision.Collider
 import java.util.concurrent.Executors
 
 class PhysicsSimulator(
     private val targetFps: Double,
+    private val colliders: Set<Collider>,
     private val renderHandler: suspend () -> Unit
 ) {
 
@@ -40,8 +43,11 @@ class PhysicsSimulator(
         val elapsedFrameTime = now - lastUpdateTime
         lastUpdateTime = now
         accumulator += elapsedFrameTime
+
+        EventManager.processEvents()
+
         while (accumulator >= fixedStepInterval) {
-            physicsEngine.update(toSeconds(lastUpdateTime), toSeconds(elapsedFrameTime))
+            physicsEngine.update(colliders, toSeconds(elapsedFrameTime))
             accumulator -= fixedStepInterval
             lastUpdateTime += fixedStepInterval
         }

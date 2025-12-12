@@ -1,11 +1,9 @@
 package org.storm.physics
 
-import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.storm.core.extensions.units
 import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.Renderable
-import org.storm.core.update.Updatable
 import org.storm.physics.collision.Collider
 import org.storm.physics.math.Vector
 import org.storm.physics.math.geometry.shapes.CollidableShape
@@ -19,31 +17,18 @@ import java.util.concurrent.ConcurrentHashMap
  */
 abstract class PhysicsEngine protected constructor(
     protected val collisionStructure: SpatialDataStructure
-) : Updatable, Renderable {
+) : Renderable {
 
     companion object {
         private const val INFINITE_DURATION = Double.NEGATIVE_INFINITY
         private const val MINIMUM_REST_VELOCITY = 0.0001 // In pixels as the unit conversion is up to the User
     }
 
-    var colliders: Set<Collider> = emptySet()
-        private set
-
     var paused = false
 
     // Tracks what forces exist in the game, what colliders they are acting on, and for how long
     private val forces: MutableMap<Vector, MutableMap<Collider, Double>> = mutableMapOf()
     private val collisions: MutableMap<Collider, MutableMap<CollidableShape, Boolean>> = mutableMapOf()
-
-    protected val entityMutex = Mutex()
-
-    suspend fun setColliders(colliders: Set<Collider>) {
-        this.entityMutex.withLock {
-            this.colliders = colliders
-            this.collisionStructure.clear()
-            resetCollisionData()
-        }
-    }
 
     /**
      * Applies the force to the collider for the given duration (in seconds).
@@ -72,32 +57,15 @@ abstract class PhysicsEngine protected constructor(
     /**
      * Clears all forces from all entities being tracked
      */
-    suspend fun clearAllForces() {
-        this.entityMutex.withLock {
-            this.forces.clear()
-        }
+    fun clearAllForces() {
+        this.forces.clear()
     }
 
-    /**
-     * Clears all forces which are on the current set of colliders
-     */
-    suspend fun clearCurrentColliderForces() {
-        this.entityMutex.withLock {
-            this.colliders.forEach { collider ->
-                this.forces.forEach { _, actingColliders ->
-                    actingColliders.remove(collider)
-                }
-            }
-        }
-    }
-
-    override suspend fun update(time: Double, elapsedTime: Double) {
+    suspend fun update(colliders: Set<Collider>, elapsedTime: Double) {
         if (this.paused) return
 
-        this.entityMutex.withLock {
-            resetCollisionData()
-            this.colliders.forEach { collider -> processPhysics(collider, elapsedTime) }
-        }
+        setColliders(colliders)
+        colliders.forEach { collider -> processPhysics(collider, elapsedTime) }
     }
 
     override suspend fun render(canvas: Canvas, x: Double, y: Double) {
@@ -105,28 +73,51 @@ abstract class PhysicsEngine protected constructor(
     }
 
     /**
-     * Resets all collision data for all entities.
+     * Sets the collision related data with
      */
-    protected open suspend fun resetCollisionData() {
+    protected open suspend fun setColliders(colliders: Set<Collider>) {
+        // Clear the spatial data structure and collisions
         this.collisionStructure.clear()
         this.collisions.clear()
-        this.colliders.forEach { collider: Collider ->
+
+        // For any colliders that don't exist in the given set we need to stop applying force to them
+        this.forces.forEach { (vector, colliders) ->
+            colliders.keys.filter {
+                it !in colliders
+            }.forEach {
+                colliders.remove(it)
+            }
+        }
+
+        colliders.forEach { collider: Collider ->
             collider.boundaries.forEach { (_, boundary) ->
                 this.collisionStructure.insert(collider, boundary)
             }
         }
     }
 
+    /**
+     * Checks if two colliders have collided on a specific boundary
+     *
+     * @param c1 Collider to check
+     * @param c2 Collider to check
+     * @param boundary CollidableShape representing the boundary to check
+     * @return true if a collision has occurred, false otherwise
+     */
     protected fun hasCheckedCollision(c1: Collider, c2: Collider, boundary: CollidableShape): Boolean {
         return collisions[c1]?.contains(boundary) == true || collisions[c2]?.contains(boundary) == true
     }
 
+    /**
+     * Updates the collision state of a collider with respect to the boundary.
+     *
+     * @param collider Collider whose state to update
+     * @param boundary CollidableShape representing the boundary to update
+     * @param collided true if a collision occurred, false otherwise
+     */
     protected fun updateCollisionState(collider: Collider, boundary: CollidableShape, collided: Boolean) {
-        collisions.computeIfPresent(collider) { _, boundaries ->
-            boundaries[boundary] = collided
-            boundaries
-        }
-        collisions.putIfAbsent(collider, mutableMapOf(boundary to collided))
+        collisions.putIfAbsent(collider, mutableMapOf())
+        collisions[collider]!![boundary] = collided
     }
 
     /**

@@ -46,7 +46,7 @@ class Collider(
     ) : this(mutableMapOf(SINGLE_BOUNDARY to boundary), mass, restitution)
 
     init {
-        require(!(this.restitution > 1 || this.restitution < 0)) { "restitution must be in the range [0, 1]" }
+        require(this.restitution in 0.0..1.0) { "restitution must be in the range [0, 1]" }
         this.mass = mass
     }
 

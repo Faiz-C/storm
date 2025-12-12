@@ -100,17 +100,15 @@ class MultiPartBoundaryTest : Application() {
 
         EventManager.registerJfxKeyEvents(window)
 
-        this.physicsSimulator = PhysicsSimulator(144.0) { render(window) }
         this.colliders.add(boundingBox)
         this.colliders.add(multiPartBoundaryEntity)
+        this.physicsSimulator = PhysicsSimulator(144.0, colliders) { render(window) }
 
         runBlocking {
             physicsSimulator.physicsEngine.paused = true
 
             physicsSimulator.physicsEngine.applyForce(Direction.NORTH_WEST.vector.scale(100.0.units), multiPartBoundaryEntity, 0.1)
             physicsSimulator.physicsEngine.applyForce(Direction.NORTH.vector.scale(100.0.units), multiPartBoundaryEntity, 0.1)
-
-            physicsSimulator.physicsEngine.setColliders(colliders)
 
             EventManager.getJfxKeyEventStream().addConsumer {
                 if (it.code == KeyCode.SPACE && it.eventType == KeyEvent.KEY_PRESSED) {
