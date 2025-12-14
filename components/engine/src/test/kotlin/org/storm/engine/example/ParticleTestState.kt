@@ -85,7 +85,7 @@ class ParticleTestState : SwitchableState() {
 
     override suspend fun onRegister(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         colliders.forEach {
-            physicsEngine.applyForce(Direction.random().vector.scale(2.0.units), it, 0.1)
+            it.addForce(Direction.random().vector.scale(2.0.units), 0.1)
         }
     }
 

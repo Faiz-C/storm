@@ -79,10 +79,10 @@ class AtRestTestState : SwitchableState() {
         soundManager.add("bgm", bgm)
         soundManager.adjustAllVolume(0.1)
 
-        physicsEngine.applyForce(gravity, repellingBall)
-        physicsEngine.applyForce(gravity, repellingBall2)
-        physicsEngine.applyForce(gravity, repellingBall3)
-        physicsEngine.applyForce(gravity, repellingBall4)
+        repellingBall.addForce(gravity)
+        repellingBall2.addForce(gravity)
+        repellingBall3.addForce(gravity)
+        repellingBall4.addForce(gravity)
     }
 
     override suspend fun onSwapOff(physicsEngine: PhysicsEngine, soundManager: SoundManager) {

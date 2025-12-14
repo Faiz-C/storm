@@ -22,34 +22,31 @@ class ImpulseResolutionPhysicsEngine : PhysicsEngine(
         private const val POSITIONAL_CORRECTION_THRESHOLD = 0.01 // This is in pixels as the unit conversion is up to the user
     }
 
-    // I think collision states should be held in the engine, not on the colliders
-    // We are doubling up on memory by storing on both ends when we don't need to
-
     override suspend fun processCollisions(collider: Collider) {
         collider.boundaries.forEach boundaries@{ (_, section) ->
             this.collisionStructure.getCloseNeighbours(collider, section)
                 .forEach neighbourCollisionCheck@{ (neighbourSection, neighbour) ->
-
-                    // If the neighbour has already checked for collisions against this section of our collider
-                    // then we can safely skip this check ourselves. No need to check twice
-                    if (hasCheckedCollision(collider, neighbour, section)) return@neighbourCollisionCheck
+                    // Record that we have checked these sections. If they have already been recorded then
+                    // skip the logic below since it's already been done.
+                    if (!recordCollisionState(section, neighbourSection)) return@neighbourCollisionCheck
 
                     // Check collision and get back the minimum translation vector
                     val mtv = checkMtv(section, neighbourSection)
 
                     if (mtv === Vector.ZERO_VECTOR) {
-                        // Update the collision states and mark these as not collided
-                        updateCollisionState(collider, neighbourSection, false)
                         return@neighbourCollisionCheck
                     }
 
-                    // resolve collision via impulse resolution
+                    // Resolve collision via impulse resolution
                     impulsiveResolution(collider, neighbour, mtv)
 
-                    // Update the collision states, mark these as collided, and trigger collision handlers
-                    collider.collide(neighbour, neighbourSection)
-                    neighbour.collide(collider, section)
-                    updateCollisionState(collider, neighbourSection, true)
+                    // Create an event to let listeners act on the collision as needed
+                    createCollisionEvent(
+                        collider,
+                        neighbour,
+                        section,
+                        neighbourSection
+                    )
                 }
         }
     }

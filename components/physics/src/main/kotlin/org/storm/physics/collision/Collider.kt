@@ -5,6 +5,8 @@ import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.geometry.Geometric
 import org.storm.physics.math.Vector
 import org.storm.physics.math.geometry.shapes.CollidableShape
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.set
 
 /**
  * Encapsulates collision and physics data. Can be associated to another object.
@@ -13,11 +15,13 @@ class Collider(
     val boundaries: MutableMap<String, CollidableShape>,
     mass: Double,
     var restitution: Double = 0.7,
-    val associatedObj: Any? = null
+    val associatedObj: Any? = null,
+    var eventOnCollision: Boolean = false
 ) : Geometric, Renderable {
 
     companion object {
-        private const val SINGLE_BOUNDARY = "single boundary"
+        private const val SINGLE_BOUNDARY = "single-boundary"
+        private const val INFINITE_DURATION = Double.POSITIVE_INFINITY
     }
 
     var velocity: Vector = Vector.Companion.ZERO_VECTOR
@@ -29,21 +33,23 @@ class Collider(
             field = value
         }
 
-    var inverseMass = 1.0
+    var inverseMass: Double = 1.0
         private set
 
     val boundary: CollidableShape? get() = this.boundaries[SINGLE_BOUNDARY]
 
     val immovable: Boolean get() = mass == Double.POSITIVE_INFINITY || mass == Double.NEGATIVE_INFINITY
 
-    private val collisionHandlers: MutableList<(Collider, CollidableShape) -> Unit> = mutableListOf()
+    val forces: Map<Vector, Double> get() = _forces
+
+    private val _forces: MutableMap<Vector, Double> = ConcurrentHashMap()
 
     constructor(
         boundary: CollidableShape,
         mass: Double,
         restitution: Double = 1.0,
         associatedObj: Any? = null
-    ) : this(mutableMapOf(SINGLE_BOUNDARY to boundary), mass, restitution)
+    ) : this(mutableMapOf(SINGLE_BOUNDARY to boundary), mass, restitution, associatedObj)
 
     init {
         require(this.restitution in 0.0..1.0) { "restitution must be in the range [0, 1]" }
@@ -51,25 +57,42 @@ class Collider(
     }
 
     /**
-     * Triggers a collision between this collider and the given collider's specific boundary. This will trigger all
-     * registered collision handlers.
+     * Adds the force to the collider for the given duration (in seconds). If the force already
+     * exists then the duration is added to the existing duration. Providing no duration value
+     * defaults to infinite duration.
      *
-     * @param collider Collider which owns the boundary we collided with
-     * @param boundary Specific boundary we collided with
+     * @param force Vector representing the force to apply
+     * @param duration How long to apply the force for in seconds
      */
-    fun collide(collider: Collider, boundary: CollidableShape) {
-        collisionHandlers.forEach {
-            it(collider, boundary)
+    fun addForce(force: Vector, duration: Double = INFINITE_DURATION) {
+        this._forces.computeIfPresent(force) { _, remainingDuration ->
+            remainingDuration + duration
         }
+        this._forces.putIfAbsent(force, duration)
     }
 
     /**
-     * Adds the given callback as a collision handler to be called when this collider collides with something.
+     * Applies accumulated forces to update the collider's velocity.
      *
-     * @param callback the callback function to invoke when a collision occurs
+     * Converts each force to acceleration (F/m), applies it to velocity, and decrements
+     * the force duration. Forces with expired durations are removed.
+     *
+     * @param elapsedTime The time elapsed since the last update in seconds
      */
-    fun addOnCollisionHandler(callback: (Collider, CollidableShape) -> Unit) {
-        collisionHandlers.add(callback)
+    fun applyForces(elapsedTime: Double) {
+        // Using iterator approach here to handle this in one pass
+        val iterator = this._forces.entries.iterator()
+        while (iterator.hasNext()) {
+            val (force, remainingDuration) = iterator.next()
+            val acceleration = force.scale(elapsedTime / this.mass)
+            this.velocity = this.velocity.add(acceleration)
+
+            if (remainingDuration <= elapsedTime) {
+                iterator.remove()
+            } else {
+                this._forces[force] = remainingDuration - elapsedTime
+            }
+        }
     }
 
     /**

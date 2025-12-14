@@ -107,8 +107,8 @@ class MultiPartBoundaryTest : Application() {
         runBlocking {
             physicsSimulator.physicsEngine.paused = true
 
-            physicsSimulator.physicsEngine.applyForce(Direction.NORTH_WEST.vector.scale(100.0.units), multiPartBoundaryEntity, 0.1)
-            physicsSimulator.physicsEngine.applyForce(Direction.NORTH.vector.scale(100.0.units), multiPartBoundaryEntity, 0.1)
+            multiPartBoundaryEntity.addForce(Direction.NORTH_WEST.vector.scale(100.0.units), 0.1)
+            multiPartBoundaryEntity.addForce(Direction.NORTH.vector.scale(100.0.units), 0.1)
 
             EventManager.getJfxKeyEventStream().addConsumer {
                 if (it.code == KeyCode.SPACE && it.eventType == KeyEvent.KEY_PRESSED) {

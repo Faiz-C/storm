@@ -91,11 +91,11 @@ class VisualAtRestTest : Application() {
         runBlocking {
             physicsSimulator.physicsEngine.paused = true
 
-            physicsSimulator.physicsEngine.applyForce(Direction.SOUTH.vector.scale(10.0.units), repellingBall)
-            physicsSimulator.physicsEngine.applyForce(Direction.NORTH.vector.scale(30.0.units), repellingBall, 2.0)
-            physicsSimulator.physicsEngine.applyForce(Direction.SOUTH.vector.scale(30.0.units), repellingBall2)
-            physicsSimulator.physicsEngine.applyForce(Direction.SOUTH.vector.scale(25.0.units), repellingBall3)
-            physicsSimulator.physicsEngine.applyForce(Direction.SOUTH.vector.scale(25.0.units), repellingBall4)
+            repellingBall.addForce(Direction.SOUTH.vector.scale(10.0.units))
+            repellingBall.addForce(Direction.NORTH.vector.scale(30.0.units), 2.0)
+            repellingBall2.addForce(Direction.SOUTH.vector.scale(30.0.units))
+            repellingBall3.addForce(Direction.SOUTH.vector.scale(25.0.units))
+            repellingBall4.addForce(Direction.SOUTH.vector.scale(25.0.units))
 
             EventManager.getJfxKeyEventStream().addConsumer {
                 if (it.code == KeyCode.SPACE && it.eventType == KeyEvent.KEY_PRESSED) {

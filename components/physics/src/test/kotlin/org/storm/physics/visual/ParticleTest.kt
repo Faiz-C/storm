@@ -96,7 +96,7 @@ class ParticleTest : Application() {
             physicsSimulator.physicsEngine.paused = true
 
             colliders.forEach {
-                physicsSimulator.physicsEngine.applyForce(Direction.random().vector.scale(2.0.units), it, 0.1)
+                it.addForce(Direction.random().vector.scale(2.0.units), 0.1)
             }
 
             EventManager.getJfxKeyEventStream().addConsumer {
