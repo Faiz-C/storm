@@ -62,7 +62,7 @@ class BouncingBallTestState : SwitchableState() {
         soundManager.add("bgm", bgm)
         soundManager.adjustAllVolume(0.1)
 
-        physicsEngine.applyForce(Direction.SOUTH_EAST.vector.scale(100.0.units), colliders.last(), 0.1)
+        colliders.last().addForce(Direction.SOUTH_EAST.vector.scale(100.0.units), 0.1)
     }
 
     override suspend fun onSwapOn(physicsEngine: PhysicsEngine, soundManager: SoundManager) {

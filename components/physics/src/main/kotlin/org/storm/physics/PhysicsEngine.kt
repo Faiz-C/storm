@@ -1,16 +1,14 @@
 package org.storm.physics
 
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import org.storm.core.event.EventManager
 import org.storm.core.extensions.units
 import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.Renderable
-import org.storm.core.update.Updatable
 import org.storm.physics.collision.Collider
-import org.storm.physics.math.Vector
+import org.storm.physics.events.CollisionEvent
+import org.storm.physics.events.getCollisionEventStream
 import org.storm.physics.math.geometry.shapes.CollidableShape
 import org.storm.physics.structures.SpatialDataStructure
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * A PhysicsEngine is an abstract representation of a game engine's physics core. A PhysicsEngine deals with applying
@@ -19,85 +17,31 @@ import java.util.concurrent.ConcurrentHashMap
  */
 abstract class PhysicsEngine protected constructor(
     protected val collisionStructure: SpatialDataStructure
-) : Updatable, Renderable {
+) : Renderable {
 
     companion object {
-        private const val INFINITE_DURATION = Double.NEGATIVE_INFINITY
         private const val MINIMUM_REST_VELOCITY = 0.0001 // In pixels as the unit conversion is up to the User
     }
 
-    var colliders: Set<Collider> = emptySet()
-        private set
-
     var paused = false
 
-    // Tracks what forces exist in the game, what colliders they are acting on, and for how long
-    private val forces: MutableMap<Vector, MutableMap<Collider, Double>> = mutableMapOf()
-    private val collisions: MutableMap<Collider, MutableMap<CollidableShape, Boolean>> = mutableMapOf()
-
-    protected val entityMutex = Mutex()
-
-    suspend fun setColliders(colliders: Set<Collider>) {
-        this.entityMutex.withLock {
-            this.colliders = colliders
-            this.collisionStructure.clear()
-            resetCollisionData()
-        }
-    }
+    private val collisions: MutableSet<Pair<CollidableShape, CollidableShape>> = mutableSetOf()
 
     /**
-     * Applies the force to the collider for the given duration (in seconds).
+     * Updates the physics simulation for all given colliders.
      *
-     * @param force Vector representing the force to apply
-     * @param collider Collider to apply the force to
-     * @param duration How long to apply the force for in seconds
+     * This is the main entry point for the physics engine, called once per frame.
+     * It prepares the collision detection system, then processes forces, collisions,
+     * and movement for each collider.
+     *
+     * @param colliders The set of active colliders to simulate
+     * @param elapsedTime The time elapsed since the last update in seconds
      */
-    fun applyForce(force: Vector, collider: Collider, duration: Double = INFINITE_DURATION) {
-        this.forces.computeIfPresent(force) { _, actingColliders ->
-            actingColliders.computeIfPresent(collider) { _, remainingDuration ->
-                remainingDuration + duration
-            }
-            actingColliders.putIfAbsent(collider, duration)
-            actingColliders
-        }
-
-        this.forces.putIfAbsent(
-            force,
-            ConcurrentHashMap<Collider, Double>().apply {
-                this[collider] = duration
-            }
-        )
-    }
-
-    /**
-     * Clears all forces from all entities being tracked
-     */
-    suspend fun clearAllForces() {
-        this.entityMutex.withLock {
-            this.forces.clear()
-        }
-    }
-
-    /**
-     * Clears all forces which are on the current set of colliders
-     */
-    suspend fun clearCurrentColliderForces() {
-        this.entityMutex.withLock {
-            this.colliders.forEach { collider ->
-                this.forces.forEach { _, actingColliders ->
-                    actingColliders.remove(collider)
-                }
-            }
-        }
-    }
-
-    override suspend fun update(time: Double, elapsedTime: Double) {
+    suspend fun update(colliders: Set<Collider>, elapsedTime: Double) {
         if (this.paused) return
 
-        this.entityMutex.withLock {
-            resetCollisionData()
-            this.colliders.forEach { collider -> processPhysics(collider, elapsedTime) }
-        }
+        setColliders(colliders)
+        colliders.forEach { collider -> processPhysics(collider, elapsedTime) }
     }
 
     override suspend fun render(canvas: Canvas, x: Double, y: Double) {
@@ -105,28 +49,40 @@ abstract class PhysicsEngine protected constructor(
     }
 
     /**
-     * Resets all collision data for all entities.
+     * Records the fact that we checked collisions between these two CollidableShapes (e.g., collider boundaries).
+     * This is used to ensure we don't over check collisions when processing.
+     *
+     * @param b1 CollidableShape included in the check
+     * @param b2 CollidableShape included in the check
+     * @return true if this is a newly recorded check, false if we have already seen it
      */
-    protected open suspend fun resetCollisionData() {
-        this.collisionStructure.clear()
-        this.collisions.clear()
-        this.colliders.forEach { collider: Collider ->
-            collider.boundaries.forEach { (_, boundary) ->
-                this.collisionStructure.insert(collider, boundary)
-            }
+    protected fun recordCollisionCheck(b1: CollidableShape, b2: CollidableShape): Boolean {
+        val pair = if (b1.hashCode() > b2.hashCode()) {
+            b1 to b2
+        } else {
+            b2 to b1
         }
+        return this.collisions.add(pair)
     }
 
-    protected fun hasCheckedCollision(c1: Collider, c2: Collider, boundary: CollidableShape): Boolean {
-        return collisions[c1]?.contains(boundary) == true || collisions[c2]?.contains(boundary) == true
-    }
+    /**
+     * Creates a collision event if at least one of the two colliders has `eventOnCollision` set to true.
+     *
+     * @param c1 Collider involved in collision
+     * @param c2 Collider involved in collision
+     * @param b1 CollidableShape representing the boundary of c1 that was involved in the collision
+     * @param b2 CollidableShape representing the boundary of c2 that was involved in the collision
+     */
+    protected fun createCollisionEvent(
+        c1: Collider,
+        c2: Collider,
+        b1: CollidableShape,
+        b2: CollidableShape
+    ) {
+        if (!c1.eventOnCollision && !c2.eventOnCollision) return
 
-    protected fun updateCollisionState(collider: Collider, boundary: CollidableShape, collided: Boolean) {
-        collisions.computeIfPresent(collider) { _, boundaries ->
-            boundaries[boundary] = collided
-            boundaries
-        }
-        collisions.putIfAbsent(collider, mutableMapOf(boundary to collided))
+        EventManager.getCollisionEventStream()
+            .produce(CollisionEvent(c1, c2, b1, b2))
     }
 
     /**
@@ -138,6 +94,21 @@ abstract class PhysicsEngine protected constructor(
     protected abstract suspend fun processCollisions(collider: Collider)
 
     /**
+     * Prepares the physics engine for the next update cycle with the given colliders.
+     * @param colliders The set of active colliders to process
+     */
+    private fun setColliders(colliders: Set<Collider>) {
+        this.collisionStructure.clear()
+        this.collisions.clear()
+
+        colliders.forEach { collider: Collider ->
+            collider.boundaries.forEach { (_, boundary) ->
+                this.collisionStructure.insert(collider, boundary)
+            }
+        }
+    }
+
+    /**
      * Processes standard Physics for a given entity based on its physics data up to this point.
      *
      * @param collider Collider to process physics for
@@ -145,7 +116,7 @@ abstract class PhysicsEngine protected constructor(
      */
     private suspend fun processPhysics(collider: Collider, elapsedTime: Double) {
         // Apply all forces onto entity
-        applyForces(collider, elapsedTime)
+        collider.applyForces(elapsedTime)
 
         // If the entity has zero or extremely little velocity then consider it at rest. This means we DON'T check collision
         val minimumRestVelocity = MINIMUM_REST_VELOCITY.units
@@ -154,31 +125,7 @@ abstract class PhysicsEngine protected constructor(
         // Check and process any collisions
         processCollisions(collider)
 
-        // Translate the entity by the forces applied to it
+        // Translate the entity
         collider.translateByVelocity()
-    }
-
-    /**
-     * Applies all forces acting on the given collider.
-     *
-     * @param collider Collider to apply forces for
-     * @param elapsedTime elapsed time (in seconds) since forces were last applied to this Collider
-     */
-    private fun applyForces(collider: Collider, elapsedTime: Double) {
-        this.forces.forEach { (x, y), actingColliders ->
-            actingColliders[collider]?.let { remainingDuration ->
-                val aX = x / collider.mass // x acceleration
-                val aY = y / collider.mass // y acceleration
-
-                collider.velocity = collider.velocity.add(Vector(aX * elapsedTime, aY * elapsedTime))
-                val adjustedDuration = if (remainingDuration == INFINITE_DURATION) INFINITE_DURATION else remainingDuration - elapsedTime
-
-                if (adjustedDuration != INFINITE_DURATION && adjustedDuration <= 0) {
-                    actingColliders.remove(collider)
-                } else {
-                    actingColliders[collider] = adjustedDuration
-                }
-            }
-        }
     }
 }

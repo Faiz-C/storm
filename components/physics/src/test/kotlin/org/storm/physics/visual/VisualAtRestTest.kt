@@ -76,19 +76,26 @@ class VisualAtRestTest : Application() {
     override fun start(stage: Stage) {
         // Make a Display
         val window = JfxWindow()
-        physicsSimulator = PhysicsSimulator(400.0) { render(window) }
+        physicsSimulator = PhysicsSimulator(400.0, setOf(
+            platform,
+            repellingBall,
+            repellingBall2,
+            repellingBall3,
+            repellingBall4
+        )) {
+            render(window)
+        }
 
         EventManager.registerJfxKeyEvents(window)
 
         runBlocking {
             physicsSimulator.physicsEngine.paused = true
-            physicsSimulator.physicsEngine.setColliders(setOf(platform, repellingBall, repellingBall2, repellingBall3, repellingBall4))
 
-            physicsSimulator.physicsEngine.applyForce(Direction.SOUTH.vector.scale(10.0.units), repellingBall)
-            physicsSimulator.physicsEngine.applyForce(Direction.NORTH.vector.scale(30.0.units), repellingBall, 2.0)
-            physicsSimulator.physicsEngine.applyForce(Direction.SOUTH.vector.scale(30.0.units), repellingBall2)
-            physicsSimulator.physicsEngine.applyForce(Direction.SOUTH.vector.scale(25.0.units), repellingBall3)
-            physicsSimulator.physicsEngine.applyForce(Direction.SOUTH.vector.scale(25.0.units), repellingBall4)
+            repellingBall.addForce(Direction.SOUTH.vector.scale(10.0.units))
+            repellingBall.addForce(Direction.NORTH.vector.scale(30.0.units), 2.0)
+            repellingBall2.addForce(Direction.SOUTH.vector.scale(30.0.units))
+            repellingBall3.addForce(Direction.SOUTH.vector.scale(25.0.units))
+            repellingBall4.addForce(Direction.SOUTH.vector.scale(25.0.units))
 
             EventManager.getJfxKeyEventStream().addConsumer {
                 if (it.code == KeyCode.SPACE && it.eventType == KeyEvent.KEY_PRESSED) {

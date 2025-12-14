@@ -78,7 +78,6 @@ class ParticleTest : Application() {
 
         EventManager.registerJfxKeyEvents(window)
 
-        this.physicsSimulator = PhysicsSimulator(144.0) { render(window) }
         this.colliders.add(boundingBox)
 
         for (i in 0..999) {
@@ -91,12 +90,13 @@ class ParticleTest : Application() {
             this.colliders.add(Collider(Circle(x, y, 2.0.units), 5.units, 1.0))
         }
 
+        this.physicsSimulator = PhysicsSimulator(144.0, colliders) { render(window) }
+
         runBlocking {
             physicsSimulator.physicsEngine.paused = true
-            physicsSimulator.physicsEngine.setColliders(colliders)
 
             colliders.forEach {
-                physicsSimulator.physicsEngine.applyForce(Direction.random().vector.scale(2.0.units), it, 0.1)
+                it.addForce(Direction.random().vector.scale(2.0.units), 0.1)
             }
 
             EventManager.getJfxKeyEventStream().addConsumer {

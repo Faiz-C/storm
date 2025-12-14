@@ -148,8 +148,6 @@ class StormEngine(
 
         this.currentState = newState
 
-        this.physicsEngine.setColliders(this.currentState!!.colliders)
-
         this.currentState!!.onSwapOn(this.physicsEngine, this.soundManager)
 
         // Resume the engine
@@ -197,6 +195,9 @@ class StormEngine(
         // get disrupted by potential changes to the current state
         val frameState = this.currentState!!
 
+        // Stage 1 Event Processing: Inputs and other async events
+        EventManager.processEvents()
+
         // Process Input
         this.inputManager.updateInputState(toMilliseconds(this.lastUpdateTime))
         val actionState = frameState.getActionState(this.inputManager.getCurrentInputState())
@@ -208,14 +209,14 @@ class StormEngine(
         if (++this.physicsDelay >= this.physicsFpsRatio) {
             // Apply Physics for as long as we have leeway through our accumulator
             while (this.accumulator >= this.fixedTimeStepInterval) {
-                this.physicsEngine.update(toSeconds(this.lastUpdateTime), toSeconds(elapsedFrameTime))
+                this.physicsEngine.update(frameState.colliders, toSeconds(elapsedFrameTime))
                 this.accumulator -= this.fixedTimeStepInterval
                 this.lastUpdateTime += this.fixedTimeStepInterval
             }
             this.physicsDelay = 0
         }
 
-        // Process all events that were produced this frame
+        // Stage 2 Event Processing: Produced events from game updates
         EventManager.processEvents()
 
         if (++this.renderDelay >= this.renderFpsRatio) {
