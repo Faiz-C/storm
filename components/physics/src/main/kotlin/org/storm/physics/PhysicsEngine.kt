@@ -48,7 +48,15 @@ abstract class PhysicsEngine protected constructor(
         this.collisionStructure.render(canvas, 0.0, 0.0)
     }
 
-    protected fun recordCollisionState(b1: CollidableShape, b2: CollidableShape): Boolean {
+    /**
+     * Records the fact that we checked collisions between these two CollidableShapes (e.g., collider boundaries).
+     * This is used to ensure we don't over check collisions when processing.
+     *
+     * @param b1 CollidableShape included in the check
+     * @param b2 CollidableShape included in the check
+     * @return true if this is a newly recorded check, false if we have already seen it
+     */
+    protected fun recordCollisionCheck(b1: CollidableShape, b2: CollidableShape): Boolean {
         val pair = if (b1.hashCode() > b2.hashCode()) {
             b1 to b2
         } else {
@@ -57,6 +65,14 @@ abstract class PhysicsEngine protected constructor(
         return this.collisions.add(pair)
     }
 
+    /**
+     * Creates a collision event if at least one of the two colliders has `eventOnCollision` set to true.
+     *
+     * @param c1 Collider involved in collision
+     * @param c2 Collider involved in collision
+     * @param b1 CollidableShape representing the boundary of c1 that was involved in the collision
+     * @param b2 CollidableShape representing the boundary of c2 that was involved in the collision
+     */
     protected fun createCollisionEvent(
         c1: Collider,
         c2: Collider,

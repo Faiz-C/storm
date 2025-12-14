@@ -24,7 +24,7 @@ class Collider(
         private const val INFINITE_DURATION = Double.POSITIVE_INFINITY
     }
 
-    var velocity: Vector = Vector.Companion.ZERO_VECTOR
+    var velocity: Vector = Vector.ZERO_VECTOR
 
     var mass: Double = 1.0
         set(value) {
@@ -40,9 +40,7 @@ class Collider(
 
     val immovable: Boolean get() = mass == Double.POSITIVE_INFINITY || mass == Double.NEGATIVE_INFINITY
 
-    val forces: Map<Vector, Double> get() = _forces
-
-    private val _forces: MutableMap<Vector, Double> = ConcurrentHashMap()
+    private val forces: MutableMap<Vector, Double> = ConcurrentHashMap()
 
     constructor(
         boundary: CollidableShape,
@@ -65,10 +63,10 @@ class Collider(
      * @param duration How long to apply the force for in seconds
      */
     fun addForce(force: Vector, duration: Double = INFINITE_DURATION) {
-        this._forces.computeIfPresent(force) { _, remainingDuration ->
+        this.forces.computeIfPresent(force) { _, remainingDuration ->
             remainingDuration + duration
         }
-        this._forces.putIfAbsent(force, duration)
+        this.forces.putIfAbsent(force, duration)
     }
 
     /**
@@ -81,7 +79,7 @@ class Collider(
      */
     fun applyForces(elapsedTime: Double) {
         // Using iterator approach here to handle this in one pass
-        val iterator = this._forces.entries.iterator()
+        val iterator = this.forces.entries.iterator()
         while (iterator.hasNext()) {
             val (force, remainingDuration) = iterator.next()
             val acceleration = force.scale(elapsedTime / this.mass)
@@ -90,7 +88,7 @@ class Collider(
             if (remainingDuration <= elapsedTime) {
                 iterator.remove()
             } else {
-                this._forces[force] = remainingDuration - elapsedTime
+                this.forces[force] = remainingDuration - elapsedTime
             }
         }
     }

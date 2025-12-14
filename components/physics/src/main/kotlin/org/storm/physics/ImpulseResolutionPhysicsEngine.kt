@@ -28,7 +28,7 @@ class ImpulseResolutionPhysicsEngine : PhysicsEngine(
                 .forEach neighbourCollisionCheck@{ (neighbourSection, neighbour) ->
                     // Record that we have checked these sections. If they have already been recorded then
                     // skip the logic below since it's already been done.
-                    if (!recordCollisionState(section, neighbourSection)) return@neighbourCollisionCheck
+                    if (!recordCollisionCheck(section, neighbourSection)) return@neighbourCollisionCheck
 
                     // Check collision and get back the minimum translation vector
                     val mtv = checkMtv(section, neighbourSection)
