@@ -59,7 +59,7 @@ class Collider(
      * exists then the duration is added to the existing duration. Providing no duration value
      * defaults to infinite duration.
      *
-     * @param force Vector representing the force to apply
+     * @param force Vector representing the force to add
      * @param duration How long to apply the force for in seconds
      */
     fun addForce(force: Vector, duration: Double = INFINITE_DURATION) {

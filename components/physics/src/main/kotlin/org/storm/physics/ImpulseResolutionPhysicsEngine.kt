@@ -79,11 +79,11 @@ class ImpulseResolutionPhysicsEngine : PhysicsEngine(
         val mag = FastMath.max(mtv.magnitude - POSITIONAL_CORRECTION_THRESHOLD.units, 0.0)
         val correction = mag / (c1.inverseMass + c2.inverseMass) * POSITIONAL_CORRECTION_ADJUSTMENT.units
 
-        val requiredE1Translation = collisionNormal.scale(correction * c1.inverseMass)
-        val requiredE2Translation = collisionNormal.scale(-correction * c2.inverseMass)
+        val requiredC1Translation = collisionNormal.scale(correction * c1.inverseMass)
+        val requiredC2Translation = collisionNormal.scale(-correction * c2.inverseMass)
 
-        c1.translate(requiredE1Translation.x, requiredE1Translation.y)
-        c2.translate(requiredE2Translation.x, requiredE2Translation.y)
+        c1.translate(requiredC1Translation.x, requiredC1Translation.y)
+        c2.translate(requiredC2Translation.x, requiredC2Translation.y)
     }
 
 }

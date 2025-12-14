@@ -94,7 +94,7 @@ abstract class PhysicsEngine protected constructor(
     protected abstract suspend fun processCollisions(collider: Collider)
 
     /**
-     * Prepares the physics engine for the next update cycle for the given colliders.
+     * Prepares the physics engine for the next update cycle with the given colliders.
      * @param colliders The set of active colliders to process
      */
     private fun setColliders(colliders: Set<Collider>) {
@@ -125,7 +125,7 @@ abstract class PhysicsEngine protected constructor(
         // Check and process any collisions
         processCollisions(collider)
 
-        // Translate the entity by the forces applied to it
+        // Translate the entity
         collider.translateByVelocity()
     }
 }
