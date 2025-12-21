@@ -16,6 +16,10 @@ class SpriteSheet(
 ) {
     val sprites: Array<Array<Image>> = spriteSheet.chop(spriteWidth, spriteHeight)
 
+    val columns: Int = this.sprites[0].size
+
+    val rows: Int = this.sprites.size
+
     /**
      * @param row row number of the sprite
      * @param col column number of the sprite
