@@ -107,7 +107,11 @@ class QuadrantTree(
                 true
             }
         } else {
-            this.getQuadrantFor(boundary)?.remove(collider, boundary) ?: false
+            this.getQuadrantFor(boundary)?.remove(collider, boundary)
+                ?: synchronized(this.contentLock) {
+                    // This handles the case where the boundary might exist in between quadrants
+                    this.content.remove(boundary) != null
+                }
         }
     }
 
