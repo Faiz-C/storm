@@ -117,6 +117,7 @@ class VectorTest {
         assertNotEquals(v1, v2)
         assertEquals(v1, v3)
         assertEquals(v4, v5)
+        assertEquals(Vector(-0.0, -0.0), Vector(0.0, 0.0))
     }
 
 }
