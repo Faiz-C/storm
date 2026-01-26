@@ -6,10 +6,14 @@ javafx {
     configuration = "testImplementation"
 }
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
 dependencies {
     api(project(":components:core"))
     api("org.apache.commons:commons-math3:3.6.1")
-    //api("com.google.guava:guava:33.0.0-jre")
     testImplementation(project(":components:jfx"))
 }
 
@@ -58,6 +62,8 @@ publishing {
             version = version
 
             from(components["kotlin"])
+            artifact(tasks["sourcesJar"])
+            artifact(tasks["javadocJar"])
         }
     }
 }

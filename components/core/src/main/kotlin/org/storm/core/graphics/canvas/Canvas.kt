@@ -3,6 +3,7 @@ package org.storm.core.graphics.canvas
 import org.storm.core.extensions.pixels
 import org.storm.core.graphics.Image
 import org.storm.core.graphics.geometry.Point
+import org.storm.core.graphics.geometry.shape.Rectangle
 import java.util.Stack
 
 abstract class Canvas(
@@ -131,6 +132,15 @@ abstract class Canvas(
      * Clears the Canvas
      */
     abstract suspend fun clear()
+
+    /**
+     * Creates a clipping area based on the given boundary such that anything outside it does not
+     * get rendered
+     *
+     * @param boundary The clipping boundary
+     * @param block The canvas rendering code to execute within this boundary
+     */
+    abstract suspend fun withClip(boundary: Rectangle, block: suspend Canvas.() -> Unit)
 
     /**
      * A hook which triggers whenever the withBrush method is used to change the active Brush settings. This is where

@@ -2,6 +2,9 @@ package org.storm.core.graphics.geometry.shape
 
 import org.storm.core.graphics.geometry.Point
 
+/**
+ * A simple class representing a Rectangle
+ */
 open class Rectangle(
     p1: Point,
     p2: Point,
@@ -22,5 +25,11 @@ open class Rectangle(
         Point(x + width, y + height),
         Point(x, y + height)
     )
+
+    val x get() = this.vertices[TOP_LEFT_POINT].x
+    val y get() = this.vertices[TOP_LEFT_POINT].y
+
+    val width get() = this.vertices[TOP_RIGHT_POINT].x - this.vertices[TOP_LEFT_POINT].x
+    val height get() = this.vertices[BOTTOM_LEFT_POINT].y - this.vertices[TOP_LEFT_POINT].y
 
 }

@@ -5,6 +5,11 @@ javafx {
     modules("javafx.graphics", "javafx.media")
 }
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
 dependencies {
     api(project(":components:core"))
 }
@@ -17,6 +22,8 @@ publishing {
             version = version
 
             from(components["kotlin"])
+            artifact(tasks["sourcesJar"])
+            artifact(tasks["javadocJar"])
         }
     }
 }

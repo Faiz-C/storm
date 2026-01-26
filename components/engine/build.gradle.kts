@@ -6,6 +6,11 @@ javafx {
     configuration = "testImplementation"
 }
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
 dependencies {
     api(project(":components:core"))
     api(project(":components:physics"))
@@ -31,6 +36,8 @@ publishing {
             version = version
 
             from(components["kotlin"])
+            artifact(tasks["sourcesJar"])
+            artifact(tasks["javadocJar"])
         }
     }
 }

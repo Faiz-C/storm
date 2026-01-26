@@ -6,6 +6,11 @@ javafx {
     configuration = "testImplementation"
 }
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
 dependencies {
     implementation("org.reflections:reflections:0.10.2")
     testImplementation(project(":components:jfx"))
@@ -19,6 +24,8 @@ publishing {
             version = version
 
             from(components["kotlin"])
+            artifact(tasks["sourcesJar"])
+            artifact(tasks["javadocJar"])
         }
     }
 }

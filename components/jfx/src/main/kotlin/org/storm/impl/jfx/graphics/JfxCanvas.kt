@@ -11,6 +11,7 @@ import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.canvas.Settings
 import org.storm.core.graphics.Image
 import org.storm.core.graphics.geometry.Point
+import org.storm.core.graphics.geometry.shape.Rectangle
 
 class JfxCanvas(private val gc: GraphicsContext): Canvas() {
 
@@ -29,6 +30,20 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
 
     override suspend fun clear() {
         gc.clearRect(0.0, 0.0, Context.RESOLUTION.width, Context.RESOLUTION.height)
+    }
+
+    override suspend fun withClip(
+        boundary: Rectangle,
+        block: suspend Canvas.() -> Unit
+    ) {
+        gc.save()
+        gc.beginPath()
+        gc.rect(boundary.x, boundary.y, boundary.width, boundary.height)
+        gc.clip()
+
+        block()
+
+        gc.restore()
     }
 
     override suspend fun onSettingsChange(settings: Settings) {
