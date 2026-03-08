@@ -95,8 +95,6 @@ class StormEngine(
     init {
         this.renderFps = renderFps
         this.physicsEngine.paused = true
-
-        Context.loadMappers()
     }
 
     /**

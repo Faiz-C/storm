@@ -2,10 +2,14 @@ package org.storm.core.context
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
+import com.fasterxml.jackson.module.kotlin.addDeserializer
+import com.fasterxml.jackson.module.kotlin.addSerializer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.storm.core.extensions.units
@@ -25,20 +29,21 @@ object CoreContext {
 /**
  * Loads default mappers for JSON, YAML and XML to help with serialization and deserialization of data
  */
-fun Context.loadMappers() {
-    val commonDeserializers = SimpleModule()
-        .addDeserializer(Color::class.java, ColorDeserializer())
+fun Context.loadMappers(moduleInitializer: (SimpleModule) -> SimpleModule = { it }) {
+    val module = moduleInitializer(
+        SimpleModule().addDeserializer(Color::class.java, ColorDeserializer())
+    )
 
     this.update(mapOf(
         CoreContext.JSON_MAPPER to jacksonObjectMapper()
-            .registerModule(commonDeserializers),
+            .registerModule(module),
         CoreContext.YAML_MAPPER to YAMLMapper()
             .configure(JsonParser.Feature.ALLOW_YAML_COMMENTS, true)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .registerModule(commonDeserializers)
+            .registerModule(module)
             .registerKotlinModule(),
         CoreContext.XML_MAPPER to XmlMapper()
-            .registerModule(commonDeserializers)
+            .registerModule(module)
             .registerKotlinModule()
     ))
 }
