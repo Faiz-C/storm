@@ -31,7 +31,7 @@ allprojects {
         val slf4jVersion = "2.0.16"
         val jacksonVersion = "2.18.1"
         val coroutinesVersion = "1.9.0"
-        val junitVersion = "5.9.0"
+        val junitVersion = "5.11.0"
 
         api("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         api("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$coroutinesVersion")

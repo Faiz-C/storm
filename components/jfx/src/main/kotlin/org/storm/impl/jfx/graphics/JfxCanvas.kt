@@ -17,14 +17,19 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
 
     companion object {
         fun getTextBounds(text: String, font: org.storm.core.graphics.canvas.Font): Pair<Double, Double> {
+            val textNode = makeTextNode(text, font)
+            val bounds = textNode.layoutBounds
+            return bounds.width to bounds.height
+        }
+
+        private fun makeTextNode(text: String, font: org.storm.core.graphics.canvas.Font): Text {
             val textNode = Text(text)
             textNode.font = Font.font(
                 font.type,
                 FontWeight.findByWeight(font.weight),
                 font.size
             )
-            val bounds = textNode.layoutBounds
-            return bounds.width to textNode.baselineOffset
+            return textNode
         }
     }
 
@@ -63,11 +68,11 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
     }
 
     override suspend fun drawText(text: String, x: Double, y: Double) {
-        val (_, textHeight) = getTextBounds(text, this.settings.font)
+        val baselineOffset = makeTextNode(text, this.settings.font).baselineOffset
         if (this.settings.fill) {
-            gc.fillText(text, x, y + textHeight)
+            gc.fillText(text, x, y + baselineOffset)
         } else {
-            gc.strokeText(text, x, y + textHeight)
+            gc.strokeText(text, x, y + baselineOffset)
         }
     }
 
