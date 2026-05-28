@@ -1,10 +1,13 @@
 package org.storm.impl.jfx.graphics
 
+import javafx.geometry.VPos
 import javafx.scene.canvas.GraphicsContext
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
 import javafx.scene.text.Text
+import javafx.scene.text.TextAlignment
+import javafx.scene.text.TextBoundsType
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION
 import org.storm.core.graphics.canvas.Canvas
@@ -22,7 +25,7 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
             return bounds.width to bounds.height
         }
 
-        private fun makeTextNode(text: String, font: org.storm.core.graphics.canvas.Font): Text {
+        fun makeTextNode(text: String, font: org.storm.core.graphics.canvas.Font): Text {
             val textNode = Text(text)
             textNode.font = Font.font(
                 font.type,
@@ -31,6 +34,11 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
             )
             return textNode
         }
+    }
+
+    init {
+        gc.textBaseline = VPos.TOP
+        gc.textAlign = TextAlignment.LEFT
     }
 
     override suspend fun clear() {
@@ -68,11 +76,10 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
     }
 
     override suspend fun drawText(text: String, x: Double, y: Double) {
-        val baselineOffset = makeTextNode(text, this.settings.font).baselineOffset
         if (this.settings.fill) {
-            gc.fillText(text, x, y + baselineOffset)
+            gc.fillText(text, x, y)
         } else {
-            gc.strokeText(text, x, y + baselineOffset)
+            gc.strokeText(text, x, y)
         }
     }
 
