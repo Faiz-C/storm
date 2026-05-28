@@ -7,12 +7,11 @@ import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
 import javafx.scene.text.Text
 import javafx.scene.text.TextAlignment
-import javafx.scene.text.TextBoundsType
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION
+import org.storm.core.graphics.Image
 import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.canvas.Settings
-import org.storm.core.graphics.Image
 import org.storm.core.graphics.geometry.Point
 import org.storm.core.graphics.geometry.shape.Rectangle
 
