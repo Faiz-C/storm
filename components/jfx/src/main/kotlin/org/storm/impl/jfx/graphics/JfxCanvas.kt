@@ -7,31 +7,49 @@ import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
 import javafx.scene.text.Text
 import javafx.scene.text.TextAlignment
+import javafx.scene.text.TextBoundsType
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION
 import org.storm.core.graphics.Image
 import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.canvas.FontMetrics
 import org.storm.core.graphics.canvas.Settings
 import org.storm.core.graphics.geometry.Point
 import org.storm.core.graphics.geometry.shape.Rectangle
+import kotlin.math.abs
 
 class JfxCanvas(private val gc: GraphicsContext): Canvas() {
 
     companion object {
-        fun getTextBounds(text: String, font: org.storm.core.graphics.canvas.Font): Pair<Double, Double> {
-            val textNode = makeTextNode(text, font)
-            val bounds = textNode.layoutBounds
-            return bounds.width to bounds.height
-        }
-
-        fun makeTextNode(text: String, font: org.storm.core.graphics.canvas.Font): Text {
+        fun getFontMetrics(text: String, font: org.storm.core.graphics.canvas.Font): FontMetrics {
             val textNode = Text(text)
             textNode.font = Font.font(
                 font.type,
                 FontWeight.findByWeight(font.weight),
                 font.size
             )
-            return textNode
+
+            // Logical Bounds (includes descent, ascent, and line spacing values)
+            // This will give us the logical width and height to work with
+            val logicalBounds = textNode.layoutBounds
+
+            // Visual Bounds (excludes ascent and line spacing but includes descent as needed, think "g")
+            textNode.boundsType = TextBoundsType.VISUAL
+            val visualBounds = textNode.layoutBounds
+
+            val ascent = abs(visualBounds.minY)
+            val descent = visualBounds.height - ascent
+
+            return FontMetrics(
+                width = logicalBounds.width,
+                height = logicalBounds.height,
+                visualWidth = visualBounds.width,
+                visualHeight = visualBounds.height,
+                visualMinX = visualBounds.minX,
+                visualMinY = visualBounds.minY,
+                ascent = ascent,
+                descent = descent
+            )
         }
     }
 
