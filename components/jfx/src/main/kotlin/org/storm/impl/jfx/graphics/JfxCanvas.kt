@@ -54,65 +54,66 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
     }
 
     init {
-        gc.textBaseline = VPos.TOP
-        gc.textAlign = TextAlignment.LEFT
+        this.gc.textBaseline = VPos.TOP
+        this.gc.textAlign = TextAlignment.LEFT
     }
 
     override suspend fun clear() {
-        gc.clearRect(0.0, 0.0, Context.RESOLUTION.width, Context.RESOLUTION.height)
+        this.gc.clearRect(0.0, 0.0, Context.RESOLUTION.width, Context.RESOLUTION.height)
     }
 
     override suspend fun withClip(
         boundary: Rectangle,
         block: suspend Canvas.() -> Unit
     ) {
-        gc.save()
-        gc.beginPath()
-        gc.rect(boundary.x, boundary.y, boundary.width, boundary.height)
-        gc.clip()
+        this.gc.save()
+        this.gc.beginPath()
+        this.gc.rect(boundary.x, boundary.y, boundary.width, boundary.height)
+        this.gc.clip()
 
         block()
 
-        gc.restore()
+        this.gc.restore()
     }
 
     override suspend fun onSettingsChange(settings: Settings) {
         val color = settings.color.toJfxColor()
-        gc.fill = color
-        gc.stroke = color
-        gc.lineWidth = settings.thickness
-        gc.font = Font.font(
+        this.gc.fill = color
+        this.gc.stroke = color
+        this.gc.lineWidth = settings.thickness
+        this.gc.font = Font.font(
             settings.font.type,
             FontWeight.findByWeight(settings.font.weight),
             settings.font.size
         )
+        this.gc.globalAlpha = settings.alpha
     }
 
     override suspend fun drawLine(x1: Double, y1: Double, x2: Double, y2: Double) {
-        gc.strokeLine(x1, y1, x2, y2)
+        this.gc.strokeLine(x1, y1, x2, y2)
     }
 
     override suspend fun drawText(text: String, x: Double, y: Double) {
         if (this.settings.fill) {
-            gc.fillText(text, x, y)
+            this.gc.fillText(text, x, y)
         } else {
-            gc.strokeText(text, x, y)
+            this.gc.strokeText(text, x, y)
         }
     }
 
     override suspend fun drawRect(x: Double, y: Double, width: Double, height: Double) {
         if (this.settings.fill) {
-            gc.fillRect(x, y, width, height)
+            this.gc.fillRect(x, y, width, height)
         } else {
-            gc.strokeRect(x, y, width, height)
+            this.gc.strokeRect(x, y, width, height)
         }
     }
 
     override suspend fun drawEllipse(x: Double, y: Double, width: Double, height: Double) {
         if (this.settings.fill) {
-            gc.fillOval(x, y, width, height)
+            this.gc.fillOval(x, y, width, height)
         } else {
-            gc.strokeOval(x, y, width, height)
+            this.gc.strokeOval(x, y, width, height)
         }
     }
 
@@ -128,9 +129,9 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
         }
 
         if (this.settings.fill) {
-            gc.fillPolygon(xCoordinates, yCoordinates, size)
+            this.gc.fillPolygon(xCoordinates, yCoordinates, size)
         } else {
-            gc.strokePolygon(xCoordinates, yCoordinates, size)
+            this.gc.strokePolygon(xCoordinates, yCoordinates, size)
         }
     }
 
@@ -139,7 +140,7 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
             "JfxCanvas only supports drawing JfxImage objects"
         }
 
-        gc.drawImage(image.image, x, y)
+        this.gc.drawImage(image.image, x, y)
     }
 
     private fun org.storm.core.graphics.canvas.Color.toJfxColor(): Color {

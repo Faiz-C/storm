@@ -12,7 +12,7 @@ abstract class Canvas(
     var settings: Settings = defaultSettings
         private set
 
-    val settingHistory: Stack<Settings> = Stack()
+    val settingHistory: ArrayDeque<Settings> = ArrayDeque()
 
     /**
      * Draws the given text onto the screen starting at the given coordinates.
@@ -99,12 +99,12 @@ abstract class Canvas(
      */
     suspend fun withSettings(settings: Settings, block: suspend Canvas.() -> Unit) {
         try {
-            settingHistory.push(this.settings)
+            settingHistory.add(this.settings)
             this.settings = settings
             onSettingsChange(this.settings)
             block()
         } finally {
-            this.settings = this.settingHistory.pop()
+            this.settings = this.settingHistory.removeLast()
             onSettingsChange(this.settings)
         }
     }
