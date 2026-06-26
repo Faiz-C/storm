@@ -21,7 +21,7 @@ class JfxWindowTest: Application() {
         EventManager.registerJfxMouseEvents(window)
 
         runBlocking {
-            EventManager.getJfxKeyEventStream().addConsumer {
+            EventManager.getJfxKeyEventStream().subscribe {
                 when (it.eventType) {
                     KeyEvent.KEY_PRESSED -> {
                         println("Key Pressed: ${it.text}")
@@ -32,7 +32,7 @@ class JfxWindowTest: Application() {
                 }
             }
 
-            EventManager.getJfxMouseEventStream().addConsumer {
+            EventManager.getJfxMouseEventStream().subscribe {
                 when (it.eventType) {
                     MouseEvent.MOUSE_PRESSED -> {
                         println("Mouse Pressed: ${it.button}, (${it.x}, ${it.y})")

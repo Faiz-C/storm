@@ -1,15 +1,15 @@
 plugins {
-    kotlin("jvm") version("2.1.0")
+    kotlin("jvm") version("2.4.0")
     id("org.openjfx.javafxplugin") version ("0.1.0")
 }
 
 javafx {
-    version = "21.0.2"
+    version = "26"
     modules("javafx.controls", "javafx.graphics", "javafx.media")
 }
 
 tasks.wrapper {
-    gradleVersion = "8.9"
+    gradleVersion = "9.6.1"
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -32,6 +32,7 @@ allprojects {
         val jacksonVersion = "2.18.1"
         val coroutinesVersion = "1.9.0"
         val junitVersion = "5.11.0"
+        val junitPlatformVersion = "1.11.0"
 
         api("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
         api("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$coroutinesVersion")
@@ -49,10 +50,11 @@ allprojects {
 
         testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
         testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
     }
 
     kotlin {
-        jvmToolchain(21)
+        jvmToolchain(26)
     }
 
     tasks {

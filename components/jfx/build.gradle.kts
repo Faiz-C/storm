@@ -1,7 +1,9 @@
-version = "2.1.0"
+import org.gradle.kotlin.dsl.register
+
+version = "2.2.0"
 
 javafx {
-    version = "21.0.2"
+    version = "26"
     modules("javafx.graphics", "javafx.media")
 }
 
@@ -29,7 +31,11 @@ publishing {
 }
 
 tasks {
-    task<JavaExec>("jfxWindowTest") {
+    test {
+        failOnNoDiscoveredTests = false
+    }
+
+    register<JavaExec>("jfxWindowTest", fun JavaExec.() {
         dependsOn(compileKotlin, compileTestKotlin)
 
         setupJavaFx(this)
@@ -37,16 +43,16 @@ tasks {
         group = "Execution"
         description = "Simple test for window creations"
         mainClass.set("org.storm.impl.jfx.graphics.JfxWindowTest")
-    }
+    })
 
-    task<JavaExec>("jfxSoundTest") {
+    register<JavaExec>("jfxSoundTest", fun JavaExec.() {
         dependsOn(compileKotlin, compileTestKotlin)
         setupJavaFx(this)
 
         group = "Execution"
         description = "Test to check if the Jfx type is working correctly"
         mainClass.set("org.storm.impl.jfx.sound.JfxSoundTest")
-    }
+    })
 }
 
 fun setupJavaFx(exec: JavaExec) {

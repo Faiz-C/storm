@@ -7,6 +7,8 @@ import javafx.stage.Stage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.runBlocking
+import org.storm.core.context.Context
+import org.storm.core.context.loadMappers
 import org.storm.core.event.EventManager
 import org.storm.core.input.InputEvent
 import org.storm.core.input.InputManager
@@ -34,6 +36,7 @@ class StormEngineTest : Application() {
             renderingDispatcher = Dispatchers.JavaFx // For JavaFx we need to render on its UI dispatcher coroutines
         )
 
+        Context.loadMappers()
         EventManager.registerJfxKeyEvents(window)
         EventManager.registerJfxMouseEvents(window)
 
@@ -43,14 +46,14 @@ class StormEngineTest : Application() {
             stormEngine.registerState(Controls.THREE, ParticleTestState())
             stormEngine.registerState(Controls.FOUR, CircleCornerTestState())
 
-            EventManager.getJfxKeyEventStream().addConsumer {
+            EventManager.getJfxKeyEventStream().subscribe {
                 when (it.eventType) {
                     KeyEvent.KEY_PRESSED -> inputManager.processInput(InputEvent(it.code.name, it, true))
                     KeyEvent.KEY_RELEASED -> inputManager.processInput(InputEvent(it.code.name, it, false))
                 }
             }
 
-            EventManager.getJfxMouseEventStream().addConsumer {
+            EventManager.getJfxMouseEventStream().subscribe {
                 when (it.eventType) {
                     MouseEvent.MOUSE_PRESSED -> inputManager.processInput(InputEvent(it.button.name, it))
                     MouseEvent.MOUSE_RELEASED -> inputManager.processInput(InputEvent(it.button.name, it))

@@ -16,11 +16,11 @@ object Controls {
 
     val BINDINGS = mapOf(
         KeyCode.SPACE.name to SPACE,
-        KeyCode.NUMPAD1.name to ONE,
-        KeyCode.NUMPAD2.name to TWO,
-        KeyCode.NUMPAD3.name to THREE,
-        KeyCode.NUMPAD4.name to FOUR,
-        KeyCode.NUMPAD5.name to FIVE,
+        KeyCode.DIGIT1.name to ONE,
+        KeyCode.DIGIT2.name to TWO,
+        KeyCode.DIGIT3.name to THREE,
+        KeyCode.DIGIT4.name to FOUR,
+        KeyCode.DIGIT5.name to FIVE,
         KeyCode.W.name to W,
         KeyCode.S.name to S,
         KeyCode.A.name to A,

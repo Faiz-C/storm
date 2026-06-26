@@ -28,7 +28,7 @@ class EventManagerTest {
 
         runBlocking {
             val results = mutableListOf<TestEvent>()
-            stream.addConsumer {
+            stream.subscribe {
                 results.add(it)
             }
 
@@ -67,7 +67,7 @@ class EventManagerTest {
         val stream = EventManager.getEventStream<TestEvent>("test-2-event")
 
         runBlocking {
-            stream.addConsumer { event ->
+            stream.subscribe { event ->
                 assert(event.data == "hello world") {
                     "Expected to consume event with data 'hello world'"
                 }
@@ -87,11 +87,11 @@ class EventManagerTest {
         runBlocking {
             val results = mutableListOf<EventType>()
 
-            stream.addConsumer {
+            stream.subscribe {
                 results.add(it)
             }
 
-            stream.addConsumer {
+            stream.subscribe {
                 when (it) {
                     is EventType.A -> stream.produce(EventType.B("world"))
                     else -> {}

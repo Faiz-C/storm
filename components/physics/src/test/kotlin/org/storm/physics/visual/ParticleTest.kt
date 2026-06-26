@@ -99,7 +99,7 @@ class ParticleTest : Application() {
                 it.addForce(Direction.random().vector.scale(2.0.units), 0.1)
             }
 
-            EventManager.getJfxKeyEventStream().addConsumer {
+            EventManager.getJfxKeyEventStream().subscribe {
                 if (it.code == KeyCode.SPACE && it.eventType == KeyEvent.KEY_PRESSED) {
                     physicsSimulator.physicsEngine.paused = !physicsSimulator.physicsEngine.paused
                 }

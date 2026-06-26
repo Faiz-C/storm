@@ -2,10 +2,8 @@ package org.storm.core.event
 
 import java.util.Queue
 import java.util.concurrent.ConcurrentLinkedQueue
-import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import org.slf4j.LoggerFactory
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Represents a stream of events of type [T].
@@ -16,18 +14,16 @@ import org.slf4j.LoggerFactory
  * @param id Unique identifier for this event stream.
  */
 class EventStream<T> internal constructor(val id: String): AutoCloseable {
+
     companion object {
         private val logger = LoggerFactory.getLogger(EventStream::class.java)
     }
-
-    private val coroutineScope = CoroutineScope(Dispatchers.Default.limitedParallelism(4))
 
     /**
      * Thread-safe queue of pending events to be processed during [process].
      */
     private val pendingEvents: Queue<T> = ConcurrentLinkedQueue()
-    private val consumers = mutableListOf<suspend (T) -> Unit>()
-    private val consumerMutex = Mutex()
+    private val listeners = CopyOnWriteArrayList<suspend (T) -> Unit>() // Thread safe list that is good for minimum writes
 
     /**
      * Produces an event and adds it to the queue to be processed during [process].
@@ -43,31 +39,17 @@ class EventStream<T> internal constructor(val id: String): AutoCloseable {
     }
 
     /**
-     * Asynchronously adds a consumer (event handler) to this stream.
-     *
-     * This method launches a coroutine to add the consumer. The consumer will be called
-     * for each event during [process].
-     *
-     * @param consumer The suspend function to handle events.
-     */
-    fun addConsumerAsync(consumer: suspend (T) -> Unit) {
-        coroutineScope.launch {
-            addConsumer(consumer)
-        }
-    }
-
-    /**
      * Adds a consumer (event handler) to this stream.
      * Thread-safe.
      *
      * The consumer will be called for each event during [process].
      *
-     * @param consumer The suspend function to handle events.
+     * @param listener The suspend function to handle events.
+     * @return A lambda that closes the listener
      */
-    suspend fun addConsumer(consumer: suspend (T) -> Unit) {
-        consumerMutex.withLock {
-            consumers.add(consumer)
-        }
+    fun subscribe(listener: suspend (T) -> Unit): () -> Unit {
+        listeners.add(listener)
+        return { listeners.remove(listener) }
     }
 
     /**
@@ -83,12 +65,15 @@ class EventStream<T> internal constructor(val id: String): AutoCloseable {
      *
      */
     internal suspend fun process() {
-        consumerMutex.withLock {
-            while (true) {
-                val event = pendingEvents.poll() ?: break
-                notify(event)
-            }
+        while (true) {
+            val event = pendingEvents.poll() ?: break
+            notify(event)
         }
+    }
+
+    override fun close() {
+        this.pendingEvents.clear()
+        this.listeners.clear()
     }
 
     /**
@@ -96,21 +81,13 @@ class EventStream<T> internal constructor(val id: String): AutoCloseable {
      * @param event The event to notify consumers about.
      */
     private suspend fun notify(event: T) {
-        consumers.forEach {
+        this.listeners.forEach {
             try {
                 it(event)
             } catch (e: Exception) {
-                logger.warn("Encountered issue with an EventHandler when listening to event", e)
+                logger.warn("Encountered issue with listener when listening to event", e)
             }
         }
     }
 
-    /**
-     * Closes this event stream and cancels any background coroutines.
-     */
-    override fun close() {
-        if (coroutineScope.isActive) {
-            coroutineScope.cancel("Closing Event Manager")
-        }
-    }
 }

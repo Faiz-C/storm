@@ -1,7 +1,9 @@
-version = "2.1.0"
+import org.gradle.kotlin.dsl.register
+
+version = "2.2.0"
 
 javafx {
-    version = "21.0.2"
+    version = "26"
     modules("javafx.graphics", "javafx.media")
     configuration = "testImplementation"
 }
@@ -18,14 +20,18 @@ dependencies {
 }
 
 tasks {
-    task<JavaExec>("engineTest") {
+    test {
+        failOnNoDiscoveredTests = false
+    }
+
+    register<JavaExec>("engineTest", fun JavaExec.() {
         dependsOn(compileKotlin, compileTestKotlin)
         setupJavaFx(this)
 
         group = "Execution"
         description = "A more involved test which tests the storm engines many components and uses multiple states"
         mainClass.set("org.storm.engine.StormEngineTest")
-    }
+    })
 }
 
 publishing {

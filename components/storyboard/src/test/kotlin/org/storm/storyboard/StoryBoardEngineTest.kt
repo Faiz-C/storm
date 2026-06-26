@@ -15,7 +15,6 @@ import org.storm.core.input.ActionState
 import org.storm.core.input.InputEvent
 import org.storm.core.input.InputManager
 import org.storm.core.input.InputTranslator
-import org.storm.core.utils.toMilliseconds
 import org.storm.impl.jfx.extensions.getJfxKeyEventStream
 import org.storm.impl.jfx.extensions.registerJfxKeyEvents
 import org.storm.impl.jfx.graphics.JfxWindow
@@ -54,7 +53,7 @@ class StoryBoardEngineTest : Application() {
         }
 
         runBlocking {
-            EventManager.getJfxKeyEventStream().addConsumer {
+            EventManager.getJfxKeyEventStream().subscribe {
                 when (it.eventType) {
                     KeyEvent.KEY_PRESSED -> inputManager.processInput(InputEvent(it.code.name, it, true))
                     KeyEvent.KEY_RELEASED -> inputManager.processInput(InputEvent(it.code.name, it, false))

@@ -110,7 +110,7 @@ class MultiPartBoundaryTest : Application() {
             multiPartBoundaryEntity.addForce(Direction.NORTH_WEST.vector.scale(100.0.units), 0.1)
             multiPartBoundaryEntity.addForce(Direction.NORTH.vector.scale(100.0.units), 0.1)
 
-            EventManager.getJfxKeyEventStream().addConsumer {
+            EventManager.getJfxKeyEventStream().subscribe {
                 if (it.code == KeyCode.SPACE && it.eventType == KeyEvent.KEY_PRESSED) {
                     physicsSimulator.physicsEngine.paused = !physicsSimulator.physicsEngine.paused
                 }
