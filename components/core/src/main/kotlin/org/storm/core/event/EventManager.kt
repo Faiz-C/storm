@@ -58,7 +58,7 @@ object EventManager: AutoCloseable {
      * @param eventStreamId Unique id of the event stream
      * @return The EventStream for the given id or a newly created EventStream with the given id
      */
-    fun <T> EventManager.getOrCreate(eventStreamId: String): EventStream<T> {
+    fun <T> getOrCreate(eventStreamId: String): EventStream<T> {
         return try {
             getEventStream(eventStreamId)
         } catch (_: IllegalArgumentException) {
