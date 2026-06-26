@@ -77,6 +77,10 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
     }
 
     override suspend fun onSettingsChange(settings: Settings) {
+        require(settings.alpha in 0.0..1.0) {
+            "global alpha value must be within [0.0, 1.0]"
+        }
+
         val color = settings.color.toJfxColor()
         this.gc.fill = color
         this.gc.stroke = color
