@@ -2,19 +2,14 @@ package org.storm.core.context
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.JsonSerializer
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
-import com.fasterxml.jackson.module.kotlin.addDeserializer
-import com.fasterxml.jackson.module.kotlin.addSerializer
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.storm.core.extensions.units
-import org.storm.core.graphics.UnitConvertor
 import org.storm.core.graphics.Resolution
+import org.storm.core.graphics.UnitConvertor
 import org.storm.core.graphics.canvas.Color
 import org.storm.core.serialization.ColorDeserializer
 
@@ -35,8 +30,9 @@ fun Context.loadMappers(moduleInitializer: (SimpleModule) -> SimpleModule = { it
     )
 
     this.update(mapOf(
-        CoreContext.JSON_MAPPER to jacksonObjectMapper()
-            .registerModule(module),
+        CoreContext.JSON_MAPPER to JsonMapper()
+            .registerModule(module)
+            .registerKotlinModule(),
         CoreContext.YAML_MAPPER to YAMLMapper()
             .configure(JsonParser.Feature.ALLOW_YAML_COMMENTS, true)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -51,17 +47,17 @@ fun Context.loadMappers(moduleInitializer: (SimpleModule) -> SimpleModule = { it
 /**
  * @return A data mapper which can read, convert and write JSON
  */
-val Context.JSON_MAPPER get() = settings[CoreContext.JSON_MAPPER] as ObjectMapper
+val Context.JSON_MAPPER get() = settings[CoreContext.JSON_MAPPER] as JsonMapper
 
 /**
  * @return A data mapper which can read, convert and write YAML
  */
-val Context.YAML_MAPPER get() = settings[CoreContext.YAML_MAPPER] as ObjectMapper
+val Context.YAML_MAPPER get() = settings[CoreContext.YAML_MAPPER] as YAMLMapper
 
 /**
  * @return A data mapper which can read, convert and write XML
  */
-val Context.XML_MAPPER get() = settings[CoreContext.YAML_MAPPER] as ObjectMapper
+val Context.XML_MAPPER get() = settings[CoreContext.XML_MAPPER] as XmlMapper
 
 /**
  * @return The current unit convertor used for converting between pixels and game engine units.

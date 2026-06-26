@@ -97,7 +97,7 @@ class VisualAtRestTest : Application() {
             repellingBall3.addForce(Direction.SOUTH.vector.scale(25.0.units))
             repellingBall4.addForce(Direction.SOUTH.vector.scale(25.0.units))
 
-            EventManager.getJfxKeyEventStream().addConsumer {
+            EventManager.getJfxKeyEventStream().subscribe {
                 if (it.code == KeyCode.SPACE && it.eventType == KeyEvent.KEY_PRESSED) {
                     physicsSimulator.physicsEngine.paused = !physicsSimulator.physicsEngine.paused
                 }

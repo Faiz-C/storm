@@ -1,7 +1,9 @@
-version = "2.1.0"
+import org.gradle.kotlin.dsl.register
+
+version = "2.2.0"
 
 javafx {
-    version = "21.0.2"
+    version = "26"
     modules("javafx.graphics", "javafx.media")
     configuration = "testImplementation"
 }
@@ -34,14 +36,18 @@ publishing {
 }
 
 tasks {
-    task<JavaExec>("storyboardTest") {
+    test {
+        failOnNoDiscoveredTests = false
+    }
+
+    register<JavaExec>("storyboardTest", fun JavaExec.() {
         dependsOn(build)
         setupJavaFx(this)
 
         group = "Execution"
         description = "Tests the StoryBoardEngine"
         mainClass.set("org.storm.storyboard.StoryBoardEngineTest")
-    }
+    })
 }
 
 fun setupJavaFx(exec: JavaExec) {

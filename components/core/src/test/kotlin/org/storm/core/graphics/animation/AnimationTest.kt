@@ -15,6 +15,7 @@ import org.storm.core.graphics.animation.sprite.SpriteAnimation
 import org.storm.core.graphics.animation.sprite.SpriteSheet
 import org.storm.impl.jfx.graphics.JfxImage
 import org.storm.impl.jfx.graphics.JfxWindow
+import kotlin.time.Duration.Companion.milliseconds
 
 class AnimationTest : Application() {
 
@@ -65,7 +66,7 @@ class AnimationTest : Application() {
                 if (waitTime < 0) waitTime =
                     BUFFER_WAIT_TIME // we took too long to execute the loop, so wait for a fixed BUFFER WAIT TIME
                 try {
-                    delay(waitTime.toLong())
+                    delay(waitTime.toLong().milliseconds)
                 } catch (e: Exception) {
                     logger.error("Error occurred during animation loop", e)
                 }

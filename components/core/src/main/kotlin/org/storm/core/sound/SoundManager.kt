@@ -18,7 +18,7 @@ class SoundManager(
 ) {
 
     init {
-        EventManager.getContextEventStream().addConsumerAsync {
+        EventManager.getContextEventStream().subscribe {
             if (it.hasSettingChanged(SoundContext.BGM_VOLUME) || it.hasSettingChanged(SoundContext.MASTER_VOLUME)) {
                 adjustAllVolume(Context.BGM_VOLUME * Context.MASTER_VOLUME, Sound.Type.BGM.value)
             }

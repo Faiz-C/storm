@@ -1,7 +1,9 @@
-version = "2.1.0"
+import org.gradle.kotlin.dsl.register
+
+version = "2.2.0"
 
 javafx {
-    version = "21.0.2"
+    version = "26"
     modules("javafx.graphics", "javafx.media")
     configuration = "testImplementation"
 }
@@ -24,16 +26,16 @@ tasks {
         useJUnitPlatform()
     }
 
-    task<JavaExec>("particleTest") {
+    register<JavaExec>("particleTest", fun JavaExec.() {
         dependsOn(compileKotlin, compileTestKotlin)
         setupJavaFx(this)
 
         group = "Execution"
         description = "Particle test and visual showcase of Quadrant Tree"
         mainClass.set("org.storm.physics.visual.ParticleTest")
-    }
+    })
 
-    task<JavaExec>("multiPartBoundaryTest") {
+    register<JavaExec>("multiPartBoundaryTest", fun JavaExec.() {
         dependsOn(compileKotlin, compileTestKotlin)
         setupJavaFx(this)
 
@@ -41,9 +43,9 @@ tasks {
         description =
             "A test and visual showcase of using multiple shapes to construct a more complex boundary for an Entity"
         mainClass.set("org.storm.physics.visual.MultiPartBoundaryTest")
-    }
+    })
 
-    task<JavaExec>("atRestTest") {
+    register<JavaExec>("atRestTest", fun JavaExec.() {
         dependsOn(compileKotlin, compileTestKotlin)
         setupJavaFx(this)
 
@@ -51,7 +53,7 @@ tasks {
         description =
             "A simple test which ensures that objects can fall into a 'rest' state and stop needing collision checks"
         mainClass.set("org.storm.physics.visual.VisualAtRestTest")
-    }
+    })
 }
 
 publishing {

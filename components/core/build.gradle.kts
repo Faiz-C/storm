@@ -1,7 +1,9 @@
-version = "2.1.0"
+import org.gradle.kotlin.dsl.register
+
+version = "2.2.0"
 
 javafx {
-    version = "21.0.2"
+    version = "26"
     modules("javafx.graphics", "javafx.media")
     configuration = "testImplementation"
 }
@@ -31,16 +33,16 @@ publishing {
 }
 
 tasks {
-    task<JavaExec>("soundManagerTest") {
+    register<JavaExec>("soundManagerTest", fun JavaExec.() {
         dependsOn(compileKotlin, compileTestKotlin)
         setupJavaFx(this)
 
         group = "Execution"
         description = "Test for SoundManager"
         mainClass.set("org.storm.core.sound.SoundManagerTest")
-    }
+    })
 
-    task<JavaExec>("animationTest") {
+    register<JavaExec>("animationTest", fun JavaExec.() {
         dependsOn(compileKotlin, compileTestKotlin)
 
         setupJavaFx(this)
@@ -48,7 +50,7 @@ tasks {
         group = "Execution"
         description = "Simple test for sprite animations and animation looping"
         mainClass.set("org.storm.core.graphics.animation.AnimationTest")
-    }
+    })
 }
 
 fun setupJavaFx(exec: JavaExec) {

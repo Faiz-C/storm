@@ -3,7 +3,6 @@ package org.storm.engine
 import kotlinx.coroutines.*
 import org.apache.commons.math3.util.FastMath
 import org.storm.core.context.Context
-import org.storm.core.context.loadMappers
 import org.storm.core.event.EventManager
 import org.storm.core.extensions.scheduleOnInterval
 import org.storm.core.graphics.Window

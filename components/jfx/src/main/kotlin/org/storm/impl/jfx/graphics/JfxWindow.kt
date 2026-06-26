@@ -38,7 +38,7 @@ class JfxWindow(resolution: Resolution = Context.RESOLUTION) : Scene(Pane()), Wi
     init {
         this.resolution = resolution // trigger the setter
 
-        EventManager.getContextEventStream().addConsumerAsync {
+        EventManager.getContextEventStream().subscribe {
             if (it.hasSettingChanged(CoreContext.RESOLUTION)) {
                 this.resolution = Context.RESOLUTION
                 this.canvas = JfxCanvas(sceneCanvas.graphicsContext2D)
