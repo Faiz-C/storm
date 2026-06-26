@@ -116,6 +116,7 @@ abstract class Canvas(
      * @param color the color of the brush
      * @param fill whether to fill shapes (true) or just draw outlines (false)
      * @param font the font to use for text
+     * @param alpha the global alpha value of the canvas
      * @param block the block of code to run with these settings
      */
     suspend fun withSettings(
@@ -123,9 +124,10 @@ abstract class Canvas(
         color: Color = settings.color,
         fill: Boolean = settings.fill,
         font: Font = settings.font,
+        alpha: Double = settings.alpha,
         block: suspend Canvas.() -> Unit
     ) {
-        withSettings(Settings(thickness, color, fill, font), block)
+        withSettings(Settings(thickness, color, fill, font, alpha), block)
     }
 
     /**
