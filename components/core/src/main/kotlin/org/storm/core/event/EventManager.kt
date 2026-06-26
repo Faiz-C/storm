@@ -53,12 +53,35 @@ object EventManager: AutoCloseable {
     }
 
     /**
+     * Gets the event stream with the given id and creates one first if it doesn't exist.
+     *
+     * @param eventStreamId Unique id of the event stream
+     * @return The EventStream for the given id or a newly created EventStream with the given id
+     */
+    fun <T> EventManager.getOrCreate(eventStreamId: String): EventStream<T> {
+        return try {
+            getEventStream(eventStreamId)
+        } catch (_: IllegalArgumentException) {
+            createEventStream(eventStreamId)
+        }
+    }
+
+    /**
      * Processes all queued events for all registered event streams
      */
     suspend fun processEvents() {
         eventStreams.values.forEach { stream ->
             stream.process()
         }
+    }
+
+    /**
+     * Processes all queued events for the event stream with id [eventStreamId]
+     *
+     * @param eventStreamId ID of the event stream to process
+     */
+    suspend fun processEvents(eventStreamId: String) {
+        eventStreams[eventStreamId]?.process()
     }
 
     override fun close() {
