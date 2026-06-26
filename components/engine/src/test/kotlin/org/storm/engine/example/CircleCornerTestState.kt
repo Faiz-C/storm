@@ -2,14 +2,15 @@ package org.storm.engine.example
 
 import org.storm.core.context.Context
 import org.storm.core.context.YAML_MAPPER
+import org.storm.core.event.EventManager
 import org.storm.core.extensions.units
 import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.input.ActionState
 import org.storm.core.sound.Sound
 import org.storm.core.sound.SoundManager
 import org.storm.engine.Controls
-import org.storm.engine.request.RequestQueue
-import org.storm.engine.request.types.TogglePhysicsRequest
+import org.storm.engine.events.EngineEvent
+import org.storm.engine.events.getEngineEventStream
 import org.storm.physics.PhysicsEngine
 import org.storm.physics.collision.Collider
 import org.storm.physics.math.Vector
@@ -62,14 +63,14 @@ class CircleCornerTestState : SwitchableState() {
 
     override suspend fun onSwapOn(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         soundManager.play("bgm")
-        RequestQueue.submit(TogglePhysicsRequest())
+        EventManager.getEngineEventStream().produce(EngineEvent.TogglePhysics())
     }
 
     override suspend fun process(actionState: ActionState) {
         super.process(actionState)
 
         if (actionState.isFirstActivation(Controls.SPACE)) {
-            RequestQueue.submit(TogglePhysicsRequest())
+            EventManager.getEngineEventStream().produce(EngineEvent.TogglePhysics())
         }
 
         // TODO: this is kinda jank, should update eventually

@@ -10,9 +10,10 @@ import org.storm.core.input.InputManager
 import org.storm.core.sound.SoundManager
 import org.storm.core.utils.toMilliseconds
 import org.storm.core.utils.toSeconds
+import org.storm.engine.events.ENGINE_EVENT_STREAM_ID
+import org.storm.engine.events.EngineEvent
+import org.storm.engine.events.getEngineEventStream
 import org.storm.engine.exception.StormEngineException
-import org.storm.engine.request.Request
-import org.storm.engine.request.RequestQueue
 import org.storm.engine.state.GameState
 import org.storm.physics.PhysicsEngine
 
@@ -94,6 +95,27 @@ class StormEngine(
     init {
         this.renderFps = renderFps
         this.physicsEngine.paused = true
+
+        EventManager.getEngineEventStream().subscribe { event ->
+            when (event) {
+                is EngineEvent.StateChange -> {
+                    if (event.targetStateId != null) {
+                        this.swapState(event.targetStateId)
+                    } else if (event.targetState != null) {
+                        this.swapState(event.targetState)
+                    } else {
+                        throw StormEngineException("One of `stateId` or `state` must not be null in a state change event")
+                    }
+                }
+                is EngineEvent.TogglePhysics -> {
+                    if (event.enabled != null) {
+                        this.physicsEngine.paused = event.enabled
+                    } else {
+                        this.physicsEngine.paused = !physicsEngine.paused
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -183,10 +205,8 @@ class StormEngine(
         // Run all scheduled context updates
         Context.runScheduledUpdates()
 
-        // First handle the next set of requests
-        RequestQueue.next()?.let { requests: List<Request> ->
-            requests.forEach { request -> request.execute(this, this.physicsEngine, this.soundManager) }
-        }
+        // Engine events must be processed first before any game state is captured/changed
+        EventManager.processEvents(ENGINE_EVENT_STREAM_ID)
 
         // Capture the current state of the game here so the next steps of the game loop doesn't
         // get disrupted by potential changes to the current state

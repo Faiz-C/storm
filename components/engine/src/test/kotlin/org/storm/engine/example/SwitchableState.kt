@@ -1,5 +1,6 @@
 package org.storm.engine.example
 
+import org.storm.core.event.EventManager
 import org.storm.core.input.Action
 import org.storm.core.input.ActionState
 import org.storm.core.input.InputState
@@ -9,23 +10,23 @@ import org.storm.engine.Controls.FOUR
 import org.storm.engine.Controls.ONE
 import org.storm.engine.Controls.THREE
 import org.storm.engine.Controls.TWO
-import org.storm.engine.request.RequestQueue
-import org.storm.engine.request.types.StateChangeRequest
+import org.storm.engine.events.EngineEvent
+import org.storm.engine.events.getEngineEventStream
 import org.storm.engine.state.GameState
 
 abstract class SwitchableState : GameState {
 
     override suspend fun process(actionState: ActionState) {
         if (actionState.isFirstActivation(ONE)) {
-            RequestQueue.submit(StateChangeRequest(ONE))
+            EventManager.getEngineEventStream().produce(EngineEvent.StateChange(targetStateId = ONE))
         } else if (actionState.isFirstActivation(TWO)) {
-            RequestQueue.submit(StateChangeRequest(TWO))
+            EventManager.getEngineEventStream().produce(EngineEvent.StateChange(targetStateId = TWO))
         } else if (actionState.isFirstActivation(THREE)) {
-            RequestQueue.submit(StateChangeRequest(THREE))
+            EventManager.getEngineEventStream().produce(EngineEvent.StateChange(targetStateId = THREE))
         } else if (actionState.isFirstActivation(FOUR)) {
-            RequestQueue.submit(StateChangeRequest(FOUR))
+            EventManager.getEngineEventStream().produce(EngineEvent.StateChange(targetStateId = FOUR))
         } else if (actionState.isFirstActivation(FIVE)) {
-            RequestQueue.submit(StateChangeRequest(FIVE))
+            EventManager.getEngineEventStream().produce(EngineEvent.StateChange(targetStateId = FIVE))
         }
     }
 
