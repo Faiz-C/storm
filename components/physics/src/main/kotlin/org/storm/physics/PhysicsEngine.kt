@@ -82,7 +82,7 @@ abstract class PhysicsEngine protected constructor(
         if (!c1.eventOnCollision && !c2.eventOnCollision) return
 
         EventManager.getCollisionEventStream()
-            .produce(CollisionEvent(c1, c2, b1, b2))
+            .publish(CollisionEvent(c1, c2, b1, b2))
     }
 
     /**

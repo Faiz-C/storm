@@ -26,7 +26,7 @@ class EventStream<T> internal constructor(val id: String): AutoCloseable {
     private val listeners = CopyOnWriteArrayList<suspend (T) -> Unit>() // Thread safe list that is good for minimum writes
 
     /**
-     * Produces an event and adds it to the queue to be processed during [process].
+     * Publishes an event and adds it to the queue to be processed during [process].
      * Thread-safe.
      *
      * This method suspends until the event is enqueued. The event will be handled
@@ -34,7 +34,7 @@ class EventStream<T> internal constructor(val id: String): AutoCloseable {
      *
      * @param event The event to produce.
      */
-    fun produce(event: T) {
+    fun publish(event: T) {
         pendingEvents.add(event)
     }
 

@@ -77,7 +77,7 @@ class BouncingBallTestState : SwitchableState() {
     override suspend fun process(actionState: ActionState) {
         super.process(actionState)
         if (actionState.isFirstActivation(Controls.SPACE)) {
-            EventManager.getEngineEventStream().produce(EngineEvent.TogglePhysics())
+            EventManager.getEngineEventStream().publish(EngineEvent.TogglePhysics())
         }
     }
 

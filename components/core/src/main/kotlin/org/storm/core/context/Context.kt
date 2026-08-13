@@ -1,7 +1,6 @@
 package org.storm.core.context
 
 import org.storm.core.event.EventManager
-import org.storm.core.event.EventStream
 
 /**
  * The Context object encapsulates the settings/global state for the game. The settings are stored as a simple map to allow
@@ -35,7 +34,7 @@ object Context {
         }
 
         processUpdates(listOf(settingsToUpdate))?.let {
-            EventManager.getContextEventStream().produce(it)
+            EventManager.getContextEventStream().publish(it)
         }
     }
 
@@ -44,7 +43,7 @@ object Context {
      */
     fun runScheduledUpdates() {
         processUpdates(this.updates)?.let {
-            EventManager.getContextEventStream().produce(it)
+            EventManager.getContextEventStream().publish(it)
         }
 
         this.updates.clear()

@@ -18,15 +18,15 @@ abstract class SwitchableState : GameState {
 
     override suspend fun process(actionState: ActionState) {
         if (actionState.isFirstActivation(ONE)) {
-            EventManager.getEngineEventStream().produce(EngineEvent.StateChange(targetStateId = ONE))
+            EventManager.getEngineEventStream().publish(EngineEvent.StateChange(targetStateId = ONE))
         } else if (actionState.isFirstActivation(TWO)) {
-            EventManager.getEngineEventStream().produce(EngineEvent.StateChange(targetStateId = TWO))
+            EventManager.getEngineEventStream().publish(EngineEvent.StateChange(targetStateId = TWO))
         } else if (actionState.isFirstActivation(THREE)) {
-            EventManager.getEngineEventStream().produce(EngineEvent.StateChange(targetStateId = THREE))
+            EventManager.getEngineEventStream().publish(EngineEvent.StateChange(targetStateId = THREE))
         } else if (actionState.isFirstActivation(FOUR)) {
-            EventManager.getEngineEventStream().produce(EngineEvent.StateChange(targetStateId = FOUR))
+            EventManager.getEngineEventStream().publish(EngineEvent.StateChange(targetStateId = FOUR))
         } else if (actionState.isFirstActivation(FIVE)) {
-            EventManager.getEngineEventStream().produce(EngineEvent.StateChange(targetStateId = FIVE))
+            EventManager.getEngineEventStream().publish(EngineEvent.StateChange(targetStateId = FIVE))
         }
     }
 

@@ -94,7 +94,7 @@ class ParticleTestState : SwitchableState() {
         super.process(actionState)
 
         if (actionState.isFirstActivation(Controls.SPACE)) {
-            EventManager.getEngineEventStream().produce(EngineEvent.TogglePhysics())
+            EventManager.getEngineEventStream().publish(EngineEvent.TogglePhysics())
         }
     }
 

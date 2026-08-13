@@ -63,14 +63,14 @@ class CircleCornerTestState : SwitchableState() {
 
     override suspend fun onSwapOn(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         soundManager.play("bgm")
-        EventManager.getEngineEventStream().produce(EngineEvent.TogglePhysics())
+        EventManager.getEngineEventStream().publish(EngineEvent.TogglePhysics())
     }
 
     override suspend fun process(actionState: ActionState) {
         super.process(actionState)
 
         if (actionState.isFirstActivation(Controls.SPACE)) {
-            EventManager.getEngineEventStream().produce(EngineEvent.TogglePhysics())
+            EventManager.getEngineEventStream().publish(EngineEvent.TogglePhysics())
         }
 
         // TODO: this is kinda jank, should update eventually

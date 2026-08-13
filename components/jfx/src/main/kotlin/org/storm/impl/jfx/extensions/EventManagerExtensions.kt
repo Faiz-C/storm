@@ -18,7 +18,7 @@ private const val MOUSE_EVENT_STREAM = "mouse-events"
 fun EventManager.registerJfxKeyEvents(window: JfxWindow) {
     createEventStream<KeyEvent>(KEY_EVENT_STREAM).also { stream ->
         window.addEventHandler(KeyEvent.ANY) {
-            runBlocking { stream.produce(it) }
+            runBlocking { stream.publish(it) }
         }
     }
 }
@@ -31,7 +31,7 @@ fun EventManager.registerJfxKeyEvents(window: JfxWindow) {
 fun EventManager.registerJfxMouseEvents(window: JfxWindow) {
     createEventStream<MouseEvent>(MOUSE_EVENT_STREAM).also { stream ->
         window.addEventHandler(MouseEvent.ANY) {
-            runBlocking { stream.produce(it) }
+            runBlocking { stream.publish(it) }
         }
     }
 }

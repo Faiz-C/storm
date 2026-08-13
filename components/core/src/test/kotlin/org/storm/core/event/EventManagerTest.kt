@@ -32,8 +32,8 @@ class EventManagerTest {
                 results.add(it)
             }
 
-            stream.produce(TestEvent("hello"))
-            stream.produce(TestEvent("world"))
+            stream.publish(TestEvent("hello"))
+            stream.publish(TestEvent("world"))
 
             stream.process()
 
@@ -73,7 +73,7 @@ class EventManagerTest {
                 }
             }
 
-            stream.produce(TestEvent("hello world"))
+            stream.publish(TestEvent("hello world"))
             stream.process()
         }
     }
@@ -93,12 +93,12 @@ class EventManagerTest {
 
             stream.subscribe {
                 when (it) {
-                    is EventType.A -> stream.produce(EventType.B("world"))
+                    is EventType.A -> stream.publish(EventType.B("world"))
                     else -> {}
                 }
             }
 
-            stream.produce(EventType.A("hello"))
+            stream.publish(EventType.A("hello"))
 
             stream.process()
 
