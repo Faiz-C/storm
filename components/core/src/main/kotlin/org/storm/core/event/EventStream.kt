@@ -32,7 +32,7 @@ class EventStream<T> internal constructor(val id: String): AutoCloseable {
      * This method suspends until the event is enqueued. The event will be handled
      * during the next call to [process].
      *
-     * @param event The event to produce.
+     * @param event The event to publish.
      */
     fun publish(event: T) {
         pendingEvents.add(event)
