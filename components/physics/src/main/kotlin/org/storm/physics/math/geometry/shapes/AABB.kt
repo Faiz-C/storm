@@ -9,7 +9,8 @@ import org.storm.physics.math.extensions.getSquaredDistance
 
 /**
  * An Axis Aligned Bounding Box (Rectangle) is a Polygon with four sides that is aligned with the x-axis and y-axis
- * accordingly.
+ * accordingly. Note, this extends the Polygon class of this library instead of the Polygon of the core graphics library
+ * because it's goal is to be used for math calculations rather than rendering graphics.
  */
 open class AABB(
     x: Double,
@@ -24,7 +25,6 @@ open class AABB(
 ) {
 
     val x: Double get() = vertices[TOP_LEFT_POINT].x
-
     val y: Double get() = vertices[TOP_LEFT_POINT].y
 
     /**
@@ -64,13 +64,17 @@ open class AABB(
         }
     }
 
+    override fun aabbBounds(): AABB {
+        return this
+    }
+
     override operator fun contains(p: Point): Boolean {
         // Axis Aligned Rectangles have a quicker way to check for point containment
         val (tlx, tly) = this.vertices[TOP_LEFT_POINT]
         val (trx, _) = this.vertices[TOP_RIGHT_POINT]
         val (_, bry) = this.vertices[BOTTOM_RIGHT_POINT]
 
-        return p.x >= tlx && p.x <= trx && p.y >= tly && p.y <= bry
+        return p.x in tlx..trx && p.y >= tly && p.y <= bry
     }
 
     /**

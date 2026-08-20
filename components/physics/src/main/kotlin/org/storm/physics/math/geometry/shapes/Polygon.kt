@@ -73,13 +73,34 @@ open class Polygon(
         var min = Double.POSITIVE_INFINITY
         var max = 0.0
 
-        vertices.forEach {
+        this.vertices.forEach {
             val d = axis.dot(it.toVector())
             if (d < min) min = d
             if (d > max) max = d
         }
 
         return Interval(min, max)
+    }
+
+    override fun aabbBounds(): AABB {
+        var minX = Double.MAX_VALUE
+        var minY = Double.MAX_VALUE
+        var maxX = Double.MIN_VALUE
+        var maxY = Double.MIN_VALUE
+
+        this.vertices.forEach { v ->
+            if (v.x < minX) minX = v.x
+            if (v.y < minY) minY = v.y
+            if (v.x > maxX) maxX = v.x
+            if (v.y > maxY) maxY = v.y
+        }
+
+        return AABB(
+            x = minX,
+            y = minY,
+            width = maxX - minX,
+            height = maxY - minY
+        )
     }
 
     /**
@@ -103,7 +124,7 @@ open class Polygon(
         }
     }
 
-    override fun toString(): String = "ConvexPolygon(vertices=$vertices)"
+    override fun toString(): String = "ConvexPolygon(vertices=${this.vertices})"
 
     /**
      * @return calculates and returns the center of a generic ConvexPolygon
@@ -114,7 +135,7 @@ open class Polygon(
         var denominator = 0.0
         val vertexCount = vertices.size
 
-        vertices.forEachIndexed { i, vertex ->
+        this.vertices.forEachIndexed { i, vertex ->
             val (x, y) = vertex
 
 
@@ -147,7 +168,7 @@ open class Polygon(
         // Considering "on vertex" case
         val p = if (point.y == hy || point.y == ly) Point(point.x, point.y + RAY_CASTING_EPSILON) else point
 
-        if (p.y > hy || p.y < ly || p.x > max(hx, lx)) return 0
+        if (p.y !in ly..hy || p.x > max(hx, lx)) return 0
 
         if (p.x < min(hx, lx)) return 1
 
@@ -161,7 +182,7 @@ open class Polygon(
     private fun checkConvex(): Boolean {
         // Check all interior angles are less than 180 degrees or pi radians
         val n = vertices.size
-        for (i in 0 .. n - 1) {
+        for (i in 0..<n) {
             val p1 = vertices[i]
             val p2 = vertices[(i + 1) % n]
             val p3 = vertices[(i + 2) % n]

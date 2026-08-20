@@ -80,9 +80,7 @@ class QuadrantTree(
         }
 
     override fun insert(collider: Collider, boundary: CollidableShape): Boolean {
-        if (!this.boundary.contains(boundary)) return false
-
-        return if (this.leaf) {
+        return this.boundary.contains(boundary) && if (this.leaf) {
             synchronized(this.contentLock) {
                 this.content[boundary] = collider
                 if (this.content.size > MAX_CAPACITY && this.level < MAX_DEPTH) {
@@ -99,9 +97,7 @@ class QuadrantTree(
     }
 
     override fun remove(collider: Collider, boundary: CollidableShape): Boolean {
-        if (!this.boundary.contains(boundary)) return false
-
-        return if (this.leaf) {
+        return this.boundary.contains(boundary) && if (this.leaf) {
             synchronized(this.contentLock) {
                 this.content.remove(boundary)
                 true

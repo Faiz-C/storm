@@ -3,7 +3,7 @@ package org.storm.core.graphics.geometry.shape
 import org.storm.core.graphics.geometry.Point
 
 /**
- * A simple class representing a Rectangle
+ * A simple class representing a Rectangle. The points in the constructor are clockwise order vertices of the rectangle.
  */
 open class Rectangle(
     p1: Point,
@@ -29,7 +29,7 @@ open class Rectangle(
     val x get() = this.vertices[TOP_LEFT_POINT].x
     val y get() = this.vertices[TOP_LEFT_POINT].y
 
-    val width get() = this.vertices[TOP_RIGHT_POINT].x - this.vertices[TOP_LEFT_POINT].x
-    val height get() = this.vertices[BOTTOM_LEFT_POINT].y - this.vertices[TOP_LEFT_POINT].y
+    val width = this.vertices[TOP_RIGHT_POINT].x - this.vertices[TOP_LEFT_POINT].x
+    val height = this.vertices[BOTTOM_LEFT_POINT].y - this.vertices[TOP_LEFT_POINT].y
 
 }

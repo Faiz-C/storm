@@ -21,6 +21,15 @@ class Circle(
         return Interval(projectionLength - radius, projectionLength + radius)
     }
 
+    override fun aabbBounds(): AABB {
+        return AABB(
+            x = center.x - radius,
+            y = center.y - radius,
+            width = radius * 2,
+            height = radius * 2
+        )
+    }
+
     override fun toString(): String = "Circle(center = $center, radius: $radius)"
 
 }
