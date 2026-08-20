@@ -2,17 +2,16 @@ package org.storm.physics.structures
 
 import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.geometry.shape.Rectangle.Companion.TOP_LEFT_POINT
-import org.storm.physics.collision.Collider
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.CollidableShape
 
 /**
  * A QuadrantTree is a type of SpatialDataStructure which uses a Quad Tree as its underlying data structure.
  */
-class QuadrantTree(
+class QuadrantTree<T>(
     private val level: Int,
     private val boundary: Quadrant
-) : SpatialDataStructure {
+) : SpatialDataStructure<T> {
 
     companion object {
         private const val MAX_DEPTH = 15
@@ -51,11 +50,11 @@ class QuadrantTree(
         }
     }
 
-    private val quadrants: Array<QuadrantTree?> = arrayOfNulls(4)
+    private val quadrants: Array<QuadrantTree<T>?> = arrayOfNulls(4)
     private val quadrantLock: Any = Any()
     private val contentLock: Any = Any()
 
-    var content: MutableMap<CollidableShape, Collider> = mutableMapOf()
+    var content: MutableMap<CollidableShape, T> = mutableMapOf()
         private set
 
     var leaf = true
@@ -79,31 +78,31 @@ class QuadrantTree(
             return synchronized(this.contentLock) { size + this@QuadrantTree.content.size }
         }
 
-    override fun insert(collider: Collider, boundary: CollidableShape): Boolean {
+    override fun insert(item: T, boundary: CollidableShape): Boolean {
         return this.boundary.contains(boundary) && if (this.leaf) {
             synchronized(this.contentLock) {
-                this.content[boundary] = collider
+                this.content[boundary] = item
                 if (this.content.size > MAX_CAPACITY && this.level < MAX_DEPTH) {
                     this.expand()
                 }
             }
             true
         } else {
-            this.getQuadrantFor(boundary)?.insert(collider, boundary) ?: run {
-                this.content[boundary] = collider
+            this.getQuadrantFor(boundary)?.insert(item, boundary) ?: run {
+                this.content[boundary] = item
                 true
             }
         }
     }
 
-    override fun remove(collider: Collider, boundary: CollidableShape): Boolean {
+    override fun remove(item: T, boundary: CollidableShape): Boolean {
         return this.boundary.contains(boundary) && if (this.leaf) {
             synchronized(this.contentLock) {
                 this.content.remove(boundary)
                 true
             }
         } else {
-            this.getQuadrantFor(boundary)?.remove(collider, boundary)
+            this.getQuadrantFor(boundary)?.remove(item, boundary)
                 ?: synchronized(this.contentLock) {
                     // This handles the case where the boundary might exist in between quadrants
                     this.content.remove(boundary) != null
@@ -126,16 +125,18 @@ class QuadrantTree(
         this.leaf = true
     }
 
-    override fun getCloseNeighbours(collider: Collider, boundary: CollidableShape): Map<CollidableShape, Collider> {
-        val neighbours = this.content.filterKeys {
-            !collider.boundaries.containsValue(it)
+    override fun getCloseNeighbours(item: T, boundary: CollidableShape): Map<CollidableShape, T> {
+        // Items are not restricted to just one boundary so when getting neighbours we want to ensure the item itself
+        // doesn't get included if we happen to be near another one of its boundaries.
+        val neighbours = this.content.filter { (_, relatedItem) ->
+            item != relatedItem
         }
 
         return if (this.leaf) {
             neighbours
         } else {
             this.getQuadrantFor(boundary)?.let {
-                neighbours.plus(it.getCloseNeighbours(collider, boundary))
+                neighbours.plus(it.getCloseNeighbours(item, boundary))
             } ?: neighbours
         }
     }
@@ -148,13 +149,13 @@ class QuadrantTree(
     }
 
     /**
-     * Allocates (inserts) the Shape for the given Collider into the correct quadrant in the tree.
+     * Allocates (inserts) the Shape for the given Item into the correct quadrant in the tree.
      *
-     * @param collider Collider for which the boundary belongs too
+     * @param item Item for which the boundary belongs too
      * @param boundary boundary Shape to allocate
      */
-    private fun allocate(collider: Collider, boundary: CollidableShape): Boolean {
-        return this.getQuadrantFor(boundary)?.insert(collider, boundary) ?: false
+    private fun allocate(item: T, boundary: CollidableShape): Boolean {
+        return this.getQuadrantFor(boundary)?.insert(item, boundary) ?: false
     }
 
     /**
@@ -192,7 +193,7 @@ class QuadrantTree(
      * @param boundary boundary Shape to check for
      * @return the QuadrantTree (child or parent) where s belongs to spatially, null if it belongs to no one
      */
-    private fun getQuadrantFor(boundary: CollidableShape): QuadrantTree? {
+    private fun getQuadrantFor(boundary: CollidableShape): QuadrantTree<T>? {
         return synchronized(this.quadrantLock) {
             this.quadrants.firstOrNull { it?.boundary?.contains(boundary) == true }
         }
