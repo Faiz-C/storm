@@ -1,5 +1,6 @@
 package org.storm.physics.structures
 
+import org.storm.core.graphics.Renderable
 import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.geometry.shape.Rectangle.Companion.TOP_LEFT_POINT
 import org.storm.physics.math.geometry.shapes.AABB
@@ -13,46 +14,50 @@ class QuadrantTree<T>(
     private val boundary: Quadrant
 ) : SpatialDataStructure<T> {
 
-    companion object {
-        private const val MAX_DEPTH = 15
-        private const val MAX_CAPACITY = 8
+    private companion object {
+        const val MAX_DEPTH = 15
+        const val MAX_CAPACITY = 8
+    }
 
-        class Quadrant(
-            x: Double,
-            y: Double,
-            width: Double,
-            height: Double
-        ) : AABB(x, y, width, height) {
+    class Quadrant(
+        x: Double,
+        y: Double,
+        width: Double,
+        height: Double
+    ): Renderable {
 
-            override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-                canvas.drawPolygonWithUnits(this.vertices)
-            }
+        private val aabb = AABB(x, y, width, height)
 
-            fun subdivide(): Array<Quadrant> {
-                val halfWidth = this.width / 2
-                val halfHeight = this.height / 2
-                val (x, y) = this.vertices[TOP_LEFT_POINT]
+        override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+            canvas.drawPolygonWithUnits(this.aabb.vertices)
+        }
 
-                return arrayOf(
-                    // Top Left Quadrant
-                    Quadrant(x, y, halfWidth, halfHeight),
+        fun contains(boundary: CollidableShape): Boolean {
+            return this.aabb.contains(boundary)
+        }
 
-                    // Top Right Quadrant
-                    Quadrant(this.center.x, y, halfWidth, halfHeight),
+        fun subdivide(): Array<Quadrant> {
+            val halfWidth = this.aabb.width / 2
+            val halfHeight = this.aabb.height / 2
+            val (x, y) = this.aabb.vertices[TOP_LEFT_POINT]
 
-                    // Bottom Right Quadrant
-                    Quadrant(this.center.x, this.center.y, halfWidth, halfHeight),
+            return arrayOf(
+                // Top Left Quadrant
+                Quadrant(x, y, halfWidth, halfHeight),
 
-                    // Bottom Left Quadrant
-                    Quadrant(x, this.center.y, halfWidth, halfHeight)
-                )
-            }
+                // Top Right Quadrant
+                Quadrant(this.aabb.center.x, y, halfWidth, halfHeight),
+
+                // Bottom Right Quadrant
+                Quadrant(this.aabb.center.x, this.aabb.center.y, halfWidth, halfHeight),
+
+                // Bottom Left Quadrant
+                Quadrant(x, this.aabb.center.y, halfWidth, halfHeight)
+            )
         }
     }
 
     private val quadrants: Array<QuadrantTree<T>?> = arrayOfNulls(4)
-    private val quadrantLock: Any = Any()
-    private val contentLock: Any = Any()
 
     var content: MutableMap<CollidableShape, T> = mutableMapOf()
         private set
@@ -67,24 +72,18 @@ class QuadrantTree<T>(
      */
     val size: Int
         get() {
-            if (this.leaf) {
-                return synchronized(this.contentLock) { this@QuadrantTree.content.size }
-            }
+            if (this.leaf) return this.content.size
 
-            val size = synchronized(this.quadrantLock) {
-                this.quadrants.fold(0) { acc, it -> acc + it!!.size }
-            }
+            val size = this.quadrants.fold(0) { acc, it -> acc + it!!.size }
 
-            return synchronized(this.contentLock) { size + this@QuadrantTree.content.size }
+            return size + this@QuadrantTree.content.size
         }
 
     override fun insert(item: T, boundary: CollidableShape): Boolean {
         return this.boundary.contains(boundary) && if (this.leaf) {
-            synchronized(this.contentLock) {
-                this.content[boundary] = item
-                if (this.content.size > MAX_CAPACITY && this.level < MAX_DEPTH) {
-                    this.expand()
-                }
+            this.content[boundary] = item
+            if (this.content.size > MAX_CAPACITY && this.level < MAX_DEPTH) {
+                this.expand()
             }
             true
         } else {
@@ -97,29 +96,23 @@ class QuadrantTree<T>(
 
     override fun remove(item: T, boundary: CollidableShape): Boolean {
         return this.boundary.contains(boundary) && if (this.leaf) {
-            synchronized(this.contentLock) {
-                this.content.remove(boundary)
-                true
-            }
+            this.content.remove(boundary)
+            true
         } else {
             this.getQuadrantFor(boundary)?.remove(item, boundary)
-                ?: synchronized(this.contentLock) {
-                    // This handles the case where the boundary might exist in between quadrants
-                    this.content.remove(boundary) != null
-                }
+                // This handles the case where the boundary might exist in between quadrants
+                ?: (this.content.remove(boundary) != null)
         }
     }
 
     override fun clear() {
-        synchronized(this.contentLock) { this.content.clear() }
+        this.content.clear()
 
         if (this.leaf) return
 
-        synchronized(this.quadrantLock) {
-            for (i in this.quadrants.indices) {
-                this.quadrants[i]!!.clear()
-                this.quadrants[i] = null
-            }
+        for (i in this.quadrants.indices) {
+            this.quadrants[i]!!.clear()
+            this.quadrants[i] = null
         }
 
         this.leaf = true
@@ -162,12 +155,10 @@ class QuadrantTree<T>(
      * Reallocates the contents of this QuadrantTree to its children where applicable.
      */
     private fun reallocate() {
-        this.content = synchronized(this.contentLock) {
-            // The new content for this tree are all the Entities which couldn't be allocated
-            this.content.filter { (s, e) ->
-                !this.allocate(e, s)
-            }.toMutableMap()
-        }
+        // The new content for this tree are all the Entities which couldn't be allocated
+        this.content = this.content.filter { (s, e) ->
+            !this.allocate(e, s)
+        }.toMutableMap()
     }
 
     /**
@@ -177,15 +168,13 @@ class QuadrantTree<T>(
     private fun expand() {
         if (!this.leaf) return
 
-        synchronized(this.quadrantLock) {
-            val quadrantBoundaries = this.boundary.subdivide()
-            for (i in quadrants.indices) {
-                quadrants[i] = QuadrantTree(level + 1, quadrantBoundaries[i])
-            }
-
-            this.reallocate()
-            leaf = false
+        val quadrantBoundaries = this.boundary.subdivide()
+        for (i in quadrants.indices) {
+            quadrants[i] = QuadrantTree(level + 1, quadrantBoundaries[i])
         }
+
+        this.reallocate()
+        leaf = false
 
     }
 
@@ -194,9 +183,7 @@ class QuadrantTree<T>(
      * @return the QuadrantTree (child or parent) where s belongs to spatially, null if it belongs to no one
      */
     private fun getQuadrantFor(boundary: CollidableShape): QuadrantTree<T>? {
-        return synchronized(this.quadrantLock) {
-            this.quadrants.firstOrNull { it?.boundary?.contains(boundary) == true }
-        }
+        return this.quadrants.firstOrNull { it?.boundary?.contains(boundary) == true }
     }
 
 }

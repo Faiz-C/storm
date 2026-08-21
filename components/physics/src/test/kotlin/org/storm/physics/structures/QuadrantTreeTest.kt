@@ -27,7 +27,7 @@ class QuadrantTreeTest {
 
     @Test
     fun testInsert_single() {
-        val quadrantTree = QuadrantTree(0, 100.0, 100.0)
+        val quadrantTree = QuadrantTree<Collider>(0, 100.0, 100.0)
         val s: CollidableShape = Triangle(Point(5.0, 5.0), Point(15.0, 15.0), Point(7.0, 77.0))
         val c = Collider(s, 3.0, 0.3)
         quadrantTree.insert(c, c.boundary!!)
@@ -38,7 +38,7 @@ class QuadrantTreeTest {
 
     @Test
     fun testInsert_multiple() {
-        val quadrantTree = QuadrantTree(0, 100.0, 100.0)
+        val quadrantTree = QuadrantTree<Collider>(0, 100.0, 100.0)
         val maxSize = 25
         val totalEntities = 1000000
         var start = System.nanoTime()
@@ -74,7 +74,7 @@ class QuadrantTreeTest {
 
     @Test
     fun testInsert_multipleButStillLeaf() {
-        val quadrantTree = QuadrantTree(0, 100.0, 100.0)
+        val quadrantTree = QuadrantTree<Collider>(0, 100.0, 100.0)
         val totalEntities = 3
         for (i in 0 until totalEntities - 1) {
             val s: CollidableShape = AABB(
@@ -91,7 +91,7 @@ class QuadrantTreeTest {
 
     @Test
     fun testRemove() {
-        val quadrantTree = QuadrantTree(0, 100.0, 100.0)
+        val quadrantTree = QuadrantTree<Collider>(0, 100.0, 100.0)
         val totalEntities = 10
         var last: Collider? = null
         for (i in 0 until totalEntities) {
@@ -116,7 +116,7 @@ class QuadrantTreeTest {
 
     @Test
     fun testClear() {
-        val quadrantTree = QuadrantTree(0, 100.0, 100.0)
+        val quadrantTree = QuadrantTree<Collider>(0, 100.0, 100.0)
         val maxSize = 25
         val totalEntities = 10
         for (i in 0 until totalEntities) {
@@ -137,7 +137,7 @@ class QuadrantTreeTest {
 
     @Test
     fun testGetCloseNeighboursAsLeaf() {
-        val quadrantTree = QuadrantTree(0, 100.0, 100.0)
+        val quadrantTree = QuadrantTree<Collider>(0, 100.0, 100.0)
         val e1 = Collider(AABB(20.0, 20.0, 30.0, 30.0), 3.0, 0.3)
         val e2 = Collider(AABB(60.0, 65.0, 30.0, 30.0), 3.0, 0.3)
         val e3 = Collider(Circle(45.0, 34.0, 30.0), 3.0, 0.3)
@@ -156,7 +156,7 @@ class QuadrantTreeTest {
 
     @Test
     fun testGetCloseNeighboursNonLeaf() {
-        val quadrantTree = QuadrantTree(0, 100.0, 100.0)
+        val quadrantTree = QuadrantTree<Collider>(0, 100.0, 100.0)
         val e1 = Collider(AABB(20.0, 20.0, 30.0, 30.0), 3.0, 0.3)
         val e2 = Collider(AABB(60.0, 65.0, 30.0, 30.0), 3.0, 0.3)
         val e3 = Collider(Circle(45.0, 34.0, 30.0), 3.0, 0.3)

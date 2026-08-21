@@ -12,7 +12,7 @@ import org.storm.physics.math.extensions.getSquaredDistance
  * accordingly. Note, this extends the Polygon class of this library instead of the Polygon of the core graphics library
  * because it's goal is to be used for math calculations rather than rendering graphics.
  */
-open class AABB(
+class AABB(
     x: Double,
     y: Double,
     val width: Double,

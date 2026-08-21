@@ -8,14 +8,20 @@ import org.storm.physics.collision.CollisionDetector.checkMtv
 import org.storm.physics.collision.Collider
 import org.storm.physics.math.Vector
 import org.storm.physics.structures.QuadrantTree
+import org.storm.physics.structures.SpatialDataStructure
 
 /**
  * A ImpulseResolutionPhysicsEngine is straight forward and basic implementation of a PhysicsEngines.
- * It uses a Quad Tree (QuadrantTree) to check likely collisions and then uses impulse resolution to deal with collisions.
+ * It uses a Quad Tree (QuadrantTree) by default to check likely collisions and then uses impulse resolution to
+ * deal with collisions.
  */
-class ImpulseResolutionPhysicsEngine : PhysicsEngine(
-    QuadrantTree(0, Context.RESOLUTION_IN_UNITS.width, Context.RESOLUTION_IN_UNITS.height)
-) {
+class ImpulseResolutionPhysicsEngine(
+    spatialDataStructure: SpatialDataStructure<Collider> = QuadrantTree(
+        0,
+        Context.RESOLUTION_IN_UNITS.width,
+        Context.RESOLUTION_IN_UNITS.height
+    )
+) : PhysicsEngine(spatialDataStructure) {
 
     companion object {
         private const val POSITIONAL_CORRECTION_ADJUSTMENT = 0.2 // This is in pixels as the unit conversion is up to the user
