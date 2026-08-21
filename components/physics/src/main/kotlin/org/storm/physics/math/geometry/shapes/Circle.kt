@@ -21,7 +21,7 @@ class Circle(
         return Interval(projectionLength - radius, projectionLength + radius)
     }
 
-    override fun aabbBounds(): AABB {
+    override fun boundary(): AABB {
         return AABB(
             x = center.x - radius,
             y = center.y - radius,

@@ -82,7 +82,7 @@ open class Polygon(
         return Interval(min, max)
     }
 
-    override fun aabbBounds(): AABB {
+    override fun boundary(): AABB {
         var minX = Double.MAX_VALUE
         var minY = Double.MAX_VALUE
         var maxX = Double.MIN_VALUE

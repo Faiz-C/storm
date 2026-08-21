@@ -28,7 +28,7 @@ class AABBTest {
     @Test
     fun testCircleBounds() {
         val circle = Circle(Point(5.0, 5.0), 5.0)
-        val aabb = circle.aabbBounds()
+        val aabb = circle.boundary()
 
         assertEquals(0.0, aabb.x)
         assertEquals(0.0, aabb.y)
@@ -46,7 +46,7 @@ class AABBTest {
             Point(0.0, 30.0)
         )
 
-        val aabb = polygon.aabbBounds()
+        val aabb = polygon.boundary()
         assertEquals(0.0, aabb.x, DELTA, "minX/x mismatch")
         assertEquals(0.0, aabb.y, DELTA, "minY/y mismatch")
         assertEquals(40.0, aabb.width, DELTA, "maxX - minX/width mismatch")

@@ -29,7 +29,7 @@ interface CollidableShape : Geometric {
      *
      * @return an AABB that tightly bounds this shape
      */
-    fun aabbBounds(): AABB
+    fun boundary(): AABB
 
     /**
      * @param p Point to check

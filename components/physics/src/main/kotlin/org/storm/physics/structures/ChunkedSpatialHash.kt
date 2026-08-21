@@ -109,7 +109,7 @@ class ChunkedSpatialHash<T>(
     ): Boolean {
         var added = false
         val entry = Entry(item, boundary)
-        forEachCell(boundary.aabbBounds(), true) { chunk, br, bc ->
+        forEachCell(boundary.boundary(), true) { chunk, br, bc ->
             if (chunk.bucket(br, bc).add(entry)) {
                 added = true
             }
@@ -124,7 +124,7 @@ class ChunkedSpatialHash<T>(
     ): Boolean {
         var removed = false
         val entry = Entry(item, boundary)
-        forEachCell(boundary.aabbBounds(), false) { chunk, br, bc ->
+        forEachCell(boundary.boundary(), false) { chunk, br, bc ->
             if (chunk.bucket(br, bc).remove(entry)) {
                 removed = true
             }
@@ -145,7 +145,7 @@ class ChunkedSpatialHash<T>(
     ): Map<CollidableShape, T> {
         val results = mutableMapOf<CollidableShape, T>()
 
-        forEachCell(boundary.aabbBounds(), false) { chunk, br, bc ->
+        forEachCell(boundary.boundary(), false) { chunk, br, bc ->
             for ((storedItem, shape) in chunk.bucket(br, bc)) {
                 if (storedItem != item) {
                     results[shape] = storedItem

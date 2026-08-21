@@ -64,7 +64,7 @@ class AABB(
         }
     }
 
-    override fun aabbBounds(): AABB {
+    override fun boundary(): AABB {
         return this
     }
 
