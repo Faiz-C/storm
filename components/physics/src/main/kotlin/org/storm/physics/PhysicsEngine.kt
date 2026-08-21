@@ -16,7 +16,7 @@ import org.storm.physics.structures.SpatialDataStructure
  * arbitrary units in the form of doubles, they may not be 1:1 with pixels.
  */
 abstract class PhysicsEngine protected constructor(
-    protected val collisionStructure: SpatialDataStructure
+    protected val collisionStructure: SpatialDataStructure<Collider>
 ) : Renderable {
 
     companion object {

@@ -25,6 +25,13 @@ interface CollidableShape : Geometric {
     fun project(axis: Vector): Interval
 
     /**
+     * Calculates and returns the AABB that cleanly bounds this shape. All shapes can be wrapped within an AABB.
+     *
+     * @return an AABB that tightly bounds this shape
+     */
+    fun boundary(): AABB
+
+    /**
      * @param p Point to check
      * @return true if the given Point is contained within the shape
      */
