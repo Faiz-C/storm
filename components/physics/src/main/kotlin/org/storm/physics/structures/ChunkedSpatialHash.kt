@@ -100,6 +100,9 @@ class ChunkedSpatialHash<T>(
         }
     }
 
+    /**
+     * A readonly view of the chunks
+     */
     val chunks: Map<Long, ReadOnlyChunk<T>>
         field = mutableMapOf<Long, Chunk<T>>()
 
