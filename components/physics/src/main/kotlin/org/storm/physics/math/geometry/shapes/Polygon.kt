@@ -168,7 +168,7 @@ open class Polygon(
         // Considering "on vertex" case
         val p = if (point.y == hy || point.y == ly) Point(point.x, point.y + RAY_CASTING_EPSILON) else point
 
-        if (p.y !in ly..hy || p.x > max(hx, lx)) return 0
+        if (p.y > hy || p.y < ly || p.x > max(hx, lx)) return 0
 
         if (p.x < min(hx, lx)) return 1
 
