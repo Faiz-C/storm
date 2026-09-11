@@ -62,6 +62,8 @@ class StormEngine(
     // External var used to toggle rendering, input translation, and physics. Essentially the entire game loop.
     var paused: Boolean = false
 
+    var telemetry: Boolean = false
+
     var fpsChangeAllow: Boolean = true
 
     var renderFps: Int = renderFps
@@ -244,4 +246,6 @@ class StormEngine(
             }
         }
     }
+
+    private fun measure()
 }
