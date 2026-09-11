@@ -1,6 +1,6 @@
 import org.gradle.kotlin.dsl.register
 
-version = "2.3.1"
+version = "2.3.2"
 
 javafx {
     version = "26"
