@@ -13,7 +13,10 @@ import org.storm.core.event.EventManager
 import org.storm.core.input.InputEvent
 import org.storm.core.input.InputManager
 import org.storm.core.sound.SoundManager
-import org.storm.engine.example.*
+import org.storm.engine.example.AtRestTestState
+import org.storm.engine.example.BouncingBallTestState
+import org.storm.engine.example.CircleCornerTestState
+import org.storm.engine.example.ParticleTestState
 import org.storm.impl.jfx.extensions.getJfxKeyEventStream
 import org.storm.impl.jfx.extensions.getJfxMouseEventStream
 import org.storm.impl.jfx.extensions.registerJfxKeyEvents

@@ -15,6 +15,7 @@ import org.storm.engine.events.EngineEvent
 import org.storm.engine.events.getEngineEventStream
 import org.storm.engine.exception.StormEngineException
 import org.storm.engine.state.GameState
+import org.storm.engine.telemetry.TelemetryTracker
 import org.storm.physics.PhysicsEngine
 
 /**
@@ -216,32 +217,47 @@ class StormEngine(
         EventManager.processEvents()
 
         // Process Input
-        this.inputManager.updateInputState(toMilliseconds(this.lastUpdateTime))
-        val actionState = frameState.getActionState(this.inputManager.getCurrentInputState())
-        frameState.process(actionState)
+        TelemetryTracker.recordInputProcessing {
+            this.inputManager.updateInputState(toMilliseconds(this.lastUpdateTime))
+            val actionState = frameState.getActionState(this.inputManager.getCurrentInputState())
+            frameState.process(actionState)
+        }
+
+        val elapsedTimeSeconds = toSeconds(elapsedFrameTime)
+        val currentTimeSeconds = toSeconds(this.lastUpdateTime)
 
         // Then allow the state to do any internal updating
-        frameState.update(toSeconds(this.lastUpdateTime), toSeconds(elapsedFrameTime))
+        TelemetryTracker.recordUpdate {
+            frameState.update(currentTimeSeconds, elapsedTimeSeconds)
+        }
 
-        if (++this.physicsDelay >= this.physicsFpsRatio) {
-            // Apply Physics for as long as we have leeway through our accumulator
-            while (this.accumulator >= this.fixedTimeStepInterval) {
-                this.physicsEngine.update(frameState.colliders, toSeconds(elapsedFrameTime))
-                this.accumulator -= this.fixedTimeStepInterval
-                this.lastUpdateTime += this.fixedTimeStepInterval
+        TelemetryTracker.recordPhysics {
+            if (++this.physicsDelay >= this.physicsFpsRatio) {
+                // Apply Physics for as long as we have leeway through our accumulator
+                while (this.accumulator >= this.fixedTimeStepInterval) {
+                    this.physicsEngine.update(frameState.colliders, elapsedTimeSeconds)
+                    this.accumulator -= this.fixedTimeStepInterval
+                    this.lastUpdateTime += this.fixedTimeStepInterval
+                }
+                this.physicsDelay = 0
             }
-            this.physicsDelay = 0
         }
 
         // Stage 2 Event Processing: Produced events from game updates
         EventManager.processEvents()
 
-        if (++this.renderDelay >= this.renderFpsRatio) {
-            withContext(renderingDispatcher) {
-                this@StormEngine.window.canvas.clear()
-                this@StormEngine.currentState!!.render(this@StormEngine.window.canvas, 0.0, 0.0)
-                this@StormEngine.renderDelay = 0
+        // Finally render to the screen
+        TelemetryTracker.recordRender {
+            if (++this.renderDelay >= this.renderFpsRatio) {
+                withContext(renderingDispatcher) {
+                    this@StormEngine.window.canvas.clear()
+                    this@StormEngine.currentState!!.render(this@StormEngine.window.canvas, 0.0, 0.0)
+                    this@StormEngine.renderDelay = 0
+                }
             }
         }
+
+        // Update the internal snapshot of the TelemetryTracker
+        TelemetryTracker.update(currentTimeSeconds, elapsedTimeSeconds)
     }
 }

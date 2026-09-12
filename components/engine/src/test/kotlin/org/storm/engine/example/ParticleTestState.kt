@@ -5,12 +5,14 @@ import org.storm.core.context.RESOLUTION
 import org.storm.core.context.RESOLUTION_IN_UNITS
 import org.storm.core.event.EventManager
 import org.storm.core.extensions.units
+import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.geometry.Point
 import org.storm.core.input.ActionState
 import org.storm.core.sound.SoundManager
 import org.storm.engine.Controls
 import org.storm.engine.events.EngineEvent
 import org.storm.engine.events.getEngineEventStream
+import org.storm.engine.telemetry.TelemetryTracker
 import org.storm.physics.PhysicsEngine
 import org.storm.physics.collision.Collider
 import org.storm.physics.enums.Direction
@@ -96,6 +98,11 @@ class ParticleTestState : SwitchableState() {
         if (actionState.isFirstActivation(Controls.SPACE)) {
             EventManager.getEngineEventStream().publish(EngineEvent.TogglePhysics())
         }
+    }
+
+    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+        super.render(canvas, x, y)
+        TelemetryTracker.render(canvas, x, y)
     }
 
 }
