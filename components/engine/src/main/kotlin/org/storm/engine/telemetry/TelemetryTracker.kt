@@ -3,6 +3,7 @@ package org.storm.engine.telemetry
 import org.storm.core.graphics.Renderable
 import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.canvas.Color
+import org.storm.core.graphics.canvas.Font
 import org.storm.core.update.Updatable
 
 /**
@@ -25,6 +26,11 @@ object TelemetryTracker: Updatable, Renderable {
     @PublishedApi internal var updateTimeMs = 0.0
     @PublishedApi internal var physicsTimeMs = 0.0
     @PublishedApi internal var renderTimeMs = 0.0
+
+    /**
+     * The font to use for the default debug telemetry rendering
+     */
+    var font: Font = Font(size = 15.0)
 
     /**
      * How many seconds to wait for before capturing a snapshot
@@ -119,7 +125,7 @@ object TelemetryTracker: Updatable, Renderable {
      */
     override suspend fun render(canvas: Canvas, x: Double, y: Double) {
         val snapshot = this.snapshot
-        canvas.withSettings(color = DEBUG_COLOUR) {
+        canvas.withSettings(color = DEBUG_COLOUR, font = this.font) {
             drawText(
                 "FPS: ${snapshot.fps} | FT: ${String.format("%.2f", snapshot.frameTimeMs)}ms",
                 RENDER_MARGIN,
