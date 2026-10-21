@@ -17,6 +17,7 @@ import org.storm.engine.exception.StormEngineException
 import org.storm.engine.state.GameState
 import org.storm.engine.telemetry.TelemetryTracker
 import org.storm.physics.PhysicsEngine
+import kotlin.math.max
 
 /**
  * The StormEngine combines the multiple components of the Storm libraries to create a simple, straight forward and
@@ -191,7 +192,7 @@ class StormEngine(
         if (this.paused || !this.running || this.currentState == null) return
 
         val now = System.nanoTime()
-        val elapsedFrameTime = now - this.lastUpdateTime
+        val elapsedFrameTime = max(now - this.lastUpdateTime, 0)
 
         // Don't let it creep up too much, upper bound it
         val adjustedElapsedFrameTime = if (elapsedFrameTime > ELAPSED_TIME_UPPER_BOUND) {
