@@ -75,7 +75,7 @@ class StormEngine(
             this.gameLoop?.cancel() // Stop the current loop if its running
 
             // Figure out which of the two is the greater fps, that will be the rate the loop will run at
-            val higher = FastMath.max(value, this.physicsFps)
+            val higher = max(value, this.physicsFps)
 
             // We capture both ratios as we do not enforce that any one fps amount must be smaller than the other
             // This allows us to separate the physics and the rendering rates during the game loop

@@ -32,6 +32,15 @@ tasks {
         description = "A more involved test which tests the storm engines many components and uses multiple states"
         mainClass.set("org.storm.engine.StormEngineTest")
     })
+
+    register<JavaExec>("fpsTest", fun JavaExec.() {
+        dependsOn(compileKotlin, compileTestKotlin)
+        setupJavaFx(this)
+
+        group = "Execution"
+        description = "A test to validate fps is properly locked"
+        mainClass.set("org.storm.engine.FpsTest")
+    })
 }
 
 publishing {
