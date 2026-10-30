@@ -22,8 +22,8 @@ class FpsTest: Application() {
         val window = JfxWindow(Resolution.HD)
         val stormEngine = StormEngine(
             physicsEngine = ImpulseResolutionPhysicsEngine(),
-            renderFps = 30,
-            physicsFps = 30,
+            renderFps = 120,
+            physicsFps = 60,
             inputManager = InputManager(),
             soundManager = SoundManager(),
             window = window,
