@@ -1,6 +1,6 @@
 import org.gradle.kotlin.dsl.register
 
-version = "2.3.2"
+version = "2.3.3"
 
 javafx {
     version = "26"
@@ -31,6 +31,15 @@ tasks {
         group = "Execution"
         description = "A more involved test which tests the storm engines many components and uses multiple states"
         mainClass.set("org.storm.engine.StormEngineTest")
+    })
+
+    register<JavaExec>("fpsTest", fun JavaExec.() {
+        dependsOn(compileKotlin, compileTestKotlin)
+        setupJavaFx(this)
+
+        group = "Execution"
+        description = "A test to validate fps is properly locked"
+        mainClass.set("org.storm.engine.FpsTest")
     })
 }
 

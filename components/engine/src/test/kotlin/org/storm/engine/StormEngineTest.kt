@@ -69,7 +69,6 @@ class StormEngineTest : Application() {
             stormEngine.run()
         }
 
-
         primaryStage.scene = window
         primaryStage.show()
     }

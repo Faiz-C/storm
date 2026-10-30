@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version("2.4.0")
+    kotlin("jvm") version("2.4.21")
     id("org.openjfx.javafxplugin") version ("0.1.0")
 }
 
@@ -9,7 +9,7 @@ javafx {
 }
 
 tasks.wrapper {
-    gradleVersion = "9.6.1"
+    gradleVersion = "9.8.2"
     distributionType = Wrapper.DistributionType.ALL
 }
 

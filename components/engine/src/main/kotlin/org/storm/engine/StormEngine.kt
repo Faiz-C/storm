@@ -52,7 +52,7 @@ class StormEngine(
     private var physicsDelay: Int = 0
 
     private var gameLoop: Job? = null
-    private val engineCoroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default.limitedParallelism(1))
+    private val engineCoroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default.limitedParallelism(2))
 
     // Stateful Vars
     private var currentState: GameState? = null
@@ -75,7 +75,7 @@ class StormEngine(
             this.gameLoop?.cancel() // Stop the current loop if its running
 
             // Figure out which of the two is the greater fps, that will be the rate the loop will run at
-            val higher = FastMath.max(value, this.physicsFps)
+            val higher = max(value, this.physicsFps)
 
             // We capture both ratios as we do not enforce that any one fps amount must be smaller than the other
             // This allows us to separate the physics and the rendering rates during the game loop
@@ -87,9 +87,7 @@ class StormEngine(
             this.fixedTimeStepInterval = 1_000_000_000L / this.physicsFps
 
             // Restart the loop with the new interval rate
-            this.gameLoop = this.engineCoroutineScope.scheduleOnInterval(1000L / higher) {
-                this.runGameLogic()
-            }
+            this.gameLoop = this.engineCoroutineScope.scheduleOnInterval(1000L / higher, this::runGameLogic)
 
             field = value
         }
@@ -192,7 +190,7 @@ class StormEngine(
         if (this.paused || !this.running || this.currentState == null) return
 
         val now = System.nanoTime()
-        val elapsedFrameTime = max(now - this.lastUpdateTime, 0)
+        val elapsedFrameTime = now - this.lastUpdateTime
 
         // Don't let it creep up too much, upper bound it
         val adjustedElapsedFrameTime = if (elapsedFrameTime > ELAPSED_TIME_UPPER_BOUND) {
@@ -235,10 +233,12 @@ class StormEngine(
         TelemetryTracker.recordPhysics {
             if (++this.physicsDelay >= this.physicsFpsRatio) {
                 // Apply Physics for as long as we have leeway through our accumulator
+                val timeStepSeconds = toSeconds(this.fixedTimeStepInterval)
                 while (this.accumulator >= this.fixedTimeStepInterval) {
-                    this.physicsEngine.update(frameState.colliders, elapsedTimeSeconds)
+                    // To keep consistent physics regardless of hiccups in time taken in the loop we add the *fixed
+                    // time step* value instead of the elapsed seconds.
+                    this.physicsEngine.update(frameState.colliders, timeStepSeconds)
                     this.accumulator -= this.fixedTimeStepInterval
-                    this.lastUpdateTime += this.fixedTimeStepInterval
                 }
                 this.physicsDelay = 0
             }
