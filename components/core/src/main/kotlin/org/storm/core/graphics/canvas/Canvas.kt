@@ -6,6 +6,15 @@ import org.storm.core.graphics.geometry.Point
 import org.storm.core.graphics.geometry.shape.Rectangle
 import java.util.Stack
 
+// TODO
+// Here is the idea:
+// The canvas here needs to stop immediately drawing to the underlying canvas (javafx)
+// We need to move towards a queue and flush pattern where the flushing is handling by the implementation
+// Each method stays the same but internally we now just queue DrawCommands
+// Then we can take this RenderSnapshot at the end of a frame and queue it up somewhere.
+
+// 1. implement the draw commands, queue, and flush ignoring settings
+// 2. integrate settings back into the mix
 abstract class Canvas(
     defaultSettings: Settings = Settings()
 ) {
