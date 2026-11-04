@@ -76,7 +76,7 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
         this.gc.restore()
     }
 
-    override suspend fun onSettingsChange(settings: Settings) {
+    override fun onSettingsChange(settings: Settings) {
         require(settings.alpha in 0.0..1.0) {
             "global alpha value must be within [0.0, 1.0]"
         }

@@ -23,6 +23,75 @@ abstract class Canvas(
 
     val settingHistory: ArrayDeque<Settings> = ArrayDeque()
 
+    private val commands: ArrayDeque<DrawCommand> = ArrayDeque()
+
+    /**
+     * Draws a line from (x1, y1) to (x2, y2)
+     *
+     * @param x1 x coordinate of the starting point in pixels
+     * @param y1 y coordinate of the starting point in pixels
+     * @param x2 x coordinate of the ending point in pixels
+     * @param y2 y coordinate of the ending point in pixels
+     */
+    fun drawLine(x1: Double, y1: Double, x2: Double, y2: Double) {
+        this.commands.add(DrawCommand.Line(x1, y1, x2, y2))
+    }
+
+    /**
+     * Draws the given text onto the screen starting at the given coordinates.
+     *
+     * @param text the text to draw onto the screen
+     * @param x the x coordinate of the top left corner to start drawing the text from in pixels
+     * @param y the y coordinate of the top left corner to start drawing the text from in pixels
+     */
+    fun drawText(text: String, x: Double, y: Double) {
+        this.commands.add(DrawCommand.Text(text, x, y))
+    }
+
+    /**
+     * Draws a rectangle with the given x and y coordinates with the given width and height.
+     *
+     * @param x x coordinate of the top left corner in pixels
+     * @param y y coordinate of the top left corner in pixels
+     * @param width width of the rectangle in pixels
+     * @param height height of the rectangle in pixels
+     */
+    fun drawRect(x: Double, y: Double, width: Double, height: Double) {
+        this.commands.add(DrawCommand.Rect(x, y, width, height))
+    }
+
+    /**
+     * Draws an ellipse with the given x and y coordinates with the given width and height.
+     *
+     * @param x x coordinate of the center in pixels
+     * @param y x coordinate of the center in pixels
+     * @param width width of the ellipse in pixels
+     * @param height height of the ellipse in pixels
+     */
+    fun drawEllipse(x: Double, y: Double, width: Double, height: Double) {
+        this.commands.add(DrawCommand.Ellipse(x, y, width, height))
+    }
+
+    /**
+     * Draws a polygon from the given list of points. The points are given in *clockwise* order.
+     *
+     * @param points the points of the polygon in *clockwise* order and in pixels
+     */
+    fun drawPolygon(points: List<Point>) {
+        this.commands.add(DrawCommand.Polygon(points))
+    }
+
+    /**
+     * Draws the given Image at the given coordinates. The coordinates represent the top left corner of the Image.
+     *
+     * @param image the Image to draw
+     * @param x x coordinate in pixels of the top left corner
+     * @param y y coordinate in pixels of the top left corner
+     */
+    fun drawImage(image: Image, x: Double, y: Double) {
+        this.commands.add(DrawCommand.Image(image, x, y))
+    }
+
     /**
      * Draws the given text onto the screen starting at the given coordinates.
      *
@@ -30,7 +99,7 @@ abstract class Canvas(
      * @param x the x coordinate *of the bottom left corner* to start drawing the text from in game units
      * @param y the y coordinate *of the bottom left corner* to start drawing the text from in game units
      */
-    suspend fun drawTextWithUnits(text: String, x: Double, y: Double) {
+    fun drawTextWithUnits(text: String, x: Double, y: Double) {
         drawText(text, x.pixels, y.pixels)
     }
 
@@ -42,7 +111,7 @@ abstract class Canvas(
      * @param x2 x coordinate of the ending point in game engine units
      * @param y2 y coordinate of the ending point in game engine units
      */
-    suspend fun drawLineWithUnits(x1: Double, y1: Double, x2: Double, y2: Double) {
+    fun drawLineWithUnits(x1: Double, y1: Double, x2: Double, y2: Double) {
         drawLine(x1.pixels, y1.pixels, x2.pixels, y2.pixels)
     }
 
@@ -54,7 +123,7 @@ abstract class Canvas(
      * @param width width of the ellipse in game engine units
      * @param height height of the ellipse in game engine units
      */
-    suspend fun drawEllipseWithUnits(x: Double, y: Double, width: Double, height: Double) {
+    fun drawEllipseWithUnits(x: Double, y: Double, width: Double, height: Double) {
         drawEllipse(
             x.pixels,
             y.pixels,
@@ -71,7 +140,7 @@ abstract class Canvas(
      * @param width width of the rectangle in game engine units
      * @param height height of the rectangle in game engine units
      */
-    suspend fun drawRectWithUnits(x: Double, y: Double, width: Double, height: Double) {
+    fun drawRectWithUnits(x: Double, y: Double, width: Double, height: Double) {
         drawRect(
             x.pixels,
             y.pixels,
@@ -85,7 +154,7 @@ abstract class Canvas(
      *
      * @param points the points of the polygon in *clockwise* order and in game engine units
      */
-    suspend fun drawPolygonWithUnits(points: List<Point>) {
+    fun drawPolygonWithUnits(points: List<Point>) {
         drawPolygon(points.map { it.toPixels() })
     }
 
@@ -96,7 +165,7 @@ abstract class Canvas(
      * @param x x coordinate in game engine units of the top left corner
      * @param y y coordinate in game engine units of the top left corner
      */
-    suspend fun drawImageWithUnits(image: Image, x: Double, y: Double) {
+    fun drawImageWithUnits(image: Image, x: Double, y: Double) {
         drawImage(image, x.pixels, y.pixels)
     }
 
@@ -106,7 +175,7 @@ abstract class Canvas(
      * @param settings the Brush settings to use
      * @param block the block of code to run
      */
-    suspend fun withSettings(settings: Settings, block: suspend Canvas.() -> Unit) {
+    fun withSettings(settings: Settings, block: Canvas.() -> Unit) {
         try {
             settingHistory.add(this.settings)
             this.settings = settings
@@ -128,7 +197,7 @@ abstract class Canvas(
      * @param alpha the global alpha value of the canvas
      * @param block the block of code to run with these settings
      */
-    suspend fun withSettings(
+    fun withSettings(
         thickness: Double = settings.thickness,
         color: Color = settings.color,
         fill: Boolean = settings.fill,
@@ -159,60 +228,8 @@ abstract class Canvas(
      *
      * @param settings The brush to use
      */
-    abstract suspend fun onSettingsChange(settings: Settings)
+    abstract fun onSettingsChange(settings: Settings)
 
-    /**
-     * Draws a line from (x1, y1) to (x2, y2)
-     *
-     * @param x1 x coordinate of the starting point in pixels
-     * @param y1 y coordinate of the starting point in pixels
-     * @param x2 x coordinate of the ending point in pixels
-     * @param y2 y coordinate of the ending point in pixels
-     */
-    abstract suspend fun drawLine(x1: Double, y1: Double, x2: Double, y2: Double)
+    abstract fun
 
-    /**
-     * Draws the given text onto the screen starting at the given coordinates.
-     *
-     * @param text the text to draw onto the screen
-     * @param x the x coordinate of the top left corner to start drawing the text from in pixels
-     * @param y the y coordinate of the top left corner to start drawing the text from in pixels
-     */
-    abstract suspend fun drawText(text: String, x: Double, y: Double)
-
-    /**
-     * Draws a rectangle with the given x and y coordinates with the given width and height.
-     *
-     * @param x x coordinate of the top left corner in pixels
-     * @param y y coordinate of the top left corner in pixels
-     * @param width width of the rectangle in pixels
-     * @param height height of the rectangle in pixels
-     */
-    abstract suspend fun drawRect(x: Double, y: Double, width: Double, height: Double)
-
-    /**
-     * Draws an ellipse with the given x and y coordinates with the given width and height.
-     *
-     * @param x x coordinate of the center in pixels
-     * @param y x coordinate of the center in pixels
-     * @param width width of the ellipse in pixels
-     * @param height height of the ellipse in pixels
-     */
-    abstract suspend fun drawEllipse(x: Double, y: Double, width: Double, height: Double)
-
-    /**
-     * Draws a polygon from the given list of points. The points are given in *clockwise* order.
-     *
-     * @param points the points of the polygon in *clockwise* order and in pixels
-     */
-    abstract suspend fun drawPolygon(points: List<Point>)
-
-    /**
-     * Draws the given Image at the given coordinates. The coordinates represent the top left corner of the Image.
-     *
-     * @param image the Image to draw
-     * @param x x coordinate in pixels of the top left corner
-     * @param y y coordinate in pixels of the top left corner
-     */
-    abstract suspend fun drawImage(image: Image, x: Double, y: Double)
 }
