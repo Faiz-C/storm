@@ -4,7 +4,7 @@ import org.storm.core.extensions.pixels
 import org.storm.core.graphics.Image
 import org.storm.core.graphics.geometry.Point
 import org.storm.core.graphics.geometry.shape.Rectangle
-import java.util.Stack
+import org.storm.core.graphics.render.RenderCommand
 
 // TODO
 // Here is the idea:
@@ -15,15 +15,17 @@ import java.util.Stack
 
 // 1. implement the draw commands, queue, and flush ignoring settings
 // 2. integrate settings back into the mix
-abstract class Canvas(
-    defaultSettings: Settings = Settings()
-) {
+class Canvas(defaultSettings: Settings = Settings()) {
+
     var settings: Settings = defaultSettings
-        private set
+        private set(value) {
+            field = value
+            this.commands.add(RenderCommand.ChangeSettings(field))
+        }
 
     val settingHistory: ArrayDeque<Settings> = ArrayDeque()
 
-    private val commands: ArrayDeque<DrawCommand> = ArrayDeque()
+    private val commands: ArrayDeque<RenderCommand> = ArrayDeque()
 
     /**
      * Draws a line from (x1, y1) to (x2, y2)
@@ -34,7 +36,7 @@ abstract class Canvas(
      * @param y2 y coordinate of the ending point in pixels
      */
     fun drawLine(x1: Double, y1: Double, x2: Double, y2: Double) {
-        this.commands.add(DrawCommand.Line(x1, y1, x2, y2))
+        this.commands.add(RenderCommand.Line(x1, y1, x2, y2))
     }
 
     /**
@@ -45,7 +47,7 @@ abstract class Canvas(
      * @param y the y coordinate of the top left corner to start drawing the text from in pixels
      */
     fun drawText(text: String, x: Double, y: Double) {
-        this.commands.add(DrawCommand.Text(text, x, y))
+        this.commands.add(RenderCommand.Text(text, x, y))
     }
 
     /**
@@ -57,7 +59,7 @@ abstract class Canvas(
      * @param height height of the rectangle in pixels
      */
     fun drawRect(x: Double, y: Double, width: Double, height: Double) {
-        this.commands.add(DrawCommand.Rect(x, y, width, height))
+        this.commands.add(RenderCommand.Rect(x, y, width, height))
     }
 
     /**
@@ -69,7 +71,7 @@ abstract class Canvas(
      * @param height height of the ellipse in pixels
      */
     fun drawEllipse(x: Double, y: Double, width: Double, height: Double) {
-        this.commands.add(DrawCommand.Ellipse(x, y, width, height))
+        this.commands.add(RenderCommand.Ellipse(x, y, width, height))
     }
 
     /**
@@ -78,7 +80,7 @@ abstract class Canvas(
      * @param points the points of the polygon in *clockwise* order and in pixels
      */
     fun drawPolygon(points: List<Point>) {
-        this.commands.add(DrawCommand.Polygon(points))
+        this.commands.add(RenderCommand.Polygon(points))
     }
 
     /**
@@ -89,7 +91,7 @@ abstract class Canvas(
      * @param y y coordinate in pixels of the top left corner
      */
     fun drawImage(image: Image, x: Double, y: Double) {
-        this.commands.add(DrawCommand.Image(image, x, y))
+        this.commands.add(RenderCommand.Image(image, x, y))
     }
 
     /**
@@ -170,6 +172,19 @@ abstract class Canvas(
     }
 
     /**
+     * Creates a clipping area based on the given boundary such that anything outside it does not
+     * get rendered
+     *
+     * @param boundary The clipping boundary
+     * @param block The canvas rendering code to execute within this boundary
+     */
+    fun withClip(boundary: Rectangle, block: Canvas.() -> Unit) {
+        this.commands.add(RenderCommand.Clip(boundary))
+        block()
+        this.commands.add(RenderCommand.Unclip)
+    }
+
+    /**
      * Executes the given block of code using the given brush settings.
      *
      * @param settings the Brush settings to use
@@ -177,13 +192,13 @@ abstract class Canvas(
      */
     fun withSettings(settings: Settings, block: Canvas.() -> Unit) {
         try {
-            settingHistory.add(this.settings)
+            this.settingHistory.add(this.settings)
             this.settings = settings
-            onSettingsChange(this.settings)
+            // onSettingsChange(this.settings) this moves to the renderer
             block()
         } finally {
             this.settings = this.settingHistory.removeLast()
-            onSettingsChange(this.settings)
+            //onSettingsChange(this.settings)
         }
     }
 
@@ -211,25 +226,8 @@ abstract class Canvas(
     /**
      * Clears the Canvas
      */
-    abstract suspend fun clear()
-
-    /**
-     * Creates a clipping area based on the given boundary such that anything outside it does not
-     * get rendered
-     *
-     * @param boundary The clipping boundary
-     * @param block The canvas rendering code to execute within this boundary
-     */
-    abstract suspend fun withClip(boundary: Rectangle, block: suspend Canvas.() -> Unit)
-
-    /**
-     * A hook which triggers whenever the withBrush method is used to change the active Brush settings. This is where
-     * the implementation is able to handle any required logic it needs to use the new settings.
-     *
-     * @param settings The brush to use
-     */
-    abstract fun onSettingsChange(settings: Settings)
-
-    abstract fun
+    fun clear() {
+        this.commands.clear()
+    }
 
 }

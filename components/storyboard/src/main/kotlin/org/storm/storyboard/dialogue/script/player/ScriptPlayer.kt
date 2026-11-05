@@ -1,7 +1,7 @@
 package org.storm.storyboard.dialogue.script.player
 
 import org.storm.core.input.ActionStateProcessor
-import org.storm.core.graphics.Renderable
+import org.storm.core.graphics.render.Renderable
 import org.storm.core.update.Updatable
 import org.storm.storyboard.dialogue.script.Script
 import kotlin.math.min

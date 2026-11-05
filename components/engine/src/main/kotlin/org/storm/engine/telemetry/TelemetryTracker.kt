@@ -1,6 +1,6 @@
 package org.storm.engine.telemetry
 
-import org.storm.core.graphics.Renderable
+import org.storm.core.graphics.render.Renderable
 import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.canvas.Color
 import org.storm.core.graphics.canvas.Font

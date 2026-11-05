@@ -1,4 +1,4 @@
-package org.storm.core.graphics
+package org.storm.core.graphics.render
 
 import org.storm.core.graphics.canvas.Canvas
 

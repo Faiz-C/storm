@@ -3,7 +3,7 @@ package org.storm.physics
 import org.storm.core.event.EventManager
 import org.storm.core.extensions.units
 import org.storm.core.graphics.canvas.Canvas
-import org.storm.core.graphics.Renderable
+import org.storm.core.graphics.render.Renderable
 import org.storm.physics.collision.Collider
 import org.storm.physics.events.CollisionEvent
 import org.storm.physics.events.getCollisionEventStream

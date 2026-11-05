@@ -1,7 +1,7 @@
 package org.storm.engine.state
 
 import org.storm.core.input.ActionStateProcessor
-import org.storm.core.graphics.Renderable
+import org.storm.core.graphics.render.Renderable
 import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.input.InputTranslator
 import org.storm.core.sound.SoundManager

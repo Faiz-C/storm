@@ -2,7 +2,7 @@ package org.storm.storyboard
 
 import org.storm.core.input.ActionStateProcessor
 import org.storm.core.graphics.canvas.Canvas
-import org.storm.core.graphics.Renderable
+import org.storm.core.graphics.render.Renderable
 import org.storm.core.input.ActionState
 import org.storm.core.update.Updatable
 import org.storm.storyboard.exception.StoryBoardEngineException

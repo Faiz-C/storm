@@ -1,6 +1,6 @@
 package org.storm.core.graphics.geometry
 
-import org.storm.core.graphics.Renderable
+import org.storm.core.graphics.render.Renderable
 
 /**
  * A Geometric object can be translated (moved) in Euclidean (2D) space and is Renderable

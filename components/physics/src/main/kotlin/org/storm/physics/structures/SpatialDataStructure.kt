@@ -1,7 +1,6 @@
 package org.storm.physics.structures
 
-import org.storm.core.graphics.Renderable
-import org.storm.physics.collision.Collider
+import org.storm.core.graphics.render.Renderable
 import org.storm.physics.math.geometry.shapes.CollidableShape
 
 /**

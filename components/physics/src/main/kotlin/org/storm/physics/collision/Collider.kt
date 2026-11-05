@@ -1,6 +1,6 @@
 package org.storm.physics.collision
 
-import org.storm.core.graphics.Renderable
+import org.storm.core.graphics.render.Renderable
 import org.storm.core.graphics.canvas.Canvas
 import org.storm.core.graphics.geometry.Geometric
 import org.storm.physics.math.Vector
