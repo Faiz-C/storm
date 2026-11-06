@@ -5,7 +5,7 @@ import org.storm.core.graphics.Image
 import org.storm.core.graphics.geometry.Point
 import org.storm.core.graphics.geometry.shape.Rectangle
 import org.storm.core.graphics.render.RenderCommand
-import org.storm.core.graphics.render.RenderSnapshot
+import org.storm.core.graphics.render.RenderingBuffer
 
 /**
  * Abstracts the idea of drawing into a recording of commands
@@ -18,7 +18,7 @@ class Canvas(defaultSettings: Settings = Settings()) {
             this.commands.add(RenderCommand.ChangeSettings(field))
         }
 
-    val snapshot: RenderSnapshot get() = RenderSnapshot(this.commands.toList())
+    val snapshot: RenderingBuffer get() = RenderingBuffer(this.commands.toList())
 
     private val settingHistory: ArrayDeque<Settings> = ArrayDeque()
 
