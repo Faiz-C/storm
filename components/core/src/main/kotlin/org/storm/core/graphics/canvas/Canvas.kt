@@ -5,16 +5,11 @@ import org.storm.core.graphics.Image
 import org.storm.core.graphics.geometry.Point
 import org.storm.core.graphics.geometry.shape.Rectangle
 import org.storm.core.graphics.render.RenderCommand
+import org.storm.core.graphics.render.RenderSnapshot
 
-// TODO
-// Here is the idea:
-// The canvas here needs to stop immediately drawing to the underlying canvas (javafx)
-// We need to move towards a queue and flush pattern where the flushing is handling by the implementation
-// Each method stays the same but internally we now just queue DrawCommands
-// Then we can take this RenderSnapshot at the end of a frame and queue it up somewhere.
-
-// 1. implement the draw commands, queue, and flush ignoring settings
-// 2. integrate settings back into the mix
+/**
+ * Abstracts the idea of drawing into a recording of commands
+ */
 class Canvas(defaultSettings: Settings = Settings()) {
 
     var settings: Settings = defaultSettings
@@ -23,9 +18,11 @@ class Canvas(defaultSettings: Settings = Settings()) {
             this.commands.add(RenderCommand.ChangeSettings(field))
         }
 
-    val settingHistory: ArrayDeque<Settings> = ArrayDeque()
+    val snapshot: RenderSnapshot get() = RenderSnapshot(this.commands.toList())
 
-    private val commands: ArrayDeque<RenderCommand> = ArrayDeque()
+    private val settingHistory: ArrayDeque<Settings> = ArrayDeque()
+
+    private val commands: MutableList<RenderCommand> = mutableListOf()
 
     /**
      * Draws a line from (x1, y1) to (x2, y2)
@@ -218,7 +215,7 @@ class Canvas(defaultSettings: Settings = Settings()) {
         fill: Boolean = settings.fill,
         font: Font = settings.font,
         alpha: Double = settings.alpha,
-        block: suspend Canvas.() -> Unit
+        block: Canvas.() -> Unit
     ) {
         withSettings(Settings(thickness, color, fill, font, alpha), block)
     }
