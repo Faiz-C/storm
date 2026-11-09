@@ -8,21 +8,27 @@ import org.storm.core.graphics.render.RenderCommand
 import org.storm.core.graphics.render.RenderingBuffer
 
 /**
- * Abstracts the idea of drawing into a recording of commands
+ * A high level API to render content to the screen. This is what game entities should use to render content. Internally,
+ * this acts a recorder in the render pipeline, tracking what should be done into a [RenderingBuffer]. The buffer is
+ * then utilized by specific rendering implementations.
  */
 class Canvas(defaultSettings: Settings = Settings()) {
 
+    /**
+     * The current brush settings of the Canvas
+     */
     var settings: Settings = defaultSettings
         private set(value) {
             field = value
-            this.commands.add(RenderCommand.ChangeSettings(field))
+            this.buffer.add(RenderCommand.ChangeSettings(field))
         }
 
-    val snapshot: RenderingBuffer get() = RenderingBuffer(this.commands.toList())
+    /**
+     * The buffer where [RenderCommand]s will be written to.
+     */
+    internal var buffer: RenderingBuffer = RenderingBuffer()
 
     private val settingHistory: ArrayDeque<Settings> = ArrayDeque()
-
-    private val commands: MutableList<RenderCommand> = mutableListOf()
 
     /**
      * Draws a line from (x1, y1) to (x2, y2)
@@ -33,7 +39,7 @@ class Canvas(defaultSettings: Settings = Settings()) {
      * @param y2 y coordinate of the ending point in pixels
      */
     fun drawLine(x1: Double, y1: Double, x2: Double, y2: Double) {
-        this.commands.add(RenderCommand.Line(x1, y1, x2, y2))
+        this.buffer.add(RenderCommand.Line(x1, y1, x2, y2))
     }
 
     /**
@@ -44,7 +50,7 @@ class Canvas(defaultSettings: Settings = Settings()) {
      * @param y the y coordinate of the top left corner to start drawing the text from in pixels
      */
     fun drawText(text: String, x: Double, y: Double) {
-        this.commands.add(RenderCommand.Text(text, x, y))
+        this.buffer.add(RenderCommand.Text(text, x, y))
     }
 
     /**
@@ -56,7 +62,7 @@ class Canvas(defaultSettings: Settings = Settings()) {
      * @param height height of the rectangle in pixels
      */
     fun drawRect(x: Double, y: Double, width: Double, height: Double) {
-        this.commands.add(RenderCommand.Rect(x, y, width, height))
+        this.buffer.add(RenderCommand.Rect(x, y, width, height))
     }
 
     /**
@@ -68,7 +74,7 @@ class Canvas(defaultSettings: Settings = Settings()) {
      * @param height height of the ellipse in pixels
      */
     fun drawEllipse(x: Double, y: Double, width: Double, height: Double) {
-        this.commands.add(RenderCommand.Ellipse(x, y, width, height))
+        this.buffer.add(RenderCommand.Ellipse(x, y, width, height))
     }
 
     /**
@@ -77,7 +83,7 @@ class Canvas(defaultSettings: Settings = Settings()) {
      * @param points the points of the polygon in *clockwise* order and in pixels
      */
     fun drawPolygon(points: List<Point>) {
-        this.commands.add(RenderCommand.Polygon(points))
+        this.buffer.add(RenderCommand.Polygon(points))
     }
 
     /**
@@ -88,7 +94,7 @@ class Canvas(defaultSettings: Settings = Settings()) {
      * @param y y coordinate in pixels of the top left corner
      */
     fun drawImage(image: Image, x: Double, y: Double) {
-        this.commands.add(RenderCommand.Image(image, x, y))
+        this.buffer.add(RenderCommand.Image(image, x, y))
     }
 
     /**
@@ -176,9 +182,9 @@ class Canvas(defaultSettings: Settings = Settings()) {
      * @param block The canvas rendering code to execute within this boundary
      */
     fun withClip(boundary: Rectangle, block: Canvas.() -> Unit) {
-        this.commands.add(RenderCommand.Clip(boundary))
+        this.buffer.add(RenderCommand.Clip(boundary))
         block()
-        this.commands.add(RenderCommand.Unclip)
+        this.buffer.add(RenderCommand.Unclip)
     }
 
     /**
@@ -221,10 +227,11 @@ class Canvas(defaultSettings: Settings = Settings()) {
     }
 
     /**
-     * Clears the Canvas
+     * Clears the internal buffer. This method is primarily available to allow for usage of this object within a
+     * different pipeline definition.
      */
     fun clear() {
-        this.commands.clear()
+        this.buffer.clear()
     }
 
 }
