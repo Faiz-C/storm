@@ -1,6 +1,6 @@
 package org.storm.core.graphics.geometry.shape
 
-import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.render.RenderContext
 import org.storm.core.graphics.geometry.Geometric
 import org.storm.core.graphics.geometry.Point
 
@@ -30,9 +30,9 @@ open class Polygon(
         this.vertices.forEach { point -> point.translate(dx, dy) }
     }
 
-    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-        canvas.withSettings(canvas.settings.copy(fill = true)) {
-            drawPolygonWithUnits(this@Polygon.vertices)
+    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+        context.withSettings(context.settings.copy(fill = true)) {
+            drawPolygon(vertices.map { it.toPixels() })
         }
     }
 

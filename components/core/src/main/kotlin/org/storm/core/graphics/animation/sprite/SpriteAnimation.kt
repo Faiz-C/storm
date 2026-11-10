@@ -1,7 +1,7 @@
 package org.storm.core.graphics.animation.sprite
 
 import org.storm.core.serialization.Polymorphic
-import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.render.RenderContext
 import org.storm.core.graphics.Image
 import org.storm.core.graphics.animation.Animation
 
@@ -49,8 +49,8 @@ class SpriteAnimation(
         return (loops == Animation.LOOP_INDEFINITELY && hasCompletedOnce) || currentLoop == loops
     }
 
-    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-        canvas.drawImage(sprites[currentSprite], x, y)
+    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+        context.drawImage(sprites[currentSprite], x, y)
     }
 
     override suspend fun update(time: Double, elapsedTime: Double) {

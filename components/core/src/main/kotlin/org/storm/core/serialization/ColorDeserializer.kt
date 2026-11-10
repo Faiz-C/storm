@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonNode
-import org.storm.core.graphics.canvas.Color
+import org.storm.core.graphics.render.brush.Color
 
 class ColorDeserializer: JsonDeserializer<Color>() {
 

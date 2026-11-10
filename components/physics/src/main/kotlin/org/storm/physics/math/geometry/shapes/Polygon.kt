@@ -3,7 +3,7 @@ package org.storm.physics.math.geometry.shapes
 import org.apache.commons.math3.util.FastMath
 import org.apache.commons.math3.util.FastMath.max
 import org.apache.commons.math3.util.FastMath.min
-import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.render.RenderContext
 import org.storm.core.graphics.geometry.Point
 import org.storm.core.graphics.geometry.shape.Polygon
 import org.storm.physics.math.Interval
@@ -118,9 +118,9 @@ open class Polygon(
         return totalIntersections and 1 != 0 // Check if odd
     }
 
-    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-        canvas.withSettings(canvas.settings.copy(fill = true)) {
-            drawPolygonWithUnits(this@Polygon.vertices)
+    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+        context.withSettings(context.settings.copy(fill = true)) {
+            drawPolygonWithUnits(vertices)
         }
     }
 

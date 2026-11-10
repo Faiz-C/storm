@@ -1,6 +1,6 @@
-package org.storm.core.graphics.render
+package org.storm.core.graphics.render.buffered
 
-import org.storm.core.graphics.canvas.Settings
+import org.storm.core.graphics.render.Settings
 import org.storm.core.graphics.geometry.Point
 import org.storm.core.graphics.geometry.shape.Rectangle
 import org.storm.core.graphics.Image as FileImage

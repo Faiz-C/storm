@@ -6,7 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.runBlocking
 import org.storm.core.graphics.Resolution
-import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.render.RenderContext
 import org.storm.core.input.ActionState
 import org.storm.core.input.InputManager
 import org.storm.core.input.InputState
@@ -41,8 +41,8 @@ class FpsTest: Application() {
                 // Noop
             }
 
-            override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-                TelemetryTracker.render(canvas, x, y)
+            override suspend fun render(context: RenderContext, x: Double, y: Double) {
+                TelemetryTracker.render(context, x, y)
             }
         }
 

@@ -1,7 +1,7 @@
 package org.storm.physics.structures
 
 import org.storm.core.graphics.render.Renderable
-import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.render.RenderContext
 import org.storm.core.graphics.geometry.shape.Rectangle.Companion.TOP_LEFT_POINT
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.CollidableShape
@@ -28,8 +28,8 @@ class QuadrantTree<T>(
 
         private val aabb = AABB(x, y, width, height)
 
-        override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-            canvas.drawPolygonWithUnits(this.aabb.vertices)
+        override suspend fun render(context: RenderContext, x: Double, y: Double) {
+            context.drawPolygonWithUnits(aabb.vertices)
         }
 
         fun contains(boundary: CollidableShape): Boolean {
@@ -134,10 +134,10 @@ class QuadrantTree<T>(
         }
     }
 
-    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-        this.boundary.render(canvas, 0.0, 0.0)
+    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+        this.boundary.render(context, 0.0, 0.0)
         this.quadrants.forEach {
-            it?.render(canvas, x, y)
+            it?.render(context, x, y)
         }
     }
 

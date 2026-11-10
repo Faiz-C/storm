@@ -1,6 +1,7 @@
 package org.storm.core.graphics.geometry.shape
 
-import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.extensions.pixels
+import org.storm.core.graphics.render.RenderContext
 import org.storm.core.graphics.geometry.Geometric
 import org.storm.core.graphics.geometry.Point
 
@@ -15,9 +16,14 @@ open class Ellipse(
 
     constructor(x: Double, y: Double, width: Double, height: Double) : this(Point(x, y), width, height)
 
-    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-        canvas.withSettings(canvas.settings.copy(fill = true)) {
-            drawEllipseWithUnits(x + center.x - width / 2, y + center.y - height / 2, width, height)
+    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+        context.withSettings(context.settings.copy(fill = true)) {
+            drawEllipse(
+                (x + center.x - width / 2).pixels,
+                (y + center.y - height / 2).pixels,
+                width.pixels,
+                height.pixels
+            )
         }
     }
 

@@ -1,7 +1,7 @@
 package org.storm.physics.structures
 
-import org.storm.core.graphics.canvas.Canvas
-import org.storm.core.graphics.canvas.Color
+import org.storm.core.graphics.render.RenderContext
+import org.storm.core.graphics.render.brush.Color
 import org.storm.physics.math.geometry.shapes.AABB
 import org.storm.physics.math.geometry.shapes.CollidableShape
 import kotlin.math.floor
@@ -162,11 +162,11 @@ class ChunkedSpatialHash<T>(
     /**
      * For debugging only, we just draw the bounds of each chunk
      */
-    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+    override suspend fun render(context: RenderContext, x: Double, y: Double) {
         val color = Color(255.0, 0.0, 0.0, 0.0)
-        canvas.withSettings(color = color) {
-            this@ChunkedSpatialHash.chunks.values.forEach { chunk ->
-                chunk.boundary.render(canvas, x, y)
+        context.withSettings(color = color) {
+            chunks.values.forEach { chunk ->
+                chunk.boundary.render(context, x, y)
             }
         }
     }

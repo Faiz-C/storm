@@ -4,7 +4,7 @@ import org.storm.core.context.Context
 import org.storm.core.context.YAML_MAPPER
 import org.storm.core.event.EventManager
 import org.storm.core.extensions.units
-import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.render.RenderContext
 import org.storm.core.input.ActionState
 import org.storm.core.sound.Sound
 import org.storm.core.sound.SoundManager
@@ -83,11 +83,11 @@ class CircleCornerTestState : SwitchableState() {
         }
     }
 
-    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-        rect.render(canvas, x, y)
-        player.collider.render(canvas, x, y)
+    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+        rect.render(context, x, y)
+        player.collider.render(context, x, y)
 
-        TelemetryTracker.render(canvas, x, y)
+        TelemetryTracker.render(context, x, y)
     }
 
 }

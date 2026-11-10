@@ -1,10 +1,10 @@
-package org.storm.core.graphics.render
+package org.storm.core.graphics.render.buffered
 
 /**
- * A simple fixed size buffer for commands that a [org.storm.core.graphics.canvas.Canvas] will write to and a
- * [Renderer] will read from.
+ * A simple fixed size buffer for commands that a [org.storm.core.graphics.render.RenderContext] will write to and a
+ * [org.storm.core.graphics.render.Renderer] will read from.
  */
-class RenderingBuffer(size: Int = DEFAULT_SIZE) {
+class RenderBuffer(size: Int = DEFAULT_SIZE) {
 
     companion object {
         const val DEFAULT_SIZE = 256

@@ -1,7 +1,7 @@
 package org.storm.storyboard.impl
 
 import org.storm.core.serialization.Polymorphic
-import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.render.RenderContext
 import org.storm.core.graphics.Image
 import org.storm.core.graphics.Resolution
 import org.storm.core.graphics.animation.Animation
@@ -56,9 +56,9 @@ class BatState(
         currentFrame = 0
     }
 
-    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-        animation.render(canvas, x + batX, y + batY)
-        scriptPlayer.render(canvas, x, y)
+    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+        animation.render(context, x + batX, y + batY)
+        scriptPlayer.render(context, x, y)
     }
 
     override suspend fun update(time: Double, elapsedTime: Double) {

@@ -2,7 +2,7 @@ package org.storm.physics
 
 import org.storm.core.event.EventManager
 import org.storm.core.extensions.units
-import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.render.RenderContext
 import org.storm.core.graphics.render.Renderable
 import org.storm.physics.collision.Collider
 import org.storm.physics.events.CollisionEvent
@@ -44,8 +44,8 @@ abstract class PhysicsEngine protected constructor(
         colliders.forEach { collider -> processPhysics(collider, elapsedTime) }
     }
 
-    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-        this.collisionStructure.render(canvas, 0.0, 0.0)
+    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+        this.collisionStructure.render(context, 0.0, 0.0)
     }
 
     /**

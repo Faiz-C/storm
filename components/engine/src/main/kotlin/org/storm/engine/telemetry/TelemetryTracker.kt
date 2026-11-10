@@ -1,9 +1,9 @@
 package org.storm.engine.telemetry
 
 import org.storm.core.graphics.render.Renderable
-import org.storm.core.graphics.canvas.Canvas
-import org.storm.core.graphics.canvas.Color
-import org.storm.core.graphics.canvas.Font
+import org.storm.core.graphics.render.RenderContext
+import org.storm.core.graphics.render.brush.Color
+import org.storm.core.graphics.render.brush.Font
 import org.storm.core.update.Updatable
 
 /**
@@ -123,9 +123,9 @@ object TelemetryTracker: Updatable, Renderable {
     /**
      * Just for debugging purposes. To build a custom view use [snapshot] directly to pull the data needed.
      */
-    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+    override suspend fun render(context: RenderContext, x: Double, y: Double) {
         val snapshot = this.snapshot
-        canvas.withSettings(color = DEBUG_COLOUR, font = this.font) {
+        context.withSettings(color = DEBUG_COLOUR, font = font) {
             drawText(
                 "FPS: ${snapshot.fps} | FT: ${String.format("%.2f", snapshot.frameTimeMs)}ms",
                 RENDER_MARGIN,

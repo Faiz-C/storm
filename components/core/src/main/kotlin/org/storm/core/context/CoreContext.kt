@@ -10,7 +10,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.storm.core.extensions.units
 import org.storm.core.graphics.Resolution
 import org.storm.core.graphics.UnitConvertor
-import org.storm.core.graphics.canvas.Color
+import org.storm.core.graphics.render.brush.Color
 import org.storm.core.serialization.ColorDeserializer
 
 object CoreContext {

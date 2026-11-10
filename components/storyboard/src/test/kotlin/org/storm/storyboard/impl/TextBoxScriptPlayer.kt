@@ -2,10 +2,10 @@ package org.storm.storyboard.impl
 
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION
-import org.storm.core.graphics.canvas.Canvas
-import org.storm.core.graphics.canvas.Color
-import org.storm.core.graphics.canvas.Font
-import org.storm.core.graphics.canvas.Settings
+import org.storm.core.graphics.render.RenderContext
+import org.storm.core.graphics.render.brush.Color
+import org.storm.core.graphics.render.brush.Font
+import org.storm.core.graphics.render.Settings
 import org.storm.core.input.ActionState
 import org.storm.storyboard.dialogue.script.Script
 import org.storm.storyboard.dialogue.script.player.ScriptPlayer
@@ -43,22 +43,22 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
         }
     }
 
-    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+    override suspend fun render(context: RenderContext, x: Double, y: Double) {
         val (screenWidth, screenHeight) = Context.RESOLUTION
 
         // Draw a rectangle to wrap around the text
-        canvas.drawRect(1.0, screenHeight - TEXT_BOX_HEIGHT, screenWidth - canvas.settings.thickness, TEXT_BOX_HEIGHT - 1.0)
+        context.drawRect(1.0, screenHeight - TEXT_BOX_HEIGHT, screenWidth - context.settings.thickness, TEXT_BOX_HEIGHT - 1.0)
 
         // Draw a rectangle on top of the above to wrap around the speaker
-        canvas.drawRect(1.0, screenHeight - TEXT_BOX_HEIGHT - 40.0, 70.0, 40.0)
+        context.drawRect(1.0, screenHeight - TEXT_BOX_HEIGHT - 40.0, 70.0, 40.0)
 
         // Draw the speaker
-        canvas.withSettings(Settings(fill = true, font = Font(size = 20.0, weight = 700))) {
+        context.withSettings(Settings(fill = true, font = Font(size = 20.0, weight = 700))) {
             drawText(speaker, 10.0, screenHeight - TEXT_BOX_HEIGHT - 30.0)
         }
 
         // Draw the current line of dialogue
-        canvas.withSettings(Settings(fill = true, font = Font(size = 20.0))) {
+        context.withSettings(Settings(fill = true, font = Font(size = 20.0))) {
             drawText(screenText, 5.0, screenHeight - TEXT_BOX_HEIGHT + 25.0)
         }
 
@@ -72,8 +72,8 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
                 Color.BLACK to "   $choice"
             }
 
-            canvas.withSettings(Settings(fill = true, color = color)) {
-                canvas.drawText(choiceText, 10.0, (screenHeight - TEXT_BOX_HEIGHT + 60.0) + (i * 20.0))
+            context.withSettings(Settings(fill = true, color = color)) {
+                context.drawText(choiceText, 10.0, (screenHeight - TEXT_BOX_HEIGHT + 60.0) + (i * 20.0))
             }
         }
     }

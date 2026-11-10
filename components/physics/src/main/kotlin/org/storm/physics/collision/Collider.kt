@@ -1,7 +1,7 @@
 package org.storm.physics.collision
 
 import org.storm.core.graphics.render.Renderable
-import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.render.RenderContext
 import org.storm.core.graphics.geometry.Geometric
 import org.storm.physics.math.Vector
 import org.storm.physics.math.geometry.shapes.CollidableShape
@@ -100,9 +100,9 @@ class Collider(
         this.translate(velocity.x, velocity.y)
     }
 
-    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+    override suspend fun render(context: RenderContext, x: Double, y: Double) {
         this.boundaries.forEach { (_, boundary) ->
-            boundary.render(canvas, x, y)
+            boundary.render(context, x, y)
         }
     }
 

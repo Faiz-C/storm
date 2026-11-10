@@ -1,4 +1,4 @@
-package org.storm.core.graphics.canvas
+package org.storm.core.graphics.render.brush
 
 data class Font(
     val size: Double = 12.0,

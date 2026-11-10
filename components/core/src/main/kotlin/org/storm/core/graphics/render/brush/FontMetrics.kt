@@ -1,4 +1,4 @@
-package org.storm.core.graphics.canvas
+package org.storm.core.graphics.render.brush
 
 data class FontMetrics(
     val width: Double,

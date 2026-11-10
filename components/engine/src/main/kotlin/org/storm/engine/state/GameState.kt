@@ -2,7 +2,7 @@ package org.storm.engine.state
 
 import org.storm.core.input.ActionStateProcessor
 import org.storm.core.graphics.render.Renderable
-import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.render.RenderContext
 import org.storm.core.input.InputTranslator
 import org.storm.core.sound.SoundManager
 import org.storm.core.update.Updatable
@@ -33,8 +33,8 @@ interface GameState: Updatable, Renderable, InputTranslator, ActionStateProcesso
         // Default behaviour is a noop
     }
 
-    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-        this.colliders.forEach { it.render(canvas, x, y) }
+    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+        this.colliders.forEach { it.render(context, x, y) }
     }
 
 }

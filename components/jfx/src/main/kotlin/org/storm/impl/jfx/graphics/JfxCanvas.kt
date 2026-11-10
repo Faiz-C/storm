@@ -11,17 +11,17 @@ import javafx.scene.text.TextBoundsType
 import org.storm.core.context.Context
 import org.storm.core.context.RESOLUTION
 import org.storm.core.graphics.Image
-import org.storm.core.graphics.canvas.Canvas
-import org.storm.core.graphics.canvas.FontMetrics
-import org.storm.core.graphics.canvas.Settings
+import org.storm.core.graphics.render.RenderContext
+import org.storm.core.graphics.render.brush.FontMetrics
+import org.storm.core.graphics.render.Settings
 import org.storm.core.graphics.geometry.Point
 import org.storm.core.graphics.geometry.shape.Rectangle
 import kotlin.math.abs
 
-class JfxCanvas(private val gc: GraphicsContext): Canvas() {
+class JfxCanvas(private val gc: GraphicsContext): RenderContext() {
 
     companion object {
-        fun getFontMetrics(text: String, font: org.storm.core.graphics.canvas.Font): FontMetrics {
+        fun getFontMetrics(text: String, font: org.storm.core.graphics.render.brush.Font): FontMetrics {
             val textNode = Text(text)
             textNode.font = Font.font(
                 font.type,
@@ -64,7 +64,7 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
 
     override suspend fun withClip(
         boundary: Rectangle,
-        block: suspend Canvas.() -> Unit
+        block: suspend RenderContext.() -> Unit
     ) {
         this.gc.save()
         this.gc.beginPath()
@@ -147,7 +147,7 @@ class JfxCanvas(private val gc: GraphicsContext): Canvas() {
         this.gc.drawImage(image.image, x, y)
     }
 
-    private fun org.storm.core.graphics.canvas.Color.toJfxColor(): Color {
+    private fun org.storm.core.graphics.render.brush.Color.toJfxColor(): Color {
         return Color(
             this.red / 255.0,
             this.green / 255.0,

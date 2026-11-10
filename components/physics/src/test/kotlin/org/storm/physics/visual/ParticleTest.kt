@@ -10,8 +10,8 @@ import org.storm.core.context.RESOLUTION_IN_UNITS
 import org.storm.core.context.setResolution
 import org.storm.core.event.EventManager
 import org.storm.core.extensions.units
-import org.storm.core.graphics.canvas.Color
-import org.storm.core.graphics.canvas.Settings
+import org.storm.core.graphics.render.brush.Color
+import org.storm.core.graphics.render.Settings
 import org.storm.core.graphics.geometry.Point
 import org.storm.core.graphics.Resolution
 import org.storm.impl.jfx.extensions.getJfxKeyEventStream

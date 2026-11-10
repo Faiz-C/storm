@@ -9,7 +9,7 @@ import org.storm.core.context.getContextEventStream
 import org.storm.core.event.EventManager
 import org.storm.core.graphics.Resolution
 import org.storm.core.graphics.Window
-import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.render.RenderContext
 import javafx.scene.canvas.Canvas as SceneCanvas
 
 /**
@@ -32,7 +32,7 @@ class JfxWindow(resolution: Resolution = Context.RESOLUTION) : Scene(Pane()), Wi
             sceneCanvas.height = value.height
         }
 
-    override var canvas: Canvas = JfxCanvas(sceneCanvas.graphicsContext2D)
+    override var canvas: RenderContext = JfxCanvas(sceneCanvas.graphicsContext2D)
         private set
 
     init {

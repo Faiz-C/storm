@@ -1,7 +1,7 @@
 package org.storm.storyboard
 
 import org.storm.core.input.ActionStateProcessor
-import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.render.RenderContext
 import org.storm.core.graphics.render.Renderable
 import org.storm.core.input.ActionState
 import org.storm.core.update.Updatable
@@ -67,8 +67,8 @@ open class StoryBoardEngine : Renderable, Updatable, ActionStateProcessor {
         currentState?.process(actionState)
     }
 
-    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
-        currentState?.render(canvas, x, y)
+    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+        currentState?.render(context, x, y)
     }
 
     override suspend fun update(time: Double, elapsedTime: Double) {

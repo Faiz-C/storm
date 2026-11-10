@@ -1,4 +1,7 @@
-package org.storm.core.graphics.canvas
+package org.storm.core.graphics.render
+
+import org.storm.core.graphics.render.brush.Color
+import org.storm.core.graphics.render.brush.Font
 
 data class Settings(
     val thickness: Double = 2.0,

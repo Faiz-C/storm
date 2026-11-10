@@ -1,9 +1,7 @@
 package org.storm.core.graphics.render
 
-import org.storm.core.graphics.canvas.Canvas
-
 /**
- * A RenderingPipeline abstracts the full end-to-end process of rendering objects onto the screen.
+ * A RenderingEngine handles the full rendering process end-to-end.
  */
 interface RenderingEngine {
 
@@ -20,8 +18,8 @@ interface RenderingEngine {
     /**
      * Renders the [block]
      *
-     * @param block a block of code to execute on the [Canvas]
+     * @param block a block of code to execute on the [RenderContext]
      */
-    fun render(block: Canvas.() -> Unit)
+    fun render(block: RenderContext.() -> Unit)
 
 }

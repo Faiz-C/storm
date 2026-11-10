@@ -1,19 +1,17 @@
 package org.storm.core.graphics.render
 
-import org.storm.core.graphics.canvas.Canvas
-
 /**
  * A Renderable is an object which understands how to represent itself on a canvas.
  */
 fun interface Renderable {
 
     /**
-     * Renders the object onto the given Canvas.
+     * Renders the object for a given frame.
      *
-     * @param canvas Canvas to render onto
+     * @param context RenderContext for the current frame
      * @param x base x position to render from
      * @param y base y position to render from
      */
-    suspend fun render(canvas: Canvas, x: Double, y: Double)
+    suspend fun render(context: RenderContext, x: Double, y: Double)
 
 }

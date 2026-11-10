@@ -5,7 +5,7 @@ import org.storm.core.context.RESOLUTION_IN_UNITS
 import org.storm.core.context.YAML_MAPPER
 import org.storm.core.event.EventManager
 import org.storm.core.extensions.units
-import org.storm.core.graphics.canvas.Canvas
+import org.storm.core.graphics.render.RenderContext
 import org.storm.core.input.ActionState
 import org.storm.core.sound.Sound
 import org.storm.core.sound.SoundManager
@@ -82,13 +82,13 @@ class BouncingBallTestState : SwitchableState() {
         }
     }
 
-    override suspend fun render(canvas: Canvas, x: Double, y: Double) {
+    override suspend fun render(context: RenderContext, x: Double, y: Double) {
         rects.forEach {
-            it.render(canvas, x, y)
+            it.render(context, x, y)
         }
 
-        colliders.last().render(canvas, x, y)
+        colliders.last().render(context, x, y)
 
-        TelemetryTracker.render(canvas, x, y)
+        TelemetryTracker.render(context, x, y)
     }
 }
