@@ -30,7 +30,7 @@ open class Polygon(
         this.vertices.forEach { point -> point.translate(dx, dy) }
     }
 
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         context.withSettings(context.settings.copy(fill = true)) {
             drawPolygon(vertices.map { it.toPixels() })
         }

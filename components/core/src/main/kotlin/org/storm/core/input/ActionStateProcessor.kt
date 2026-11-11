@@ -11,6 +11,6 @@ fun interface ActionStateProcessor {
      *
      * @param actionState ActionState to process
      */
-    suspend fun process(actionState: ActionState)
+    fun process(actionState: ActionState)
 
 }

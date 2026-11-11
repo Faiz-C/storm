@@ -63,15 +63,15 @@ open class StoryBoardEngine : Renderable, Updatable, ActionStateProcessor {
         states.clear()
     }
 
-    override suspend fun process(actionState: ActionState) {
+    override fun process(actionState: ActionState) {
         currentState?.process(actionState)
     }
 
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         currentState?.render(context, x, y)
     }
 
-    override suspend fun update(time: Double, elapsedTime: Double) {
+    override fun update(time: Double, elapsedTime: Double) {
         val state = currentState ?: return
 
         state.update(time, elapsedTime)

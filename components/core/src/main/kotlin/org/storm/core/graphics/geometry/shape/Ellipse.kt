@@ -16,7 +16,7 @@ open class Ellipse(
 
     constructor(x: Double, y: Double, width: Double, height: Double) : this(Point(x, y), width, height)
 
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         context.withSettings(context.settings.copy(fill = true)) {
             drawEllipse(
                 (x + center.x - width / 2).pixels,

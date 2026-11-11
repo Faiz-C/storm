@@ -162,7 +162,7 @@ class ChunkedSpatialHash<T>(
     /**
      * For debugging only, we just draw the bounds of each chunk
      */
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         val color = Color(255.0, 0.0, 0.0, 0.0)
         context.withSettings(color = color) {
             chunks.values.forEach { chunk ->

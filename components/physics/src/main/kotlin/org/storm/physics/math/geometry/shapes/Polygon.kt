@@ -118,9 +118,9 @@ open class Polygon(
         return totalIntersections and 1 != 0 // Check if odd
     }
 
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         context.withSettings(context.settings.copy(fill = true)) {
-            drawPolygonWithUnits(vertices)
+            drawPolygon(vertices.map { it.toPixels() })
         }
     }
 

@@ -21,7 +21,7 @@ open class Line(
         this.end.translate(dx, dy)
     }
 
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         context.drawLine(
             (x + start.x).pixels,
             (y + start.y).pixels,

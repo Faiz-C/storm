@@ -12,6 +12,6 @@ fun interface Renderable {
      * @param x base x position to render from
      * @param y base y position to render from
      */
-    suspend fun render(context: RenderContext, x: Double, y: Double)
+    fun render(context: RenderContext, x: Double, y: Double)
 
 }

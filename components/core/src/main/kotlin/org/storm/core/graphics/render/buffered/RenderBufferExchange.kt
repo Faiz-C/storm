@@ -30,7 +30,7 @@ class RenderBufferExchange(val bufferPoolSize: Int = 3, val bufferSize: Int = 25
      *
      * @return Next available buffer to write to or a dynamically allocated buffer if none are available
      */
-    private fun writeBuffer(): RenderBuffer {
+    fun writeBuffer(): RenderBuffer {
         return this.pool.poll() ?: RenderBuffer(bufferSize)
     }
 
@@ -40,7 +40,7 @@ class RenderBufferExchange(val bufferPoolSize: Int = 3, val bufferSize: Int = 25
      *
      * @param renderBuffer [RenderBuffer] to set as the next buffer to render
      */
-    private fun submit(renderBuffer: RenderBuffer) {
+    fun submit(renderBuffer: RenderBuffer) {
         this.next.getAndSet(renderBuffer)?.let { existing ->
             existing.clear()
             this.pool.offer(existing)
@@ -53,7 +53,7 @@ class RenderBufferExchange(val bufferPoolSize: Int = 3, val bufferSize: Int = 25
      *
      * @return The next [RenderBuffer] to render, null if there isn't one
      */
-    private fun renderingBuffer(): RenderBuffer? {
+    fun renderingBuffer(): RenderBuffer? {
         // we set to null here to "consume" the next and properly state we have no next
         val new = this.next.getAndSet(null)
 
@@ -65,18 +65,6 @@ class RenderBufferExchange(val bufferPoolSize: Int = 3, val bufferSize: Int = 25
         }
 
         return this.current
-    }
-
-    override fun start() {
-
-    }
-
-    override fun stop() {
-        TODO("Not yet implemented")
-    }
-
-    override fun render(block: RenderContext.() -> Unit) {
-        TODO("Not yet implemented")
     }
 
 }

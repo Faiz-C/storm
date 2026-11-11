@@ -49,11 +49,11 @@ class SpriteAnimation(
         return (loops == Animation.LOOP_INDEFINITELY && hasCompletedOnce) || currentLoop == loops
     }
 
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         context.drawImage(sprites[currentSprite], x, y)
     }
 
-    override suspend fun update(time: Double, elapsedTime: Double) {
+    override fun update(time: Double, elapsedTime: Double) {
         if (!playing || currentLoop == loops) return
 
         if (++currentFrame == delay) {

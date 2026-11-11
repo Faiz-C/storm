@@ -37,14 +37,14 @@ abstract class PhysicsEngine protected constructor(
      * @param colliders The set of active colliders to simulate
      * @param elapsedTime The time elapsed since the last update in seconds
      */
-    suspend fun update(colliders: Set<Collider>, elapsedTime: Double) {
+    fun update(colliders: Set<Collider>, elapsedTime: Double) {
         if (this.paused) return
 
         setColliders(colliders)
         colliders.forEach { collider -> processPhysics(collider, elapsedTime) }
     }
 
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         this.collisionStructure.render(context, 0.0, 0.0)
     }
 
@@ -91,7 +91,7 @@ abstract class PhysicsEngine protected constructor(
      *
      * @param collider Collider to check collisions for
      */
-    protected abstract suspend fun processCollisions(collider: Collider)
+    protected abstract fun processCollisions(collider: Collider)
 
     /**
      * Prepares the physics engine for the next update cycle with the given colliders.
@@ -114,7 +114,7 @@ abstract class PhysicsEngine protected constructor(
      * @param collider Collider to process physics for
      * @param elapsedTime elapsed time (in seconds) since the physics of this entity was last processed
      */
-    private suspend fun processPhysics(collider: Collider, elapsedTime: Double) {
+    private fun processPhysics(collider: Collider, elapsedTime: Double) {
         // Apply all forces onto entity
         collider.applyForces(elapsedTime)
 

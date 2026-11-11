@@ -27,7 +27,7 @@ data class Point(
         this.y += dy
     }
 
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         // actually 1 pixel x 1 pixel in size
         context.drawEllipse((x + this.x).pixels, (y + this.y).pixels, 1.0, 1.0)
     }
