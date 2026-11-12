@@ -45,8 +45,6 @@ class StormEngine(
     private var fixedTimeStepInterval: Long = 0L
     private var lastUpdateTime: Long = 0L
 
-    private var physicsDelay: Int = 0
-
     private var gameLoop: Job? = null
     private val engineCoroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default.limitedParallelism(2))
 
