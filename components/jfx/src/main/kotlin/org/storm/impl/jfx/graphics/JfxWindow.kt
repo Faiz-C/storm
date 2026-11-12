@@ -32,7 +32,7 @@ class JfxWindow(resolution: Resolution = Context.RESOLUTION) : Scene(Pane()), Wi
             sceneCanvas.height = value.height
         }
 
-    override var canvas: RenderContext = JfxCanvas(sceneCanvas.graphicsContext2D)
+    override var canvas: RenderContext = JfxRenderingEngine(sceneCanvas.graphicsContext2D)
         private set
 
     init {
@@ -41,7 +41,7 @@ class JfxWindow(resolution: Resolution = Context.RESOLUTION) : Scene(Pane()), Wi
         EventManager.getContextEventStream().subscribe {
             if (it.hasSettingChanged(CoreContext.RESOLUTION)) {
                 this.resolution = Context.RESOLUTION
-                this.canvas = JfxCanvas(sceneCanvas.graphicsContext2D)
+                this.canvas = JfxRenderingEngine(sceneCanvas.graphicsContext2D)
             }
         }
     }

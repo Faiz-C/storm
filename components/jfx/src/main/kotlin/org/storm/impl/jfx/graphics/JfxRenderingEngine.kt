@@ -16,9 +16,17 @@ import org.storm.core.graphics.render.brush.FontMetrics
 import org.storm.core.graphics.render.Settings
 import org.storm.core.graphics.geometry.Point
 import org.storm.core.graphics.geometry.shape.Rectangle
+import org.storm.core.graphics.render.RenderingEngine
+import org.storm.core.graphics.render.buffered.BufferedRenderContext
+import org.storm.core.graphics.render.buffered.RenderBufferExchange
+import org.storm.core.graphics.render.buffered.RenderCommand
 import kotlin.math.abs
 
-class JfxCanvas(private val gc: GraphicsContext): RenderContext() {
+class JfxRenderingEngine(
+    bufferPoolSize: Int = 4,
+    bufferSize: Int = 256,
+    private val gc: GraphicsContext,
+) : RenderingEngine {
 
     companion object {
         fun getFontMetrics(text: String, font: org.storm.core.graphics.render.brush.Font): FontMetrics {
@@ -53,30 +61,76 @@ class JfxCanvas(private val gc: GraphicsContext): RenderContext() {
         }
     }
 
+    private val bufferExchange = RenderBufferExchange(bufferPoolSize, bufferSize)
+    private val context = BufferedRenderContext()
+
     init {
         this.gc.textBaseline = VPos.TOP
         this.gc.textAlign = TextAlignment.LEFT
     }
 
-    override suspend fun clear() {
-        this.gc.clearRect(0.0, 0.0, Context.RESOLUTION.width, Context.RESOLUTION.height)
+    override fun start() {
+        // Start JFX Animation timer or something
     }
 
-    override suspend fun withClip(
-        boundary: Rectangle,
-        block: suspend RenderContext.() -> Unit
-    ) {
-        this.gc.save()
-        this.gc.beginPath()
-        this.gc.rect(boundary.x, boundary.y, boundary.width, boundary.height)
-        this.gc.clip()
-
-        block()
-
-        this.gc.restore()
+    override fun stop() {
+        // Stop that timer or something
     }
 
-    override fun onSettingsChange(settings: Settings) {
+    override fun render(block: RenderContext.() -> Unit) {
+        // acquire a buffer for writing
+        val buffer = this.bufferExchange.writeBuffer()
+
+        // Use that record to that buffer
+        this.context.withBuffer(buffer, block)
+
+        // Submit the buffer to render next
+        this.bufferExchange.submit(buffer)
+    }
+
+    private fun execute(command: RenderCommand) {
+        when (command) {
+            // State Changes
+            is RenderCommand.ChangeSettings -> this.onSettingsChange(command.settings)
+            RenderCommand.Save -> this.gc.save()
+            RenderCommand.Restore -> this.gc.restore()
+            RenderCommand.Clear -> this.gc.clearRect(0.0, 0.0, Context.RESOLUTION.width, Context.RESOLUTION.height)
+
+            // Actions
+            is RenderCommand.Line -> this.gc.strokeLine(command.x1, command.y1, command.x2, command.y2)
+            is RenderCommand.Text -> {
+                if (this.context.settings.fill) {
+                    this.gc.fillText(command.text, command.x, command.y)
+                } else {
+                    this.gc.strokeText(command.text, command.x, command.y)
+                }
+            }
+            is RenderCommand.Rect -> {
+                if (this.context.settings.fill) {
+                    this.gc.fillRect(command.x, command.y, command.width, command.height)
+                } else {
+                    this.gc.strokeRect(command.x, command.y, command.width, command.height)
+                }
+            }
+            is RenderCommand.Clip -> {
+                val boundary = command.boundary
+                this.gc.beginPath()
+                this.gc.rect(boundary.x, boundary.y, boundary.width, boundary.height)
+                this.gc.clip()
+            }
+            is RenderCommand.Ellipse -> {
+                if (this.context.settings.fill) {
+                    this.gc.fillOval(command.x, command.y, command.width, command.height)
+                } else {
+                    this.gc.strokeOval(command.x, command.y, command.width, command.height)
+                }
+            }
+            is RenderCommand.Polygon -> drawPolygon(command.points)
+            is RenderCommand.Image -> drawImage(command.image, command.x, command.y)
+        }
+    }
+
+    private fun onSettingsChange(settings: Settings) {
         require(settings.alpha in 0.0..1.0) {
             "global alpha value must be within [0.0, 1.0]"
         }
@@ -93,35 +147,7 @@ class JfxCanvas(private val gc: GraphicsContext): RenderContext() {
         this.gc.globalAlpha = settings.alpha
     }
 
-    override suspend fun drawLine(x1: Double, y1: Double, x2: Double, y2: Double) {
-        this.gc.strokeLine(x1, y1, x2, y2)
-    }
-
-    override suspend fun drawText(text: String, x: Double, y: Double) {
-        if (this.settings.fill) {
-            this.gc.fillText(text, x, y)
-        } else {
-            this.gc.strokeText(text, x, y)
-        }
-    }
-
-    override suspend fun drawRect(x: Double, y: Double, width: Double, height: Double) {
-        if (this.settings.fill) {
-            this.gc.fillRect(x, y, width, height)
-        } else {
-            this.gc.strokeRect(x, y, width, height)
-        }
-    }
-
-    override suspend fun drawEllipse(x: Double, y: Double, width: Double, height: Double) {
-        if (this.settings.fill) {
-            this.gc.fillOval(x, y, width, height)
-        } else {
-            this.gc.strokeOval(x, y, width, height)
-        }
-    }
-
-    override suspend fun drawPolygon(points: List<Point>) {
+    private fun drawPolygon(points: List<Point>) {
         val size = points.size
         val xCoordinates = DoubleArray(size)
         val yCoordinates = DoubleArray(size)
@@ -132,14 +158,14 @@ class JfxCanvas(private val gc: GraphicsContext): RenderContext() {
             yCoordinates[i] = y1
         }
 
-        if (this.settings.fill) {
+        if (this.context.settings.fill) {
             this.gc.fillPolygon(xCoordinates, yCoordinates, size)
         } else {
             this.gc.strokePolygon(xCoordinates, yCoordinates, size)
         }
     }
 
-    override suspend fun drawImage(image: Image, x: Double, y: Double) {
+    private fun drawImage(image: Image, x: Double, y: Double) {
         require(image is JfxImage) {
             "JfxCanvas only supports drawing JfxImage objects"
         }
@@ -155,4 +181,5 @@ class JfxCanvas(private val gc: GraphicsContext): RenderContext() {
             this.alpha
         )
     }
+
 }

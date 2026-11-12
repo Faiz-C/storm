@@ -9,7 +9,9 @@ sealed interface RenderCommand {
     // State Management
     data class ChangeSettings(val settings: Settings): RenderCommand
     data class Clip(val boundary: Rectangle): RenderCommand
-    object Unclip: RenderCommand
+    object Save: RenderCommand
+    object Restore: RenderCommand
+    object Clear: RenderCommand
 
     // Primitives
     data class Line(val x1: Double, val y1: Double, val x2: Double, val y2: Double): RenderCommand

@@ -42,9 +42,10 @@ class BufferedRenderContext: RenderContext() {
 
     override fun withClip(boundary: Rectangle, block: RenderContext.() -> Unit) {
         requireBuffer()
+        this.buffer!!.add(RenderCommand.Save)
         this.buffer!!.add(RenderCommand.Clip(boundary))
         block()
-        this.buffer!!.add(RenderCommand.Unclip)
+        this.buffer!!.add(RenderCommand.Restore)
     }
 
     override fun drawLine(x1: Double, y1: Double, x2: Double, y2: Double) {
