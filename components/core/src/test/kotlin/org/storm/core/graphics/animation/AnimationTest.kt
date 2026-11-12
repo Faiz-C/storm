@@ -78,11 +78,11 @@ class AnimationTest : Application() {
     }
 
     private suspend fun render(window: JfxWindow) {
-        window.canvas.clear()
-        downSpriteAnimation.render(window.canvas, 100.0, 100.0)
-        rightSpriteAnimation.render(window.canvas, 100.0, 150.0)
-        upSpriteAnimation.render(window.canvas, 150.0, 100.0)
-        leftSpriteAnimation.render(window.canvas, 150.0, 150.0)
+        window.renderingEngine.clear()
+        downSpriteAnimation.render(window.renderingEngine, 100.0, 100.0)
+        rightSpriteAnimation.render(window.renderingEngine, 100.0, 150.0)
+        upSpriteAnimation.render(window.renderingEngine, 150.0, 100.0)
+        leftSpriteAnimation.render(window.renderingEngine, 150.0, 150.0)
     }
 
     private suspend fun updateAnimations() {

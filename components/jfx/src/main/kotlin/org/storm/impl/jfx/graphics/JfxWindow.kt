@@ -8,22 +8,22 @@ import org.storm.core.context.RESOLUTION
 import org.storm.core.context.getContextEventStream
 import org.storm.core.event.EventManager
 import org.storm.core.graphics.Resolution
-import org.storm.core.graphics.Window
 import org.storm.core.graphics.render.RenderContext
+import org.storm.core.graphics.render.RenderingEngine
 import javafx.scene.canvas.Canvas as SceneCanvas
 
 /**
  * An implementation of a Window using Java FX. Key (KeyEvent) and Mouse (MouseEvent) inputs are available to be listened
  * to through the EventManager.
  */
-class JfxWindow(resolution: Resolution = Context.RESOLUTION) : Scene(Pane()), Window {
+class JfxWindow(resolution: Resolution = Context.RESOLUTION) : Scene(Pane()) {
 
     private val sceneCanvas: SceneCanvas = SceneCanvas()
     private val pane: Pane = (this.root as Pane).also {
         it.children.add(this.sceneCanvas)
     }
 
-    override var resolution: Resolution = resolution
+    var resolution: Resolution = resolution
         private set(value) {
             field = value
             pane.setMaxSize(value.width, value.height)
@@ -32,7 +32,7 @@ class JfxWindow(resolution: Resolution = Context.RESOLUTION) : Scene(Pane()), Wi
             sceneCanvas.height = value.height
         }
 
-    override var canvas: RenderContext = JfxRenderingEngine(sceneCanvas.graphicsContext2D)
+    var renderingEngine: RenderingEngine = JfxRenderingEngine(gc = sceneCanvas.graphicsContext2D)
         private set
 
     init {
@@ -41,7 +41,7 @@ class JfxWindow(resolution: Resolution = Context.RESOLUTION) : Scene(Pane()), Wi
         EventManager.getContextEventStream().subscribe {
             if (it.hasSettingChanged(CoreContext.RESOLUTION)) {
                 this.resolution = Context.RESOLUTION
-                this.canvas = JfxRenderingEngine(sceneCanvas.graphicsContext2D)
+                this.renderingEngine = JfxRenderingEngine(gc = sceneCanvas.graphicsContext2D)
             }
         }
     }

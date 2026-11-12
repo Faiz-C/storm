@@ -112,16 +112,16 @@ class ParticleTest : Application() {
     }
 
     private suspend fun render(window: JfxWindow) {
-        window.canvas.clear()
-        this.physicsSimulator.physicsEngine.render(window.canvas, 0.0, 0.0)
+        window.renderingEngine.clear()
+        this.physicsSimulator.physicsEngine.render(window.renderingEngine, 0.0, 0.0)
         this.colliders.forEach { c: Collider ->
             val canvasSettings = if (c.immovable) {
                 Settings(color = Color(255.0, 0.0, 0.0, 1.0))
             } else {
                 Settings(color = ballColour)
             }
-            window.canvas.withSettings(canvasSettings) {
-                c.render(window.canvas, 0.0, 0.0)
+            window.renderingEngine.withSettings(canvasSettings) {
+                c.render(window.renderingEngine, 0.0, 0.0)
             }
         }
     }

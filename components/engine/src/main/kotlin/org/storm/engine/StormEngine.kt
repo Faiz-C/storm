@@ -1,11 +1,13 @@
 package org.storm.engine
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import org.apache.commons.math3.util.FastMath
 import org.storm.core.context.Context
 import org.storm.core.event.EventManager
 import org.storm.core.extensions.scheduleOnInterval
-import org.storm.core.graphics.Window
+import org.storm.core.graphics.render.RenderingEngine
 import org.storm.core.input.InputManager
 import org.storm.core.sound.SoundManager
 import org.storm.core.utils.toMilliseconds
@@ -24,13 +26,12 @@ import kotlin.math.max
  * efficient 2D game engine.
  */
 class StormEngine(
-    renderFps: Int = 60,
-    val physicsFps: Int = renderFps,
-    val window: Window,
+    private val renderingEngine: RenderingEngine,
     private val physicsEngine: PhysicsEngine,
     private val inputManager: InputManager,
     private val soundManager: SoundManager,
-    private val renderingDispatcher: CoroutineDispatcher = Dispatchers.Default
+    renderFps: Int = 60,
+    logicFps: Int = 60,
 ) {
 
     companion object {
@@ -44,11 +45,6 @@ class StormEngine(
     private var fixedTimeStepInterval: Long = 0L
     private var lastUpdateTime: Long = 0L
 
-    // To allow for separate rendering and physics rates we use fps ratios and delays (calculated in the setter for render fps)
-    private var renderFpsRatio: Int = 0
-    private var renderDelay: Int = 0
-
-    private var physicsFpsRatio: Int = 0
     private var physicsDelay: Int = 0
 
     private var gameLoop: Job? = null
@@ -68,32 +64,31 @@ class StormEngine(
 
     var renderFps: Int = renderFps
         set(value) {
+            field = value
+            this.renderingEngine.setFps(value)
+        }
+
+    var logicFps: Int = logicFps
+        set(value) {
             if (!this.fpsChangeAllow) {
                 throw StormEngineException("fps change not allowed at this time")
             }
 
             this.gameLoop?.cancel() // Stop the current loop if its running
 
-            // Figure out which of the two is the greater fps, that will be the rate the loop will run at
-            val higher = max(value, this.physicsFps)
-
-            // We capture both ratios as we do not enforce that any one fps amount must be smaller than the other
-            // This allows us to separate the physics and the rendering rates during the game loop
-            this.renderFpsRatio = FastMath.ceil(higher.toDouble() / value).toInt()
-            this.physicsFpsRatio = FastMath.ceil(higher.toDouble() / this.physicsFps).toInt()
-
             // 1 / fps == fixed number of calls per second, but we want it in terms of nanoseconds as that is our tracking
             // metric, therefore we multiply by 1000000000 to go from seconds to nanoseconds -> 1000000000 / fps
-            this.fixedTimeStepInterval = 1_000_000_000L / this.physicsFps
+            this.fixedTimeStepInterval = 1_000_000_000L / value
 
             // Restart the loop with the new interval rate
-            this.gameLoop = this.engineCoroutineScope.scheduleOnInterval(1000L / higher, this::runGameLogic)
+            this.gameLoop = this.engineCoroutineScope.scheduleOnInterval(1000L / value, this::runGameLogic)
 
             field = value
         }
 
     init {
-        this.renderFps = renderFps
+        this.renderFps = this.renderFps
+        this.logicFps = this.logicFps
         this.physicsEngine.paused = true
 
         EventManager.getEngineEventStream().subscribe { event ->
@@ -231,16 +226,13 @@ class StormEngine(
         }
 
         TelemetryTracker.recordPhysics {
-            if (++this.physicsDelay >= this.physicsFpsRatio) {
-                // Apply Physics for as long as we have leeway through our accumulator
-                val timeStepSeconds = toSeconds(this.fixedTimeStepInterval)
-                while (this.accumulator >= this.fixedTimeStepInterval) {
-                    // To keep consistent physics regardless of hiccups in time taken in the loop we add the *fixed
-                    // time step* value instead of the elapsed seconds.
-                    this.physicsEngine.update(frameState.colliders, timeStepSeconds)
-                    this.accumulator -= this.fixedTimeStepInterval
-                }
-                this.physicsDelay = 0
+            // Apply Physics for as long as we have leeway through our accumulator
+            val timeStepSeconds = toSeconds(this.fixedTimeStepInterval)
+            while (this.accumulator >= this.fixedTimeStepInterval) {
+                // To keep consistent physics regardless of hiccups in time taken in the loop we add the *fixed
+                // time step* value instead of the elapsed seconds.
+                this.physicsEngine.update(frameState.colliders, timeStepSeconds)
+                this.accumulator -= this.fixedTimeStepInterval
             }
         }
 
@@ -249,12 +241,8 @@ class StormEngine(
 
         // Finally render to the screen
         TelemetryTracker.recordRender {
-            if (++this.renderDelay >= this.renderFpsRatio) {
-                withContext(renderingDispatcher) {
-                    this@StormEngine.window.canvas.clear()
-                    this@StormEngine.currentState!!.render(this@StormEngine.window.canvas, 0.0, 0.0)
-                    this@StormEngine.renderDelay = 0
-                }
+            this@StormEngine.renderingEngine.render {
+                this@StormEngine.currentState!!.render(this, 0.0, 0.0)
             }
         }
 

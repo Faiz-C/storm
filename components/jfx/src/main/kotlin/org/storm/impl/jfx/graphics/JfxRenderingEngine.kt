@@ -25,10 +25,12 @@ import kotlin.math.abs
 class JfxRenderingEngine(
     bufferPoolSize: Int = 4,
     bufferSize: Int = 256,
-    private val gc: GraphicsContext,
+    private val gc: GraphicsContext
 ) : RenderingEngine {
 
     companion object {
+        private const val DEFAULT_FPS = 60
+
         fun getFontMetrics(text: String, font: org.storm.core.graphics.render.brush.Font): FontMetrics {
             val textNode = Text(text)
             textNode.font = Font.font(
@@ -64,17 +66,25 @@ class JfxRenderingEngine(
     private val bufferExchange = RenderBufferExchange(bufferPoolSize, bufferSize)
     private val context = BufferedRenderContext()
 
+    private var animationTimer = FrameLimitedAnimationTimer(DEFAULT_FPS, this::processBuffer)
+
     init {
         this.gc.textBaseline = VPos.TOP
         this.gc.textAlign = TextAlignment.LEFT
     }
 
     override fun start() {
-        // Start JFX Animation timer or something
+        this.animationTimer.start()
     }
 
     override fun stop() {
-        // Stop that timer or something
+        this.animationTimer.stop()
+    }
+
+    override fun setFps(fps: Int) {
+        this.stop()
+        this.animationTimer = FrameLimitedAnimationTimer(fps, this::processBuffer)
+        this.start()
     }
 
     override fun render(block: RenderContext.() -> Unit) {
@@ -86,6 +96,16 @@ class JfxRenderingEngine(
 
         // Submit the buffer to render next
         this.bufferExchange.submit(buffer)
+    }
+
+    private fun processBuffer() {
+        val buffer = this.bufferExchange.renderingBuffer() ?: return
+
+        this.execute(RenderCommand.Clear)
+
+        for (command in buffer.commands) {
+            this.execute(command)
+        }
     }
 
     private fun execute(command: RenderCommand) {

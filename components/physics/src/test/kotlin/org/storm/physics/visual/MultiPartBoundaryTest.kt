@@ -123,9 +123,9 @@ class MultiPartBoundaryTest : Application() {
     }
 
     private suspend fun render(window: JfxWindow) {
-        window.canvas.clear()
+        window.renderingEngine.clear()
 
-        this.physicsSimulator.physicsEngine.render(window.canvas, 0.0, 0.0)
+        this.physicsSimulator.physicsEngine.render(window.renderingEngine, 0.0, 0.0)
 
         this.colliders.forEach { c: Collider ->
             val canvasSettings = if (c.immovable) {
@@ -134,7 +134,7 @@ class MultiPartBoundaryTest : Application() {
                 Settings(color = Color(0.0, 255.0, 0.0, 1.0))
             }
 
-            window.canvas.withSettings(canvasSettings) {
+            window.renderingEngine.withSettings(canvasSettings) {
                 c.render(this, 0.0, 0.0)
             }
         }

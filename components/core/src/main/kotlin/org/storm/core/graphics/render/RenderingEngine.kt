@@ -16,6 +16,11 @@ interface RenderingEngine {
     fun stop()
 
     /**
+     * Sets the frames per second that the engine should render at.
+     */
+    fun setFps(fps: Int)
+
+    /**
      * Renders the [block]
      *
      * @param block a block of code to execute on the [RenderContext]

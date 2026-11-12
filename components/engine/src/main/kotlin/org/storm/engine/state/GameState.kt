@@ -29,11 +29,11 @@ interface GameState: Updatable, Renderable, InputTranslator, ActionStateProcesso
         // Default behaviour is a noop
     }
 
-    override suspend fun update(time: Double, elapsedTime: Double) {
+    override fun update(time: Double, elapsedTime: Double) {
         // Default behaviour is a noop
     }
 
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         this.colliders.forEach { it.render(context, x, y) }
     }
 

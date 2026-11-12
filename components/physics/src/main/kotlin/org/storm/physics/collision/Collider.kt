@@ -100,7 +100,7 @@ class Collider(
         this.translate(velocity.x, velocity.y)
     }
 
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         this.boundaries.forEach { (_, boundary) ->
             boundary.render(context, x, y)
         }
