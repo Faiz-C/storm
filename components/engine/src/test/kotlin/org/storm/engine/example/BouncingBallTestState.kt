@@ -75,14 +75,14 @@ class BouncingBallTestState : SwitchableState() {
         soundManager.pause("bgm")
     }
 
-    override suspend fun process(actionState: ActionState) {
+    override fun process(actionState: ActionState) {
         super.process(actionState)
         if (actionState.isFirstActivation(Controls.SPACE)) {
             EventManager.getEngineEventStream().publish(EngineEvent.TogglePhysics())
         }
     }
 
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         rects.forEach {
             it.render(context, x, y)
         }

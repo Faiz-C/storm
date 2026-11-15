@@ -1,6 +1,5 @@
 package org.storm.core.graphics.render.buffered
 
-import org.storm.core.graphics.render.RenderContext
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.atomic.AtomicReference
 
@@ -19,9 +18,32 @@ class RenderBufferExchange(val bufferPoolSize: Int = 3, val bufferSize: Int = 25
     // Tracks the next buffer that should be used for rendering
     private val next: AtomicReference<RenderBuffer?> = AtomicReference(null)
 
-    // Tracks the current buffer that the rendering thread is working on. This is important to have as a fallback
+    // Tracks the last buffer that the rendering thread was working on. This is important to have as a fallback
     // in case the game logic thread doesn't produce a new buffer before we need to render again.
-    private var current: RenderBuffer? = null
+    private var lastBuffer: RenderBuffer? = null
+
+    /**
+     * Attempts to get a buffer from the pool of available buffers, uses [writer] to fill that buffer, then
+     * submits it for rendering. This method offers a simple pattern for the writing have of the exchange using
+     * the existing methods:
+     *
+     * ```
+     * val buffer = this.writeBuffer()
+     * writer(buffer)
+     * this.submit(buffer)
+     * ```
+     * @param writer a block of code to run which will write to the next available buffer
+     */
+    fun write(writer: (RenderBuffer) -> Unit) {
+        // Acquire a buffer for writing
+        val buffer = this.writeBuffer()
+
+        // Write commands to the buffer
+        writer(buffer)
+
+        // Submit the buffer to render next
+        this.submit(buffer)
+    }
 
     /**
      * Attempts to get a buffer from the pool of available buffers but if none are available we allow for dynamic
@@ -35,7 +57,7 @@ class RenderBufferExchange(val bufferPoolSize: Int = 3, val bufferSize: Int = 25
     }
 
     /**
-     * Submits [renderBuffer] to be the next buffer that a [org.storm.core.graphics.render.Renderer] will work on. If another buffer is already waiting
+     * Submits [renderBuffer] to be the next buffer to offer for rendering. If another buffer is already waiting
      * it gets kicked in favour of [renderBuffer]. It is cleared and readded to the pool.
      *
      * @param renderBuffer [RenderBuffer] to set as the next buffer to render
@@ -54,17 +76,23 @@ class RenderBufferExchange(val bufferPoolSize: Int = 3, val bufferSize: Int = 25
      * @return The next [RenderBuffer] to render, null if there isn't one
      */
     fun renderingBuffer(): RenderBuffer? {
-        // we set to null here to "consume" the next and properly state we have no next
-        val new = this.next.getAndSet(null)
+        // Now we have a couple of cases to consider:
+        // 1) `new` is null, which means there is no new buffer to render. In this case we want to return the last buffer
+        //    we offered for rendering. This can be null in the case nothing was done yet.
+        // 2) `new` is not null, which means we need to offer this buffer but also, if `lastBuffer` is holding a value,
+        // then it needs to be cleared and the buffer returned to the pool. Then `lastBuffer` must be set to `new`.
 
-        // If a new buffer is ready we need to use that one. Clear and add the old buffer back into the pool for reuse.
-        if (this.current != null && this.current != new) {
-            this.current!!.clear()
-            this.pool.offer(this.current!!)
-            this.current = new
+        // we set to null here to "consume" the next and properly state we have no next
+        val new = this.next.getAndSet(null) ?: return this.lastBuffer
+
+        if (this.lastBuffer != null) {
+            this.lastBuffer!!.clear()
+            this.pool.offer(this.lastBuffer!!)
         }
 
-        return this.current
+        this.lastBuffer = new
+
+        return this.lastBuffer
     }
 
 }

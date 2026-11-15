@@ -92,7 +92,7 @@ class ParticleTestState : SwitchableState() {
         }
     }
 
-    override suspend fun process(actionState: ActionState) {
+    override fun process(actionState: ActionState) {
         super.process(actionState)
 
         if (actionState.isFirstActivation(Controls.SPACE)) {
@@ -100,7 +100,7 @@ class ParticleTestState : SwitchableState() {
         }
     }
 
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         super.render(context, x, y)
         TelemetryTracker.render(context, x, y)
     }

@@ -23,9 +23,9 @@ import org.storm.core.graphics.render.buffered.RenderCommand
 import kotlin.math.abs
 
 class JfxRenderingEngine(
+    private val gc: GraphicsContext,
     bufferPoolSize: Int = 4,
-    bufferSize: Int = 256,
-    private val gc: GraphicsContext
+    bufferSize: Int = 256
 ) : RenderingEngine {
 
     companion object {
@@ -88,14 +88,9 @@ class JfxRenderingEngine(
     }
 
     override fun render(block: RenderContext.() -> Unit) {
-        // acquire a buffer for writing
-        val buffer = this.bufferExchange.writeBuffer()
-
-        // Use that record to that buffer
-        this.context.withBuffer(buffer, block)
-
-        // Submit the buffer to render next
-        this.bufferExchange.submit(buffer)
+        this.bufferExchange.write {
+            this.context.withBuffer(it, block)
+        }
     }
 
     private fun processBuffer() {

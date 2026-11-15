@@ -14,6 +14,7 @@ import org.storm.core.graphics.Resolution
 import org.storm.core.graphics.animation.sprite.SpriteAnimation
 import org.storm.core.graphics.animation.sprite.SpriteSheet
 import org.storm.impl.jfx.graphics.JfxImage
+import org.storm.impl.jfx.graphics.JfxRenderingEngine
 import org.storm.impl.jfx.graphics.JfxWindow
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -77,15 +78,16 @@ class AnimationTest : Application() {
         primaryStage.show()
     }
 
-    private suspend fun render(window: JfxWindow) {
-        window.renderingEngine.clear()
-        downSpriteAnimation.render(window.renderingEngine, 100.0, 100.0)
-        rightSpriteAnimation.render(window.renderingEngine, 100.0, 150.0)
-        upSpriteAnimation.render(window.renderingEngine, 150.0, 100.0)
-        leftSpriteAnimation.render(window.renderingEngine, 150.0, 150.0)
+    private fun render(window: JfxWindow) {
+        window.renderingEngine.render {
+            downSpriteAnimation.render(this, 100.0, 100.0)
+            rightSpriteAnimation.render(this, 100.0, 150.0)
+            upSpriteAnimation.render(this, 150.0, 100.0)
+            leftSpriteAnimation.render(this, 150.0, 150.0)
+        }
     }
 
-    private suspend fun updateAnimations() {
+    private fun updateAnimations() {
         downSpriteAnimation.update(0.0, 0.0)
         rightSpriteAnimation.update(0.0, 0.0)
         upSpriteAnimation.update(0.0, 0.0)

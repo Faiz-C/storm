@@ -14,7 +14,7 @@ class ImmovableRect(
 ): Renderable {
     val collider = Collider(AABB(x, y, width, height), Double.POSITIVE_INFINITY, 1.0)
 
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         context.withSettings(context.settings.copy(color = Color(255.0, 0.0, 0.0, 1.0))) {
             collider.render(context, x, y)
         }

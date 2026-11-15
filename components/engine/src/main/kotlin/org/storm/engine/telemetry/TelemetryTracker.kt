@@ -53,7 +53,7 @@ object TelemetryTracker: Updatable, Renderable {
      *
      * @param block the block of code to execute
      */
-    internal suspend inline fun recordInputProcessing(block: suspend () -> Unit) {
+    internal inline fun recordInputProcessing(block: () -> Unit) {
         this.inputProcessingTimeMs += measure(this.inputProcessingTimeMs, block)
     }
 
@@ -62,7 +62,7 @@ object TelemetryTracker: Updatable, Renderable {
      *
      * @param block the block of code to execute
      */
-    internal suspend inline fun recordUpdate(block: suspend () -> Unit) {
+    internal inline fun recordUpdate(block: () -> Unit) {
         this.updateTimeMs += measure(this.updateTimeMs, block)
     }
 
@@ -71,7 +71,7 @@ object TelemetryTracker: Updatable, Renderable {
      *
      * @param block the block of code to execute
      */
-    internal suspend inline fun recordPhysics(block: suspend () -> Unit) {
+    internal inline fun recordPhysics(block: () -> Unit) {
         this.physicsTimeMs += measure(this.physicsTimeMs, block)
     }
 
@@ -80,7 +80,7 @@ object TelemetryTracker: Updatable, Renderable {
      *
      * @param block the block of code to execute
      */
-    internal suspend inline fun recordRender(block: suspend () -> Unit) {
+    internal inline fun recordRender(block: () -> Unit) {
         this.renderTimeMs += measure(this.renderTimeMs, block)
     }
 
@@ -90,7 +90,7 @@ object TelemetryTracker: Updatable, Renderable {
      * @param block the block of code to execute
      * @return the time taken to execute the block using linear interpolation
      */
-    internal suspend inline fun measure(current: Double, block: suspend () -> Unit): Double {
+    internal inline fun measure(current: Double, block: () -> Unit): Double {
         val start = System.nanoTime()
         block()
         val durationMs = (System.nanoTime() - start) / 1_000_000L
@@ -99,7 +99,7 @@ object TelemetryTracker: Updatable, Renderable {
         return (durationMs - current) * this.smoothingFactor
     }
 
-    override suspend fun update(time: Double, elapsedTime: Double) {
+    override fun update(time: Double, elapsedTime: Double) {
         this.frameCounter++
         this.accumulator += elapsedTime
 
@@ -123,7 +123,7 @@ object TelemetryTracker: Updatable, Renderable {
     /**
      * Just for debugging purposes. To build a custom view use [snapshot] directly to pull the data needed.
      */
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         val snapshot = this.snapshot
         context.withSettings(color = DEBUG_COLOUR, font = font) {
             drawText(

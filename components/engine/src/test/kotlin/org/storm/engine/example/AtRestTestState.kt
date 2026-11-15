@@ -95,14 +95,14 @@ class AtRestTestState : SwitchableState() {
         soundManager.play("bgm")
     }
 
-    override suspend fun process(actionState: ActionState) {
+    override fun process(actionState: ActionState) {
         super.process(actionState)
         if (actionState.isFirstActivation(Controls.SPACE)) {
             EventManager.getEngineEventStream().publish(EngineEvent.TogglePhysics())
         }
     }
 
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         platform.render(context, x, y)
         colliders.drop(1).forEach {
             it.render(context, x, y)

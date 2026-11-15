@@ -13,6 +13,7 @@ import org.storm.core.input.InputState
 import org.storm.core.sound.SoundManager
 import org.storm.engine.state.GameState
 import org.storm.engine.telemetry.TelemetryTracker
+import org.storm.impl.jfx.graphics.JfxRenderingEngine
 import org.storm.impl.jfx.graphics.JfxWindow
 import org.storm.physics.ImpulseResolutionPhysicsEngine
 import org.storm.physics.collision.Collider
@@ -21,13 +22,12 @@ class FpsTest: Application() {
     override fun start(primaryStage: Stage) {
         val window = JfxWindow(Resolution.HD)
         val stormEngine = StormEngine(
+            renderingEngine = window.renderingEngine,
             physicsEngine = ImpulseResolutionPhysicsEngine(),
             renderFps = 120,
-            physicsFps = 60,
+            logicFps = 60,
             inputManager = InputManager(),
-            soundManager = SoundManager(),
-            window = window,
-            renderingDispatcher = Dispatchers.JavaFx // For JavaFx we need to render on its UI dispatcher coroutines
+            soundManager = SoundManager()
         )
 
         val state = object: GameState {
@@ -37,11 +37,11 @@ class FpsTest: Application() {
                 return ActionState(emptyMap())
             }
 
-            override suspend fun process(actionState: ActionState) {
+            override fun process(actionState: ActionState) {
                 // Noop
             }
 
-            override suspend fun render(context: RenderContext, x: Double, y: Double) {
+            override fun render(context: RenderContext, x: Double, y: Double) {
                 TelemetryTracker.render(context, x, y)
             }
         }

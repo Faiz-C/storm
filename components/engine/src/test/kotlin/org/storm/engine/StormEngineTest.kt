@@ -30,13 +30,12 @@ class StormEngineTest : Application() {
         val window = JfxWindow()
         val inputManager = InputManager(maxInputDeadTimeMillis = 500.0)
         val stormEngine = StormEngine(
+            renderingEngine = window.renderingEngine,
             physicsEngine = ImpulseResolutionPhysicsEngine(),
             renderFps = 144,
-            physicsFps = 240,
+            logicFps = 60,
             inputManager = inputManager,
-            soundManager = SoundManager(),
-            window = window,
-            renderingDispatcher = Dispatchers.JavaFx // For JavaFx we need to render on its UI dispatcher coroutines
+            soundManager = SoundManager()
         )
 
         Context.loadMappers()

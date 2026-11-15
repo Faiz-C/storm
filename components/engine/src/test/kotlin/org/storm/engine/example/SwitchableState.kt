@@ -16,7 +16,7 @@ import org.storm.engine.state.GameState
 
 abstract class SwitchableState : GameState {
 
-    override suspend fun process(actionState: ActionState) {
+    override fun process(actionState: ActionState) {
         if (actionState.isFirstActivation(ONE)) {
             EventManager.getEngineEventStream().publish(EngineEvent.StateChange(targetStateId = ONE))
         } else if (actionState.isFirstActivation(TWO)) {

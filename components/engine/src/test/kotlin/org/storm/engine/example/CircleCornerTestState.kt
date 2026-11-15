@@ -67,7 +67,7 @@ class CircleCornerTestState : SwitchableState() {
         EventManager.getEngineEventStream().publish(EngineEvent.TogglePhysics())
     }
 
-    override suspend fun process(actionState: ActionState) {
+    override fun process(actionState: ActionState) {
         super.process(actionState)
 
         if (actionState.isFirstActivation(Controls.SPACE)) {
@@ -83,7 +83,7 @@ class CircleCornerTestState : SwitchableState() {
         }
     }
 
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         rect.render(context, x, y)
         player.collider.render(context, x, y)
 

@@ -28,7 +28,7 @@ class ImpulseResolutionPhysicsEngine(
         private const val POSITIONAL_CORRECTION_THRESHOLD = 0.01 // This is in pixels as the unit conversion is up to the user
     }
 
-    override suspend fun processCollisions(collider: Collider) {
+    override fun processCollisions(collider: Collider) {
         collider.boundaries.forEach boundaries@{ (_, section) ->
             this.collisionStructure.getCloseNeighbours(collider, section)
                 .forEach neighbourCollisionCheck@{ (neighbourSection, neighbour) ->

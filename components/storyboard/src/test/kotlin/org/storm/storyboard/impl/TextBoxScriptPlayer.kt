@@ -31,7 +31,7 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
         super.reset()
     }
 
-    override suspend fun update(time: Double, elapsedTime: Double) {
+    override fun update(time: Double, elapsedTime: Double) {
         if (currentFrame++ >= TEXT_FRAME_DELAY) {
             currentFrame = 0
             currentLength = if (currentLength + 1 < line.length) {
@@ -43,7 +43,7 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
         }
     }
 
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         val (screenWidth, screenHeight) = Context.RESOLUTION
 
         // Draw a rectangle to wrap around the text
@@ -78,7 +78,7 @@ class TextBoxScriptPlayer(script: Script) : ScriptPlayer(script) {
         }
     }
 
-    override suspend fun process(actionState: ActionState) {
+    override fun process(actionState: ActionState) {
         if (actionState.isFirstActivation("progress")) {
             if (currentLength < line.length) {
                 currentLength = line.length - 1

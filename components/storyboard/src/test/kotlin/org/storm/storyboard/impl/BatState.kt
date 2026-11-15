@@ -56,12 +56,12 @@ class BatState(
         currentFrame = 0
     }
 
-    override suspend fun render(context: RenderContext, x: Double, y: Double) {
+    override fun render(context: RenderContext, x: Double, y: Double) {
         animation.render(context, x + batX, y + batY)
         scriptPlayer.render(context, x, y)
     }
 
-    override suspend fun update(time: Double, elapsedTime: Double) {
+    override fun update(time: Double, elapsedTime: Double) {
         if (currentFrame++ < movementFrameDelay) {
             updateMovementDeltas(animationType)
             currentFrame = 0
@@ -71,7 +71,7 @@ class BatState(
         scriptPlayer.update(time, elapsedTime)
     }
 
-    override suspend fun process(actionState: ActionState) {
+    override fun process(actionState: ActionState) {
         scriptPlayer.process(actionState)
     }
 
