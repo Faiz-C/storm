@@ -3,7 +3,6 @@ package org.storm.engine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import org.apache.commons.math3.util.FastMath
 import org.storm.core.context.Context
 import org.storm.core.event.EventManager
 import org.storm.core.extensions.scheduleOnInterval
@@ -19,7 +18,6 @@ import org.storm.engine.exception.StormEngineException
 import org.storm.engine.state.GameState
 import org.storm.engine.telemetry.TelemetryTracker
 import org.storm.physics.PhysicsEngine
-import kotlin.math.max
 
 /**
  * The StormEngine combines the multiple components of the Storm libraries to create a simple, straight forward and
@@ -237,7 +235,7 @@ class StormEngine(
         // Stage 2 Event Processing: Produced events from game updates
         EventManager.processEvents()
 
-        // Finally render to the screen
+        // Finally render using the provided rendering engine
         TelemetryTracker.recordRender {
             this@StormEngine.renderingEngine.render {
                 this@StormEngine.currentState!!.render(this, 0.0, 0.0)
