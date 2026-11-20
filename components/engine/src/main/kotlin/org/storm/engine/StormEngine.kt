@@ -16,7 +16,7 @@ import org.storm.engine.events.EngineEvent
 import org.storm.engine.events.getEngineEventStream
 import org.storm.engine.exception.StormEngineException
 import org.storm.engine.state.GameState
-import org.storm.engine.telemetry.TelemetryTracker
+import org.storm.core.telemetry.TelemetryTracker
 import org.storm.physics.PhysicsEngine
 
 /**
@@ -236,10 +236,10 @@ class StormEngine(
         EventManager.processEvents()
 
         // Finally render using the provided rendering engine
-        TelemetryTracker.recordRender {
-            this@StormEngine.renderingEngine.render {
-                this@StormEngine.currentState!!.render(this, 0.0, 0.0)
-            }
+        // We don't record here because this may not be where rendering actually occurs. The rendering engine
+        // is responsible for recording render timings.
+        this.renderingEngine.render {
+            this@StormEngine.currentState!!.render(this, 0.0, 0.0)
         }
 
         // Update the internal snapshot of the TelemetryTracker

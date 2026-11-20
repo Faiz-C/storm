@@ -11,7 +11,7 @@ import org.storm.core.sound.SoundManager
 import org.storm.engine.Controls
 import org.storm.engine.events.EngineEvent
 import org.storm.engine.events.getEngineEventStream
-import org.storm.engine.telemetry.TelemetryTracker
+import org.storm.core.telemetry.TelemetryTracker
 import org.storm.physics.PhysicsEngine
 import org.storm.physics.collision.Collider
 import org.storm.physics.math.Vector

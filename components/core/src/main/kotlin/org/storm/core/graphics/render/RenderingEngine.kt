@@ -1,7 +1,9 @@
 package org.storm.core.graphics.render
 
 /**
- * A RenderingEngine handles the full rendering process end-to-end.
+ * A RenderingEngine handles the full rendering process end-to-end. Due to the potential async nature of the
+ * implementation, it is responsible for tracking render timings using
+ * [org.storm.core.telemetry.TelemetryTracker.recordRender].
  */
 interface RenderingEngine {
 

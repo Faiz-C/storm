@@ -20,6 +20,7 @@ import org.storm.core.graphics.render.RenderingEngine
 import org.storm.core.graphics.render.buffered.BufferedRenderContext
 import org.storm.core.graphics.render.buffered.RenderBufferExchange
 import org.storm.core.graphics.render.buffered.RenderCommand
+import org.storm.core.telemetry.TelemetryTracker
 import kotlin.math.abs
 
 class JfxRenderingEngine(
@@ -94,12 +95,14 @@ class JfxRenderingEngine(
     }
 
     private fun processBuffer() {
-        val buffer = this.bufferExchange.renderingBuffer() ?: return
+        TelemetryTracker.recordRender {
+            val buffer = this.bufferExchange.renderingBuffer() ?: return
 
-        this.execute(RenderCommand.Clear)
+            this.execute(RenderCommand.Clear)
 
-        for (command in buffer.commands) {
-            this.execute(command)
+            for (command in buffer.commands) {
+                this.execute(command)
+            }
         }
     }
 

@@ -1,10 +1,11 @@
-package org.storm.engine.telemetry
+package org.storm.core.telemetry
 
 import org.storm.core.graphics.render.Renderable
 import org.storm.core.graphics.render.RenderContext
 import org.storm.core.graphics.render.brush.Color
 import org.storm.core.graphics.render.brush.Font
 import org.storm.core.update.Updatable
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * A tracker for standard engine telemetry. The data is always updated by the engine but utilizing it is left to the
@@ -17,10 +18,11 @@ object TelemetryTracker: Updatable, Renderable {
     private const val RENDER_MARGIN = 5.0
 
     private var accumulator = 0.0
-    private var frameCounter = 0
+    private var logicCounter = 0
 
-    // We use @PublishedApi here because these fields shouldn't be publicly exposed
-    // but need to be accessible by inline functions.
+    // We use @PublishedApi here because these fields shouldn't be publicly exposed but need to be accessible by inline
+    // functions.
+    @PublishedApi internal val frameCounter = AtomicInteger(0)
     @PublishedApi internal var frameTimeMs = 0.0
     @PublishedApi internal var inputProcessingTimeMs = 0.0
     @PublishedApi internal var updateTimeMs = 0.0
@@ -53,7 +55,7 @@ object TelemetryTracker: Updatable, Renderable {
      *
      * @param block the block of code to execute
      */
-    internal inline fun recordInputProcessing(block: () -> Unit) {
+    inline fun recordInputProcessing(block: () -> Unit) {
         this.inputProcessingTimeMs += measure(this.inputProcessingTimeMs, block)
     }
 
@@ -62,7 +64,7 @@ object TelemetryTracker: Updatable, Renderable {
      *
      * @param block the block of code to execute
      */
-    internal inline fun recordUpdate(block: () -> Unit) {
+    inline fun recordUpdate(block: () -> Unit) {
         this.updateTimeMs += measure(this.updateTimeMs, block)
     }
 
@@ -71,7 +73,7 @@ object TelemetryTracker: Updatable, Renderable {
      *
      * @param block the block of code to execute
      */
-    internal inline fun recordPhysics(block: () -> Unit) {
+    inline fun recordPhysics(block: () -> Unit) {
         this.physicsTimeMs += measure(this.physicsTimeMs, block)
     }
 
@@ -80,8 +82,9 @@ object TelemetryTracker: Updatable, Renderable {
      *
      * @param block the block of code to execute
      */
-    internal inline fun recordRender(block: () -> Unit) {
+    inline fun recordRender(block: () -> Unit) {
         this.renderTimeMs += measure(this.renderTimeMs, block)
+        this.frameCounter.incrementAndGet()
     }
 
     /**
@@ -90,24 +93,26 @@ object TelemetryTracker: Updatable, Renderable {
      * @param block the block of code to execute
      * @return the time taken to execute the block using linear interpolation
      */
-    internal inline fun measure(current: Double, block: () -> Unit): Double {
+    inline fun measure(current: Double, block: () -> Unit): Double {
         val start = System.nanoTime()
         block()
-        val durationMs = (System.nanoTime() - start) / 1_000_000L
+        val durationMs = (System.nanoTime() - start) / 1_000_000.0
 
         // Very similar to linear interpolation
         return (durationMs - current) * this.smoothingFactor
     }
 
     override fun update(time: Double, elapsedTime: Double) {
-        this.frameCounter++
+        this.logicCounter++
         this.accumulator += elapsedTime
 
         this.frameTimeMs += (elapsedTime * 1000.0 - this.frameTimeMs) * this.smoothingFactor
 
         if (this.accumulator >= this.samplePeriodSeconds) {
+            val frameCounter = this.frameCounter.getAndSet(0)
             this.snapshot = TelemetrySnapshot(
-                fps = (this.frameCounter / this.accumulator).toInt(),
+                fps = (frameCounter / this.accumulator).toInt(),
+                ups = (this.logicCounter / this.accumulator).toInt(),
                 frameTimeMs = this.frameTimeMs,
                 updateTimeMs = this.updateTimeMs,
                 renderTimeMs = this.renderTimeMs,
@@ -115,7 +120,7 @@ object TelemetryTracker: Updatable, Renderable {
                 inputProcessingTimeMs = this.inputProcessingTimeMs
             )
 
-            this.frameCounter = 0
+            this.logicCounter = 0
             this.accumulator = 0.0
         }
     }
@@ -127,7 +132,7 @@ object TelemetryTracker: Updatable, Renderable {
         val snapshot = this.snapshot
         context.withSettings(color = DEBUG_COLOUR, font = font) {
             drawText(
-                "FPS: ${snapshot.fps} | FT: ${String.format("%.2f", snapshot.frameTimeMs)}ms",
+                "FPS: ${snapshot.fps} | UPS: ${snapshot.ups} | FT: ${String.format("%.2f", snapshot.frameTimeMs)}ms",
                 RENDER_MARGIN,
                 RENDER_MARGIN
             )
