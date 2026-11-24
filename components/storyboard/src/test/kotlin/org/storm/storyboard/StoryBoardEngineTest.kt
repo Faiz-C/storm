@@ -63,7 +63,7 @@ class StoryBoardEngineTest : Application() {
 
         val simulator = StoryBoardSimulator(144.0, {
             window.renderingEngine.render {
-                engine.render(this, 0.0, 0.0)
+                engine.render(this, 0.0, 0.0,)
             }
         }) { time, elapsedTime ->
             EventManager.processEvents()

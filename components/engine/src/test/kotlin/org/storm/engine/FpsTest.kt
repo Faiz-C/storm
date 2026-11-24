@@ -39,7 +39,7 @@ class FpsTest: Application() {
             }
 
             override fun render(context: RenderContext, x: Double, y: Double) {
-                TelemetryTracker.render(context, x, y)
+                TelemetryTracker.render(context, x, y,)
             }
         }
 

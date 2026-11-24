@@ -103,10 +103,10 @@ class AtRestTestState : SwitchableState() {
     }
 
     override fun render(context: RenderContext, x: Double, y: Double) {
-        platform.render(context, x, y)
+        platform.render(context, x, y,)
         colliders.drop(1).forEach {
-            it.render(context, x, y)
+            it.render(context, x, y,)
         }
-        TelemetryTracker.render(context, x, y)
+        TelemetryTracker.render(context, x, y,)
     }
 }

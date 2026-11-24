@@ -203,6 +203,11 @@ class StormEngine(
         // get disrupted by potential changes to the current state
         val frameState = this.currentState!!
 
+        // Capture current states of all available transforms
+        frameState.transforms.forEach {
+            it.save()
+        }
+
         // Stage 1 Event Processing: Inputs and other async events
         EventManager.processEvents()
 
@@ -232,13 +237,17 @@ class StormEngine(
             }
         }
 
+        val alpha = (this.accumulator / this.fixedTimeStepInterval)
+            .toDouble()
+            .coerceIn(0.0, 1.0)
+
         // Stage 2 Event Processing: Produced events from game updates
         EventManager.processEvents()
 
         // Finally render using the provided rendering engine
         // We don't record here because this may not be where rendering actually occurs. The rendering engine
         // is responsible for recording render timings.
-        this.renderingEngine.render {
+        this.renderingEngine.render(alpha) {
             this@StormEngine.currentState!!.render(this, 0.0, 0.0)
         }
 

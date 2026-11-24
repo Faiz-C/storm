@@ -84,10 +84,10 @@ class CircleCornerTestState : SwitchableState() {
     }
 
     override fun render(context: RenderContext, x: Double, y: Double) {
-        rect.render(context, x, y)
-        player.collider.render(context, x, y)
+        rect.render(context, x, y,)
+        player.collider.render(context, x, y,)
 
-        TelemetryTracker.render(context, x, y)
+        TelemetryTracker.render(context, x, y,)
     }
 
 }

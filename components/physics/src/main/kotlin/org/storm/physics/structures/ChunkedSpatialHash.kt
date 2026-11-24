@@ -166,7 +166,7 @@ class ChunkedSpatialHash<T>(
         val color = Color(255.0, 0.0, 0.0, 0.0)
         context.withSettings(color = color) {
             chunks.values.forEach { chunk ->
-                chunk.boundary.render(context, x, y)
+                chunk.boundary.render(context, x, y,)
             }
         }
     }

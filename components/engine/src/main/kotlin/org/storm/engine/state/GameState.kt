@@ -3,6 +3,7 @@ package org.storm.engine.state
 import org.storm.core.input.ActionStateProcessor
 import org.storm.core.graphics.render.Renderable
 import org.storm.core.graphics.render.RenderContext
+import org.storm.core.graphics.render.Transform
 import org.storm.core.input.InputTranslator
 import org.storm.core.sound.SoundManager
 import org.storm.core.update.Updatable
@@ -13,19 +14,21 @@ interface GameState: Updatable, Renderable, InputTranslator, ActionStateProcesso
 
     val colliders: Set<Collider>
 
-    suspend fun onRegister(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
+    val transforms: Set<Transform>
+
+    fun onRegister(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         // Default behaviour is a noop
     }
 
-    suspend fun onUnregister(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
+    fun onUnregister(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         // Default behaviour is a noop
     }
 
-    suspend fun onSwapOff(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
+    fun onSwapOff(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         // Default behaviour is a noop
     }
 
-    suspend fun onSwapOn(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
+    fun onSwapOn(physicsEngine: PhysicsEngine, soundManager: SoundManager) {
         // Default behaviour is a noop
     }
 
@@ -34,7 +37,7 @@ interface GameState: Updatable, Renderable, InputTranslator, ActionStateProcesso
     }
 
     override fun render(context: RenderContext, x: Double, y: Double) {
-        this.colliders.forEach { it.render(context, x, y) }
+        this.colliders.forEach { it.render(context, x, y,) }
     }
 
 }

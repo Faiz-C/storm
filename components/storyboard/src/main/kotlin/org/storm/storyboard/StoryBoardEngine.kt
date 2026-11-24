@@ -68,7 +68,7 @@ open class StoryBoardEngine : Renderable, Updatable, ActionStateProcessor {
     }
 
     override fun render(context: RenderContext, x: Double, y: Double) {
-        currentState?.render(context, x, y)
+        currentState?.render(context, x, y,)
     }
 
     override fun update(time: Double, elapsedTime: Double) {

@@ -84,11 +84,11 @@ class BouncingBallTestState : SwitchableState() {
 
     override fun render(context: RenderContext, x: Double, y: Double) {
         rects.forEach {
-            it.render(context, x, y)
+            it.render(context, x, y,)
         }
 
-        colliders.last().render(context, x, y)
+        colliders.last().render(context, x, y,)
 
-        TelemetryTracker.render(context, x, y)
+        TelemetryTracker.render(context, x, y,)
     }
 }

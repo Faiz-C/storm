@@ -29,7 +29,7 @@ class QuadrantTree<T>(
         private val aabb = AABB(x, y, width, height)
 
         override fun render(context: RenderContext, x: Double, y: Double) {
-            this.aabb.render(context, x, y)
+            this.aabb.render(context, x, y,)
         }
 
         fun contains(boundary: CollidableShape): Boolean {
@@ -135,9 +135,9 @@ class QuadrantTree<T>(
     }
 
     override fun render(context: RenderContext, x: Double, y: Double) {
-        this.boundary.render(context, 0.0, 0.0)
+        this.boundary.render(context, 0.0, 0.0,)
         this.quadrants.forEach {
-            it?.render(context, x, y)
+            it?.render(context, x, y,)
         }
     }
 

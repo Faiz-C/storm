@@ -16,7 +16,7 @@ class ImmovableRect(
 
     override fun render(context: RenderContext, x: Double, y: Double) {
         context.withSettings(context.settings.copy(color = Color(255.0, 0.0, 0.0, 1.0))) {
-            collider.render(context, x, y)
+            collider.render(context, x, y,)
         }
     }
 

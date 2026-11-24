@@ -101,8 +101,8 @@ class ParticleTestState : SwitchableState() {
     }
 
     override fun render(context: RenderContext, x: Double, y: Double) {
-        super.render(context, x, y)
-        TelemetryTracker.render(context, x, y)
+        super.render(context, x, y,)
+        TelemetryTracker.render(context, x, y,)
     }
 
 }

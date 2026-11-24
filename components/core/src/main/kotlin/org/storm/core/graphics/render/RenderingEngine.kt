@@ -23,10 +23,11 @@ interface RenderingEngine {
     fun setFps(fps: Int)
 
     /**
-     * Renders the [block]
+     * Renders by calling [block] and uses the given [alpha] value to interpolate if needed.
      *
+     * @param alpha a value between [0.0, 1.0] which represents how far along the game logic is to the next complete cycle.
      * @param block a block of code to execute on the [RenderContext]
      */
-    fun render(block: RenderContext.() -> Unit)
+    fun render(alpha: Double, block: RenderContext.() -> Unit)
 
 }

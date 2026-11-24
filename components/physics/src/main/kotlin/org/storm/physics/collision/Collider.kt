@@ -102,7 +102,7 @@ class Collider(
 
     override fun render(context: RenderContext, x: Double, y: Double) {
         this.boundaries.forEach { (_, boundary) ->
-            boundary.render(context, x, y)
+            boundary.render(context, x, y,)
         }
     }
 

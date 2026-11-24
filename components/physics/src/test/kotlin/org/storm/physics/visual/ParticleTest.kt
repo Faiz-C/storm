@@ -113,7 +113,7 @@ class ParticleTest : Application() {
 
     private fun render(window: JfxWindow) {
         window.renderingEngine.render {
-            this@ParticleTest.physicsSimulator.physicsEngine.render(this, 0.0, 0.0)
+            this@ParticleTest.physicsSimulator.physicsEngine.render(this, 0.0, 0.0,)
             this@ParticleTest.colliders.forEach { c: Collider ->
                 val canvasSettings = if (c.immovable) {
                     Settings(color = Color(255.0, 0.0, 0.0, 1.0))
@@ -121,7 +121,7 @@ class ParticleTest : Application() {
                     Settings(color = ballColour)
                 }
                 this.withSettings(canvasSettings) {
-                    c.render(this, 0.0, 0.0)
+                    c.render(this, 0.0, 0.0,)
                 }
             }
         }

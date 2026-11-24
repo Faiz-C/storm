@@ -57,8 +57,8 @@ class BatState(
     }
 
     override fun render(context: RenderContext, x: Double, y: Double) {
-        animation.render(context, x + batX, y + batY)
-        scriptPlayer.render(context, x, y)
+        animation.render(context, x + batX, y + batY,)
+        scriptPlayer.render(context, x, y,)
     }
 
     override fun update(time: Double, elapsedTime: Double) {

@@ -45,7 +45,7 @@ abstract class PhysicsEngine protected constructor(
     }
 
     override fun render(context: RenderContext, x: Double, y: Double) {
-        this.collisionStructure.render(context, 0.0, 0.0)
+        this.collisionStructure.render(context, 0.0, 0.0,)
     }
 
     /**

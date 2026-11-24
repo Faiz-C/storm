@@ -111,12 +111,12 @@ class VisualAtRestTest : Application() {
 
     private fun render(window: JfxWindow) {
         window.renderingEngine.render {
-            this@VisualAtRestTest.physicsSimulator.physicsEngine.render(this, 0.0, 0.0)
-            platform.render(this, 0.0, 0.0)
-            repellingBall.render(this, 0.0, 0.0)
-            repellingBall2.render(this, 0.0, 0.0)
-            repellingBall3.render(this, 0.0, 0.0)
-            repellingBall4.render(this, 0.0, 0.0)
+            this@VisualAtRestTest.physicsSimulator.physicsEngine.render(this, 0.0, 0.0,)
+            platform.render(this, 0.0, 0.0,)
+            repellingBall.render(this, 0.0, 0.0,)
+            repellingBall2.render(this, 0.0, 0.0,)
+            repellingBall3.render(this, 0.0, 0.0,)
+            repellingBall4.render(this, 0.0, 0.0,)
         }
     }
 
